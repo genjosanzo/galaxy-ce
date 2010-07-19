@@ -107,7 +107,9 @@ public class AdministrationPanel extends MenuPanel {
 
         // default to users panel.
         if ("admin".equals(History.getToken())) {
-            History.newItem("users");
+            if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
+                History.newItem("users");
+            }
         }
     }
 
