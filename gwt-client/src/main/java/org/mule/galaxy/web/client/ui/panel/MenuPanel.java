@@ -37,18 +37,25 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
     private ContentPanel centerPanel;
     private LayoutContainer leftMenu;
     private BorderLayoutData centerData;
+    private boolean showLeft;
 
     private boolean firstShow = true;
 
     public MenuPanel() {
+        this(true);
+    }
+
+    public MenuPanel(boolean showLeft) {
+        this.showLeft = showLeft;
+
         setId("menu-panel");
-        
+
         BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 220);
         westData.setSplit(true);
-        westData.setCollapsible(true);  
-        westData.setMargins(new Margins(0,5,0,0));
+        westData.setCollapsible(true);
+        westData.setMargins(new Margins(0, 5, 0, 0));
 
-        centerData = new BorderLayoutData(LayoutRegion.CENTER);  
+        centerData = new BorderLayoutData(LayoutRegion.CENTER);
         centerData.setMargins(new Margins(0));
 
         setLayout(new BorderLayout());
@@ -57,7 +64,7 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         leftMenu = new LayoutContainer();
         leftMenu.setStyleName("left-menu");
         leftMenu.setLayout(new FitLayout());
-        
+
         // wrapper/container for menu widgets in the left panel
         leftMenuContainer = new LayoutContainer();
         leftMenuContainer.setLayoutOnChange(true);
@@ -69,9 +76,13 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         leftMenu.add(leftMenuContainer);
         leftMenu.layout(false);
 
+        if (!showLeft) {
+            leftMenu.hide();
+        }
+
         add(leftMenu, westData);
     }
-    
+
     public void showPage(List<String> params) {
         if (firstShow) {
             firstShow = false;
@@ -97,12 +108,12 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         errorPanelWrapper.add(errorPanel);
         errorPanelWrapper.setStyleName("error-panel-wrapper");
         centerPanel.setTopComponent(errorPanelWrapper);
-        
-		add(centerPanel, centerData);
-		if (mainWidget != null) {
-		    centerPanel.add(mainWidget);
-		}
-		
+
+        add(centerPanel, centerData);
+        if (mainWidget != null) {
+            centerPanel.add(mainWidget);
+        }
+
         layout();
     }
 
@@ -141,7 +152,7 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         if (centerPanel == null) {
             return;
         }
-        
+
         clearErrorMessage();
 
         centerPanel.add(widget);
@@ -157,6 +168,19 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
 
     public void setLeftMenu(LayoutContainer leftMenu) {
         this.leftMenu = leftMenu;
+    }
+
+    public boolean isShowLeft() {
+        return showLeft;
+    }
+
+    public void setShowLeft(boolean showLeft) {
+        this.showLeft = showLeft;
+        if(showLeft) {
+            leftMenu.show();
+        } else {
+            leftMenu.hide();
+        }
     }
 
 }
