@@ -33,7 +33,7 @@ public interface AccessControlManager {
 
     Set<PermissionGrant> getPermissionGrants(Group group);
     
-    Set<PermissionGrant> getPermissionGrants(Group group, Item item);
+    Set<PermissionGrant> getPermissionGrants(Group group, Object object);
     
     Set<Permission> getGrantedPermissions(Group user);
 
@@ -46,9 +46,9 @@ public interface AccessControlManager {
      * @param w
      * @throws AccessException 
      */
-    void grant(Group group, String p, Item item) throws AccessException;
+    void grant(Group group, String p, Object object) throws AccessException;
     
-    void revoke(Group group, String p, Item item) throws AccessException;
+    void revoke(Group group, String p, Object object) throws AccessException;
 
     /**
      * Grant a permission on a specific workspace.
@@ -56,9 +56,9 @@ public interface AccessControlManager {
      * @param p
      * @param w
      */
-    void grant(Group group, Collection<String> perms, Item item) throws AccessException;
+    void grant(Group group, Collection<String> perms, Object object) throws AccessException;
     
-    void revoke(Group group, Collection<String> perms, Item item) throws AccessException;
+    void revoke(Group group, Collection<String> perms, Object object) throws AccessException;
     
     /**
      * Clear permission grants/revocations on a specific item for a Group. This means 
@@ -68,15 +68,15 @@ public interface AccessControlManager {
      * @param item
      * @throws AccessException 
      */
-    void clear(Group group, Item item) throws AccessException;
+    void clear(Group group, Object object) throws AccessException;
     
-    Set<Permission> getPermissions(Group group, Item item);
+    Set<Permission> getPermissions(Group group, Object object);
     
-    Set<Permission> getPermissions(User user, Item item);
+    Set<Permission> getPermissions(User user, Object object);
 
     void assertAccess(String permission) throws AccessException;
 
-    void assertAccess(String permission, Item item) throws AccessException;
+    void assertAccess(String permission, Object object) throws AccessException;
 
     Group getGroup(String id) throws NotFoundException;
 

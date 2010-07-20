@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -70,11 +71,31 @@ public class CollectionPersister implements FieldPersister {
             
             if (c != null) {
                 for (Object cObj : c) {
-                    values.add(((Identifiable) cObj).getId());
+                    values.add(getId(cObj));
                 }
             }
             
             n.setProperty(fd.getName(), (String[]) values.toArray(new String[values.size()]));
+        }
+    }
+
+    private String getId(Object cObj) {
+        if (cObj instanceof Identifiable) {
+            return ((Identifiable) cObj).getId();
+        }
+        
+        if (cObj instanceof String) {
+            return (String) cObj;
+        }
+        
+        try {
+            Method method = cObj.getClass().getMethod("getId");
+            
+            return (String) method.invoke(cObj);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("To persist a collection, individual objects need to have a getId method. Please add one to: " + cObj.getClass());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
     

@@ -429,8 +429,9 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
 
     protected String generateNodeName(T t) {
-        if (getId(t) != null) {
-            return getId(t);
+        String id = getId(t);
+        if (id != null) {
+            return id;
         }
         
         return UUID.randomUUID().toString();
