@@ -60,4 +60,10 @@ public abstract class AbstractShowableContainer extends LayoutContainer implemen
     public void hidePage() {
         // no-op
     }
+
+    public void clear() {
+        removeAll();
+    }
+
+
 }

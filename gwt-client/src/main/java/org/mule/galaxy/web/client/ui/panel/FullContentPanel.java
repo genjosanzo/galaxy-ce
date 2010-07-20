@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.client.ui.panel;
 
+import com.extjs.gxt.ui.client.widget.Layout;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 
@@ -14,4 +15,8 @@ public class FullContentPanel extends BasicContentPanel {
         setLayout(new FitLayout());
     }
 
+    public FullContentPanel(Layout layout) {
+        this();
+        setLayout(layout);
+    }
 }

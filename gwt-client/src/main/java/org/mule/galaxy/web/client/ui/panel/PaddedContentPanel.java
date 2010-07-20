@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.client.ui.panel;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Layout;
 
 /* usually used as a child panel -- no heading */ 
 public class PaddedContentPanel extends ContentPanel {
@@ -15,4 +16,10 @@ public class PaddedContentPanel extends ContentPanel {
         setHeaderVisible(false);
         addStyleName("padded-panel");
     }
+
+    public PaddedContentPanel(Layout layout) {
+        this();
+        setLayout(layout);
+    }
+
 }
