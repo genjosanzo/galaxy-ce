@@ -1,9 +1,9 @@
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import java.util.Collection;
 import java.util.Map;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 public interface SecurityServiceAsync {
@@ -34,4 +34,6 @@ public interface SecurityServiceAsync {
     void getGroup(String id, AsyncCallback fetchCallback);
 
     void getUser(String id, AsyncCallback fetchCallback);
+
+    void setUserProperty(String property, String value, AsyncCallback abstractCallback);
 }

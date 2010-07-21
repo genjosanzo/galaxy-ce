@@ -18,10 +18,11 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-
 import java.util.Collection;
+import java.util.Map;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * "Web user"
@@ -33,6 +34,7 @@ public class WUser implements IsSerializable, BeanModelTag {
     private String email;
     private Collection<String> groupIds;
     private Collection<String> permissions;
+    private Map<String,String> properties;
     
     public String getName() {
         return name;
@@ -70,5 +72,10 @@ public class WUser implements IsSerializable, BeanModelTag {
     public void setGroupIds(Collection<String> groupIds) {
         this.groupIds = groupIds;
     }
-    
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
 }

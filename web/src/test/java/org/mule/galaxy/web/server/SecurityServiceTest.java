@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.mule.galaxy.Item;
 import org.mule.galaxy.security.Permission;
+import org.mule.galaxy.security.User;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.WGroup;
@@ -27,6 +28,15 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
                               "/META-INF/applicationContext-test.xml" };
         
     }
+    
+    public void testSetProperty() throws Exception {
+        gwtSecurityService.setUserProperty("test", "value");
+        
+        User admin = getAdmin();
+        assertEquals("value", admin.getProperties().get("test"));
+    }
+
+    
     public void testUsers() throws Exception {
         Collection<WUser> users = gwtSecurityService.getUsers();
         

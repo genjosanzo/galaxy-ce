@@ -44,6 +44,7 @@ import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
+import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.client.admin.PasswordChangeException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
@@ -72,6 +73,39 @@ public class SecurityServiceImpl implements SecurityService {
         itemPermissions.add(Permission.MANAGE_POLICIES);
         itemPermissions.add(Permission.MODIFY_ITEM);
         itemPermissions.add(Permission.READ_ITEM);
+    }
+
+    public void setUserProperty(final String property, final String value) throws RPCException {
+        // Execute this as a privelged action because users don't have the MANAGE_USERS permission
+        // This is ok because they're just changing their own data
+        final User loggedInUser = SecurityUtils.getCurrentUser();
+        setProperty(loggedInUser, property, value);
+        
+        SecurityUtils.doPriveleged(new Runnable() {
+
+            public void run() {
+                try {
+                    // set the property on the authenticated user
+                    // get latest version because the logged in user has been there for a while
+                    User user = userManager.get(loggedInUser.getId());
+                    setProperty(user, property, value);
+                    userManager.save(user);
+                } catch (NotFoundException e) {
+                    // ignore - what are we going to do about this anyway
+                } catch (DuplicateItemException e) {
+                    // can't occur
+                }
+            }
+        });
+    }
+
+    protected void setProperty(User user, final String property, final String value) {
+        Map<String, Object> props = user.getProperties();
+        if (props == null) {
+            props = new HashMap<String, Object>();
+            user.setProperties(props);
+        }
+        props.put(property, value);
     }
 
     public String addUser(WUser user, String password) throws ItemExistsException {

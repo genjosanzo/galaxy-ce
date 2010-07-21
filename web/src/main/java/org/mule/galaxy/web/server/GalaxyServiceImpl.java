@@ -2,7 +2,9 @@ package org.mule.galaxy.web.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.extension.Extension;
@@ -69,6 +71,14 @@ public class GalaxyServiceImpl implements GalaxyService {
         }
         w.setPermissions(perms);
 
+        Map<String,String> properties = new HashMap<String,String>();
+        for (Map.Entry<String, Object> entry : user.getProperties().entrySet()) {
+            if (entry.getValue() instanceof String) {
+                properties.put(entry.getKey(), (String)entry.getValue());
+            }
+        }
+        w.setProperties(properties);
+        
         return w;
     }
 

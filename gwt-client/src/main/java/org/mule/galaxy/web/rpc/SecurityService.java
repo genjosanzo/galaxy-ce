@@ -1,5 +1,6 @@
 package org.mule.galaxy.web.rpc;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 
 import java.util.Collection;
@@ -30,6 +31,8 @@ public interface SecurityService extends RemoteService {
     Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions();
 
     Map<WGroup, Collection<WPermissionGrant>> getGroupPermissions(String itemId) throws RPCException;
+
+    void setUserProperty(String property, String value) throws RPCException;
     
     /**
      * @throws RPCException 
