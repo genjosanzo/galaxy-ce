@@ -72,9 +72,11 @@ public class GalaxyServiceImpl implements GalaxyService {
         w.setPermissions(perms);
 
         Map<String,String> properties = new HashMap<String,String>();
-        for (Map.Entry<String, Object> entry : user.getProperties().entrySet()) {
-            if (entry.getValue() instanceof String) {
-                properties.put(entry.getKey(), (String)entry.getValue());
+        if (user.getProperties() != null) {
+            for (Map.Entry<String, Object> entry : user.getProperties().entrySet()) {
+                if (entry.getValue() instanceof String) {
+                    properties.put(entry.getKey(), (String)entry.getValue());
+                }
             }
         }
         w.setProperties(properties);
