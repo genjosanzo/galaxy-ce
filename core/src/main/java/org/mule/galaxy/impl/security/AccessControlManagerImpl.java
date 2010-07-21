@@ -246,6 +246,10 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             return ((Identifiable) item).getId();
         }
         
+        if (item instanceof String) {
+            return (String) item;
+        }
+        
         try {
             Method method = item.getClass().getMethod("getId");
             
