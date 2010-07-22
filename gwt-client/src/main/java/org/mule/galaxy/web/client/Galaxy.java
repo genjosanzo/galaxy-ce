@@ -429,11 +429,11 @@ public class Galaxy {
         return baseMessages;
     }
 
-    public boolean hasPermission(String perm) {
-        for (Iterator<String> itr = user.getPermissions().iterator(); itr.hasNext();) {
-            String s = itr.next();
-
-            if (s.startsWith(perm)) return true;
+    public boolean hasPermission(final String requiredPermission) {
+        for (final String permission : user.getPermissions()) {
+            if (permission.startsWith(requiredPermission)) {
+                return true;
+            }
         }
         return false;
     }
