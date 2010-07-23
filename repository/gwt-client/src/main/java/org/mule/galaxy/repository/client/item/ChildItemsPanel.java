@@ -152,7 +152,8 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         ColumnConfig icon = new ColumnConfig("type", " ", 23);
         icon.setRenderer(new GridCellRenderer() {
             public Object render(ModelData modelData, String s, ColumnData columnData, int i, int i1, ListStore listStore, Grid grid) {
-                if(modelData.get(s).equals("Workspace")) {
+                Object obj = modelData.get(s);
+                if(obj.equals("Workspace")) {
                            return  new Image(Images.ICON_FOLDER);
                 }
                 return new Image(Images.ICON_TEXT);
