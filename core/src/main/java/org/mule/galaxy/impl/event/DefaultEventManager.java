@@ -77,9 +77,9 @@ public class DefaultEventManager implements EventManager {
                 throw new IllegalArgumentException(String.format("Listener %s is missing an @OnEvent entry point",
                                                                  listenerCandidate.getClass().getName()));
             }
-        } else if (clazz.isAnnotationPresent(BindToEvents.class)) {
+        } else if (findAnnotation(clazz, BindToEvents.class) != null) {
             // multi-event listeners
-            eventNames = clazz.getAnnotation(BindToEvents.class).value();
+            eventNames = findAnnotation(clazz, BindToEvents.class).value();
             adapter = new DelegatingMultiEventListener(listenerCandidate, executor, sessionFactory);
         } else {
             throw new IllegalArgumentException(clazz.getName() + " doesn't have a BindToEvent(s) annotation");
@@ -126,7 +126,7 @@ public class DefaultEventManager implements EventManager {
      * but extends a class having one, this method would report the subclass as having the annotation.
      * @return annotation or null if none found
      */
-    protected Annotation findAnnotation(Class<?> clazz, final Class<? extends Annotation> annotation) {
+    protected <T extends Annotation> T findAnnotation(Class<?> clazz, final Class<T> annotation) {
         boolean annotationPresent = clazz.isAnnotationPresent(annotation);
         // doesn't handle cases when a listener implements an interface which has an annotation
         while (!annotationPresent && clazz.getSuperclass() != null) {
