@@ -145,7 +145,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
                 WPermissionGrant pg = (WPermissionGrant) gItr.next();
 
                 Widget w = createGrantWidget(pg, isUberGroup);
-                table.setWidget(row, getPermissionColumn(pg.getPermission()), w);
+                table.setWidget(row, getPermissionColumn(pg.getPermission().getName()), w);
             }
             row++;
         }
@@ -201,7 +201,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
                 WPermissionGrant pg = (WPermissionGrant) pgItr.next();
 
-                int col = getPermissionColumn(pg.getPermission());
+                int col = getPermissionColumn(pg.getPermission().getName());
 
                 setGrant(row, col, pg);
             }

@@ -26,13 +26,13 @@ public class WPermissionGrant implements IsSerializable, BeanModelTag {
     public static final int INHERITED = 0;
     public static final int REVOKED = -1;
     
-    private String permission;
+    private WPermission permission;
     private int grant;
     
-    public String getPermission() {
+    public WPermission getPermission() {
         return permission;
     }
-    public void setPermission(String permission) {
+    public void setPermission(WPermission permission) {
         this.permission = permission;
     }
     public int getGrant() {

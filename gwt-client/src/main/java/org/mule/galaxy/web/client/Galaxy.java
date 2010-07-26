@@ -397,6 +397,10 @@ public class Galaxy {
         return pageManager;
     }
 
+    public void setUserManagementSupported(boolean userManagementSupported) {
+        this.userManagementSupported = userManagementSupported;
+    }
+
     public boolean isUserManagementSupported() {
         return userManagementSupported;
     }

@@ -245,11 +245,11 @@ public class SecurityServiceImpl implements SecurityService {
                 for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
                     WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
                     
-                    String p = permGrant.getPermission();
+                    WPermission p = permGrant.getPermission();
                     if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
-                        grants.add(p);
+                        grants.add(p.getName());
                     } else {
-                        revocations.add(p);
+                        revocations.add(p.getName());
                     }
                 }
                 
@@ -269,34 +269,39 @@ public class SecurityServiceImpl implements SecurityService {
         
         for (Group g : groups) {
             WGroup wgroup = toWeb(g);
-            List<WPermissionGrant> wpgs = new ArrayList<WPermissionGrant>();
-            
             Set<PermissionGrant> grants = accessControlManager.getPermissionGrants(g);
-            for (PermissionGrant pg : grants) {
-                WPermissionGrant wpg = new WPermissionGrant();
-                
-                if (isPermissionHidden(pg.getPermission())) {
-                    continue;
-                }
-                
-                switch (pg.getGrant()) {
-                case REVOKED:
-                    wpg.setGrant(WPermissionGrant.REVOKED);
-                    break;
-                case INHERITED:
-                    wpg.setGrant(WPermissionGrant.INHERITED);
-                    break;
-                case GRANTED:
-                    wpg.setGrant(WPermissionGrant.GRANTED);
-                    break;
-                }
-                wpg.setPermission(pg.getPermission().toString());
-                wpgs.add(wpg);
-            }
+            List<WPermissionGrant> wpgs = toWeb(grants);
             
             wgroups.put(wgroup, wpgs);
         }
         return wgroups;
+    }
+
+    public static List<WPermissionGrant> toWeb(Set<PermissionGrant> grants) {
+        List<WPermissionGrant> wpgs = new ArrayList<WPermissionGrant>();
+        
+        for (PermissionGrant pg : grants) {
+            WPermissionGrant wpg = new WPermissionGrant();
+//            
+//            if (isPermissionHidden(pg.getPermission())) {
+//                continue;
+//            }
+//            
+            switch (pg.getGrant()) {
+            case REVOKED:
+                wpg.setGrant(WPermissionGrant.REVOKED);
+                break;
+            case INHERITED:
+                wpg.setGrant(WPermissionGrant.INHERITED);
+                break;
+            case GRANTED:
+                wpg.setGrant(WPermissionGrant.GRANTED);
+                break;
+            }
+            wpg.setPermission(new WPermission(pg.getPermission().getId(), pg.getPermission().getName()));
+            wpgs.add(wpg);
+        }
+        return wpgs;
     }
 
     private boolean isPermissionHidden(Permission permission) {
@@ -320,7 +325,7 @@ public class SecurityServiceImpl implements SecurityService {
                 for (Iterator pgItr = permGrants.iterator(); pgItr.hasNext();) {
                     WPermissionGrant permGrant = (WPermissionGrant)pgItr.next();
                     
-                    String p = permGrant.getPermission();
+                    String p = permGrant.getPermission().getName();
                     if (permGrant.getGrant() == WPermissionGrant.GRANTED) {
                         grants.add(p);
                     } else if (permGrant.getGrant() == WPermissionGrant.REVOKED) {
@@ -369,7 +374,7 @@ public class SecurityServiceImpl implements SecurityService {
                         wpg.setGrant(WPermissionGrant.GRANTED);
                         break;
                     }
-                    wpg.setPermission(pg.getPermission().toString());
+                    wpg.setPermission(new WPermission(pg.getPermission().getId(), pg.getPermission().getName()));
                     wpgs.add(wpg);
                 }
                 
@@ -421,7 +426,7 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
-    private WGroup toWeb(Group g) {
+    public static WGroup toWeb(Group g) {
         return new WGroup(g.getId(), g.getName());
     }
 
