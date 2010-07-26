@@ -1,7 +1,9 @@
 package org.mule.galaxy.impl.tree;
 
 import java.beans.IntrospectionException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,7 +26,11 @@ public class TreeItemQueryBuilder extends IdentifiableExtensionQueryBuilder {
     @Override
     protected List<String> getMatches(Object o, String property, Operator operator) throws QueryException {
         if (property.endsWith(".id")) {
-            return Arrays.asList(o.toString());
+            if (o instanceof Collection) {
+                return new ArrayList<String>((Collection)o);
+            } else {
+                return Arrays.asList(o.toString());
+            }
         }
         
         String path = o.toString();
