@@ -266,6 +266,11 @@ public class WidgetHelper extends Composite {
         return l;
     }
 
+    public static Label cellLabel(Label l) {
+        l.addStyleName("cell-alt");
+        return l;
+    }
+
     public static Label cellLabel(Long lg) {
         Label l = longLabel(lg);
         l.addStyleName("cell-alt");
