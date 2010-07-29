@@ -368,9 +368,6 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 } catch (PropertyException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
-                } catch (AccessException e) {
-                    parentNode.refresh(false);
-                    throw new RuntimeException(e);
                 }
             }
         });
