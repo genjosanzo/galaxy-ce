@@ -67,12 +67,12 @@ public class AdministrationPanel extends MenuPanel {
                     new UserForm(this)));
         }
 
-        if (galaxy.hasPermission("MANAGE_GROUPS")) {
+        /*if (galaxy.hasPermission("MANAGE_GROUPS")) {
             addManageMenuItem(new NavMenuItem("User Groups",
                     "groups",
                     new GroupListPanel(this),
                     new GroupForm(this)));
-        }
+        } */
 
         if (galaxy.hasPermission("EXECUTE_ADMIN_SCRIPTS")) {
             addUtilityMenuItem(new NavMenuItem("Admin Shell",
