@@ -18,19 +18,6 @@
 
 package org.mule.galaxy.web.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
@@ -54,6 +41,20 @@ import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
 import org.mule.galaxy.web.rpc.WUser;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class SecurityServiceImpl implements SecurityService {
 
@@ -427,7 +428,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     public static WGroup toWeb(Group g) {
-        return new WGroup(g.getId(), g.getName());
+        return new WGroup(g.getId(), g.getName(), g.getDescription());
     }
 
     public Collection<WPermission> getPermissions(int permissionType) {
