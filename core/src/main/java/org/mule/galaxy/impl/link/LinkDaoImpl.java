@@ -338,7 +338,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
     
     @OnEvent
     public void onEvent(final ItemDeletedEvent deleted) {
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
             public void run() {
                 execute(new JcrCallback() {
                     public Object doInJcr(final Session session) throws IOException, RepositoryException {
@@ -352,7 +352,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
     
     @OnEvent
     public void onEvent(final ItemCreatedEvent created) {
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
             public void run() {
                 execute(new JcrCallback() {
                     public Object doInJcr(final Session session) throws IOException, RepositoryException {
@@ -375,7 +375,7 @@ public class LinkDaoImpl extends AbstractReflectionDao<Link> implements LinkDao,
     
     @OnEvent
     public void onEvent(final ItemMovedEvent created) {
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
             public void run() {
                 execute(new JcrCallback() {
                     public Object doInJcr(final Session session) throws IOException, RepositoryException {

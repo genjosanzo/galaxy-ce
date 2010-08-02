@@ -20,9 +20,9 @@ public class PermissionDaoImpl extends AbstractReflectionDao<Permission> {
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         Node objectsNode = JcrUtil.getOrCreate(session.getRootNode(), "permissions");
 
-        addPermission(objectsNode, "READ_ITEM", "Read Item", true);
-        addPermission(objectsNode, "MODIFY_ITEM", "Modify Item", true);
-        addPermission(objectsNode, "DELETE_ITEM", "Delete Item", true);
+        addPermission(objectsNode, "READ_ITEM", "Repository Item - Read", true);
+        addPermission(objectsNode, "MODIFY_ITEM", "Repository Item - Modify", true);
+        addPermission(objectsNode, "DELETE_ITEM", "Repository Item - Delete", true);
         addPermission(objectsNode, "VIEW_ACTIVITY", "View Activity", false);
         addPermission(objectsNode, "MANAGE_USERS", "Manage Users", false);
         addPermission(objectsNode, "MANAGE_GROUPS", "Manage Groups", false);

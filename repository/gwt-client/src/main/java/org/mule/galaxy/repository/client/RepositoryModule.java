@@ -97,7 +97,9 @@ public class RepositoryModule implements GalaxyModule {
     }
 
     protected void loadRepositoryTab() {
-        galaxy.getPageManager().createTab(repositoryTabIndex, "Repository", "browse", repositoryConstants.repo_TabTip());
+        if (galaxy.hasPermission("READ_ITEM")) {
+            galaxy.getPageManager().createTab(repositoryTabIndex, "Repository", "browse", repositoryConstants.repo_TabTip());
+        }
         createRepositoryPanels();
     }
 

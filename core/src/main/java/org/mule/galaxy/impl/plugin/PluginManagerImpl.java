@@ -90,7 +90,7 @@ public class PluginManagerImpl
             }
         };
         
-        SecurityUtils.doPriveleged(runnable);
+        SecurityUtils.doPrivileged(runnable);
     }
     
     public boolean isRunning() {

@@ -167,7 +167,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
     public void delete(final String id, final boolean removeArtifactMetadata) {
 
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
 
             public void run() {
                 execute(new JcrCallback() {
@@ -297,7 +297,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                 }
 
                 try {
-                    SecurityUtils.doPriveleged(new Runnable() {
+                    SecurityUtils.doPrivileged(new Runnable() {
                         public void run() {
                             try {
                                 // lookup a version associated with this session
@@ -462,7 +462,7 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
 
         final Collection<Index> indices = getIndexes(a);
 
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
             public void run() {
                 for (Index idx : indices) {
                     try {

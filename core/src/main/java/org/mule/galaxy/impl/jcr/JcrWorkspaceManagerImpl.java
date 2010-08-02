@@ -365,10 +365,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
                 } catch (PolicyException e) {
                     parentNode.refresh(false);
                     throw new RuntimeException(e);
-                } catch (PropertyException e) {
-                    parentNode.refresh(false);
-                    throw new RuntimeException(e);
-                }
+                } 
             }
         });
     }

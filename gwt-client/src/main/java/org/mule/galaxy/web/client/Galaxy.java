@@ -17,6 +17,13 @@
  */
 package org.mule.galaxy.web.client;
 
+import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.ui.ExternalHyperlink;
 import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
@@ -43,7 +50,6 @@ import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Html;
 import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.Viewport;
@@ -61,13 +67,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
 
 
 /**

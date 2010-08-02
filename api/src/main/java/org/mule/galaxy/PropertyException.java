@@ -2,7 +2,7 @@ package org.mule.galaxy;
 
 import org.mule.galaxy.util.Message;
 
-public class PropertyException extends GalaxyException {
+public class PropertyException extends RegistryException {
 
     public PropertyException(Message msg, Throwable t) {
         super(msg, t);

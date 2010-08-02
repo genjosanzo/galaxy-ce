@@ -162,7 +162,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
             // expected
         }
         
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
 
             public void run() {
                 try {

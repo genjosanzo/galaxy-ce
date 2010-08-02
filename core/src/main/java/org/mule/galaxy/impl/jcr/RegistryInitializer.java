@@ -52,7 +52,7 @@ public class RegistryInitializer {
         NodeIterator nodes = workspaces.getNodes();
         // ignore the system node
         if (nodes.getSize() == 0) {
-            SecurityUtils.doPriveleged(new Runnable() {
+            SecurityUtils.doPrivileged(new Runnable() {
 
                 public void run() {
                     try {
@@ -68,7 +68,7 @@ public class RegistryInitializer {
             String versionStr = JcrUtil.getStringOrNull(workspaces, REPOSITORY_LAYOUT_VERSION);
             final int version = Integer.parseInt(versionStr);
             if (version < currentVersion) {
-                SecurityUtils.doPriveleged(new Runnable() {
+                SecurityUtils.doPrivileged(new Runnable() {
                     public void run() {
                         for (Upgrader u : upgraders) {
                             try {

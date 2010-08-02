@@ -73,7 +73,7 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
         configuration.put(keys.get(0), inverse);
         pd.setConfiguration(configuration);
         
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
 
             public void run() {
                 try {

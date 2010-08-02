@@ -255,7 +255,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     public void initialize() throws Exception {
         readIdMethod = BeanUtils.findMethod(type, "getId", new Class[0]);
         writeIdMethod = BeanUtils.findMethod(type, "setId", new Class[] { String.class });
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
 
             public void run() {
                 try {

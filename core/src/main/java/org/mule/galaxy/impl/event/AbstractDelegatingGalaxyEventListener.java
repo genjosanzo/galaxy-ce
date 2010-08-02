@@ -154,7 +154,7 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
         
         public void run() {
             try {
-                SecurityUtils.doPriveleged(new Runnable() {
+                SecurityUtils.doPrivileged(new Runnable() {
                     public void run() {
                         runAsAdmin();
                     }

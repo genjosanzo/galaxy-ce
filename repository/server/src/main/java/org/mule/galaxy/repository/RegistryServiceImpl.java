@@ -341,8 +341,6 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (PolicyException e) {
             throw toWeb(e);
-        } catch (PropertyException e) {
-            throw new RPCException(e.getMessage());
         } finally {
             for (String s : filesToDelete) {
                 uploadService.delete(s);
@@ -1172,10 +1170,6 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
-        } catch (PropertyException e) {
-            // occurs if property name is formatted wrong
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
@@ -1283,10 +1277,6 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
-        } catch (PropertyException e) {
-            // occurs if property name is formatted wrong
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
@@ -1318,10 +1308,6 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
-        } catch (PropertyException e) {
-            // occurs if property name is formatted wrong
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
@@ -1351,10 +1337,6 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
-        } catch (PropertyException e) {
-            // occurs if property name is formatted wrong
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
@@ -1380,10 +1362,6 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
-        } catch (PropertyException e) {
-            // occurs if property name is formatted wrong
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
@@ -1405,10 +1383,6 @@ public class RegistryServiceImpl implements RegistryService {
                 registry.save(i);
             }
         } catch (RegistryException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
-        } catch (PropertyException e) {
-            // occurs if property name is formatted wrong
             log.error(e.getMessage(), e);
             throw new RPCException(e.getMessage());
         } catch (AccessException e) {
@@ -1607,8 +1581,6 @@ public class RegistryServiceImpl implements RegistryService {
             throw new RPCException(e.getMessage());
         } catch (PolicyException e) {
             throw toWeb(e);
-        } catch (PropertyException e) {
-            throw new RPCException(e.getMessage());
         }
     }
 

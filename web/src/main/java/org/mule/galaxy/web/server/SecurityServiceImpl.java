@@ -82,7 +82,7 @@ public class SecurityServiceImpl implements SecurityService {
         final User loggedInUser = SecurityUtils.getCurrentUser();
         setProperty(loggedInUser, property, value);
         
-        SecurityUtils.doPriveleged(new Runnable() {
+        SecurityUtils.doPrivileged(new Runnable() {
 
             public void run() {
                 try {

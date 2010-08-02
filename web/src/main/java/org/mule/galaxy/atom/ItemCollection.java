@@ -311,8 +311,6 @@ public class ItemCollection
             throw new ResponseContextException(401, e);
         } catch (NotFoundException e) {
             throw new ResponseContextException(500, e);
-        } catch (PropertyException e) {
-            throw newErrorMessage("Invalid or missing properties.", e.getMessage(), 400);
         }
     }
     
@@ -430,8 +428,6 @@ public class ItemCollection
         } catch (IOException e) {
             throw new ResponseContextException(500, e);
         } catch (RegistryException e) {
-            throw new ResponseContextException(500, e);
-        } catch (PropertyException e) {
             throw new ResponseContextException(500, e);
         } catch (PolicyException e) {
             throw AbderaUtils.createArtifactPolicyExceptionResponse(e);
@@ -718,10 +714,7 @@ public class ItemCollection
             throw new ResponseContextException(401, e);
         } catch (NotFoundException e) {
             throw newErrorMessage("Could not find type.", "Type " + e.getMessage() + " does not exist.", 400);   
-        } catch (PropertyException e) {
-            log.error("Could not set property.", e);
-            throw new ResponseContextException(500, e);
-        }
+        } 
     }
 
     private IRI getFeedIRI(Item entryObj, RequestContext request) {

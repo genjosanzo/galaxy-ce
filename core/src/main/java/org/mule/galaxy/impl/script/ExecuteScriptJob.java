@@ -37,7 +37,7 @@ public class ExecuteScriptJob implements Job, ApplicationContextAware {
             final ScriptManager scriptManager = (ScriptManager)context.getBean(SCRIPT_MANAGER);
             final String scriptId = (String)data.get(SCRIPT_ID);
 
-            SecurityUtils.doPriveleged(new Runnable() {
+            SecurityUtils.doPrivileged(new Runnable() {
                 public void run() {
                     try {
                         JcrUtil.doInTransaction(sessionFactory, new JcrCallback() {
