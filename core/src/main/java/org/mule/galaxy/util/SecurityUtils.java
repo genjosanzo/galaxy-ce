@@ -77,21 +77,11 @@ public final class SecurityUtils {
     }
     
     public static void doPrivileged(Runnable runnable) {
-        doAs(SYSTEM_USER, runnable);
-    }
-
-    public static void doAs(User user, Runnable runnable) {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication prevAuth = context.getAuthentication();
         try {
-            Set<Permission> perms = Collections.emptySet();
-            UserDetailsWrapper wrapper = new UserDetailsWrapper(user, perms, "");
-            Authentication auth = new RunAsUserToken("system", wrapper, "", new GrantedAuthority[0], User.class);
-            context.setAuthentication(auth);
-            
+            startDoPrivileged();
             runnable.run();
         } finally {
-            context.setAuthentication(prevAuth);
+            endDoPrivileged();
         }
     }
 
