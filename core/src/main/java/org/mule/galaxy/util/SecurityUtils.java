@@ -42,38 +42,35 @@ public final class SecurityUtils {
     public static void startDoPrivileged() {
         SecurityContext context = SecurityContextHolder.getContext();
         Authentication prevAuth = context.getAuthentication();
-        if (prevAuth == null) {
-            throw new IllegalStateException("Previous authorization cannot be null");
-        }
 
-        Stack<Authentication> stack = authentications.get();
-        if (stack == null) {
-            stack = new Stack<Authentication>();
-            authentications.set(stack);
-        }
-        
         Set<Permission> perms = Collections.emptySet();
         UserDetailsWrapper wrapper = new UserDetailsWrapper(SYSTEM_USER, perms, "");
         Authentication auth = new RunAsUserToken("system", wrapper, "", new GrantedAuthority[0], User.class);
         context.setAuthentication(auth);
         
-        stack.push(prevAuth);
+        if (prevAuth != null) {
+            Stack<Authentication> stack = authentications.get();
+            if (stack == null) {
+                stack = new Stack<Authentication>();
+                authentications.set(stack);
+            }
+            stack.push(prevAuth);
+        }
     }
 
     public static void endDoPrivileged() {
         Stack<Authentication> stack = authentications.get();
-        if (stack == null || stack.size() == 0) {
-            throw new IllegalStateException("Previous authorization cannot be null");
+        Authentication auth = null;
+        if (stack != null && stack.size() > 0) {
+            auth = stack.pop();
+
+            if (stack.size() == 0) {
+                authentications.set(null);
+            }
         }
-        
-        Authentication auth = stack.pop();
         
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(auth);
-        
-        if (stack.size() == 0) {
-            authentications.set(null);
-        }
     }
     
     public static void doPrivileged(Runnable runnable) {
