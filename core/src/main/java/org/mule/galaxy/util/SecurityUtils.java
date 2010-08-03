@@ -8,6 +8,7 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.context.SecurityContextImpl;
 import org.acegisecurity.runas.RunAsUserToken;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.security.Permission;
@@ -15,7 +16,7 @@ import org.mule.galaxy.security.User;
 
 public final class SecurityUtils {
     public static final User SYSTEM_USER = new User("system");
-    private static final ThreadLocal<Stack<Authentication>> authentications = new ThreadLocal<Stack<Authentication>>();
+    private static final ThreadLocal<Stack<SecurityContext>> contexts = new ThreadLocal<Stack<SecurityContext>>();
     
     static {
         SYSTEM_USER.setId("system");
@@ -40,37 +41,40 @@ public final class SecurityUtils {
     }
 
     public static void startDoPrivileged() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication prevAuth = context.getAuthentication();
+        SecurityContext prevContext = SecurityContextHolder.getContext();
 
         Set<Permission> perms = Collections.emptySet();
         UserDetailsWrapper wrapper = new UserDetailsWrapper(SYSTEM_USER, perms, "");
         Authentication auth = new RunAsUserToken("system", wrapper, "", new GrantedAuthority[0], User.class);
+        SecurityContextImpl context = new SecurityContextImpl();
         context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
         
-        if (prevAuth != null) {
-            Stack<Authentication> stack = authentications.get();
+        if (prevContext != null) {
+            Stack<SecurityContext> stack = contexts.get();
             if (stack == null) {
-                stack = new Stack<Authentication>();
-                authentications.set(stack);
+                stack = new Stack<SecurityContext>();
+                contexts.set(stack);
             }
-            stack.push(prevAuth);
+            stack.push(prevContext);
         }
     }
 
     public static void endDoPrivileged() {
-        Stack<Authentication> stack = authentications.get();
-        Authentication auth = null;
+        Stack<SecurityContext> stack = contexts.get();
+        SecurityContext context = null;
         if (stack != null && stack.size() > 0) {
-            auth = stack.pop();
+            context = stack.pop();
 
             if (stack.size() == 0) {
-                authentications.set(null);
+                contexts.set(null);
             }
         }
-        
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(auth);
+        if (context == null) {
+            SecurityContextHolder.clearContext();
+        } else {
+            SecurityContextHolder.setContext(context);
+        }
     }
     
     public static void doPrivileged(Runnable runnable) {
