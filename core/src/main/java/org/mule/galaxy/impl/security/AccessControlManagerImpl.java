@@ -71,23 +71,9 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
             }
             
             if (first) {
-                Group userGroup = new Group("Users");
-                Node gNode = objects.addNode(userGroup.getName(), getNodeType());
-                gNode.addMixin("mix:referenceable");
-                userGroup.setId(gNode.getUUID());
-                persist(userGroup, gNode, session);
-    
-                List<String> toGrant = new ArrayList<String>();
-                toGrant.add(Permission.READ_ITEM);
-                toGrant.add(Permission.MODIFY_ITEM);
-                toGrant.add(Permission.DELETE_ITEM);
-                grant(userGroup, toGrant);
-                
-                
                 User admin = userManager.getByUsername("admin");
                 if (admin != null) {
                     admin.addGroup(adminGroup);
-                    admin.addGroup(userGroup);
                     userManager.save(admin);
                 }
             }
