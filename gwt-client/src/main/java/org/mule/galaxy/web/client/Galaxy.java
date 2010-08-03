@@ -94,7 +94,6 @@ public class Galaxy {
     protected Collection<PluginTabInfo> plugins;
     protected boolean userManagementSupported;
     private PageManager pageManager;
-    private ContentPanel centerPanel;
     private GalaxyServiceAsync galaxyService;
     private AdministrationPanel adminPanel;
     private String logoHref = "images/galaxy_logo_main_trans.gif";
@@ -144,8 +143,7 @@ public class Galaxy {
         galaxyService.getApplicationInfo(new AsyncCallback<ApplicationInfo>() {
             
             public void onFailure(Throwable e) {
-                centerPanel.removeAll();
-                centerPanel.add(new Label("Could not load application: " + e.getMessage()));
+                GWT.log("Could not load application.", e);
             }
 
             public void onSuccess(ApplicationInfo appInfo) {
