@@ -101,8 +101,12 @@ public class AdministrationPanel extends MenuPanel {
         super.onFirstShow();
 
         // list of all items for this panel
-        accordionPanel.add(WidgetHelper.createPanelWithListView("Manage", manageItems));
-        accordionPanel.add(WidgetHelper.createPanelWithListView("Utility", utilityItems));
+        if (manageItems.size() > 0) {
+            accordionPanel.add(WidgetHelper.createPanelWithListView("Manage", manageItems));
+        }
+        if (utilityItems.size() > 0) {
+            accordionPanel.add(WidgetHelper.createPanelWithListView("Utility", utilityItems));
+        }
         addMenuItem(accordionPanel);
 
         // default to users panel.
