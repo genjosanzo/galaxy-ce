@@ -156,7 +156,7 @@ public class ErrorContentPanel extends ContentPanel {
         }
     }
 
-    protected void close() {
+    public void close() {
         hide();
         removeAll();
     }
