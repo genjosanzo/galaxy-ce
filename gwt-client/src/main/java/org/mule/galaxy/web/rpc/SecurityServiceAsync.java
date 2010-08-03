@@ -1,6 +1,7 @@
 package org.mule.galaxy.web.rpc;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -30,6 +31,8 @@ public interface SecurityServiceAsync {
     void getGroups(AsyncCallback abstractCallback);
 
     void deleteGroup(String itemId, AsyncCallback deleteCallback);
+    
+    void deleteGroups(List<String> ids, AsyncCallback callback);
 
     void getGroup(String id, AsyncCallback fetchCallback);
 

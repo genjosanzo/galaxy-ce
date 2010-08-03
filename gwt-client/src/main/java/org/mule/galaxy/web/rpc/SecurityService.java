@@ -1,13 +1,13 @@
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.RemoteService;
-
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.client.admin.PasswordChangeException;
+
+import com.google.gwt.user.client.rpc.RemoteService;
 
 
 public interface SecurityService extends RemoteService {
@@ -43,6 +43,8 @@ public interface SecurityService extends RemoteService {
     WGroup getGroup(String id) throws RPCException;
     
     void deleteGroup(String id) throws RPCException;
+    
+    void deleteGroups(List<String> ids) throws RPCException;
     
 
     void applyPermissions(Map<WGroup, Collection<WPermissionGrant>> group2Permissions) throws RPCException;
