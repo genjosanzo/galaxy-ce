@@ -382,6 +382,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                             perms.add(getPermission(v.getString()));
                         }
                     } catch (NotFoundException e) {
+                    } catch (PathNotFoundException e) {
                     }
                 }
                 return null;
