@@ -87,6 +87,40 @@ body {
     text-decoration: underline;
 }
 
+.quickstart-title {
+    font-size: 30px;
+    color: #336699;
+    font-weight: bold;
+}
+
+.quickstart-panel {
+    background: #FFF;
+    padding: 2px;
+    width: 80%;
+    margin-top: 4px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px dashed #C0C0C0;
+}
+
+.dashboard-toolbar-header {
+    background: #FFF;
+    padding: 2px 5px 0 5px;
+    height: 20px;
+}
+
+.quickstart-panel-header-text {
+    display: none;
+}
+
+.quickstart-panel .gwt-Label {
+    /*padding: 4px 4px 10px 4px; */ /* use with gxt panel */
+    padding: 4px;
+}
+
+
+
+
 .panel-title {
     color:#336699; /*016c96*/
     padding:5px;
