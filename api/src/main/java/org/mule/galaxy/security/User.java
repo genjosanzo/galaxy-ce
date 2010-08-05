@@ -5,6 +5,7 @@ import org.mule.galaxy.mapping.OneToMany;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +67,9 @@ public class User implements Identifiable, Serializable
     }
 
     public Map<String, Object> getProperties() {
+        if (properties == null) {
+            properties = new HashMap<String, Object>();
+        }
         return properties;
     }
     
