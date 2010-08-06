@@ -109,6 +109,24 @@ body {
     height: 20px;
 }
 
+.dashboard-portlet {
+    background: #FFF;
+    padding: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #C0C0C0;
+}
+
+.dashboard-portlet-header {
+    /*background: #FFF;*/
+    padding: 4px;
+    margin-left: auto;
+    margin-right: auto;
+    border-top: 1px solid #C0C0C0;
+    border-left: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+}
+
 .quickstart-panel-header-text {
     display: none;
 }
