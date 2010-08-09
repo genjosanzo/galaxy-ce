@@ -2,7 +2,6 @@ package org.mule.galaxy.web.client.ui.panel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
@@ -28,6 +27,7 @@ public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeH
     private final String tabToken;
     private final String header;
     private ListView<NavMenuItem> listView;
+    private final List<NavMenuItem> alertNavItems = new ArrayList<NavMenuItem>();
 
     public AbstractTabPanel(final Galaxy galaxy, final String id, final int tabIndex, final String tabToken, final String header) {
         this.galaxy = galaxy;
@@ -44,11 +44,6 @@ public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeH
     protected void onFirstShow() {
         super.onFirstShow();
 
-        final List<NavMenuItem> alertNavItems = new ArrayList<NavMenuItem>();
-        for (final Map.Entry<String, String> tab : getTabs().entrySet()) {
-            alertNavItems.add(new NavMenuItem(tab.getKey(), tab.getValue()));
-        }
-
         final ContentPanel accordionPanel = WidgetHelper.createAccodionWrapperPanel();
         accordionPanel.setCollapsible(false);
         accordionPanel.setHeaderVisible(false);
@@ -61,8 +56,6 @@ public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeH
 
         setDefaultSelection();
     }
-
-    protected abstract Map<String, String> getTabs();
 
     protected final PageManager getPageManager() {
         return this.galaxy.getPageManager();
@@ -81,7 +74,7 @@ public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeH
         }
     }
 
-    public void createPageInfo(final String token, final Widget composite) {
+    protected final void createPageInfo(final String token, final Widget composite) {
         final PageInfo page = new PageInfo(token, this.tabIndex) {
 
             public Widget createInstance() {
@@ -95,6 +88,10 @@ public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeH
 
         };
         getPageManager().addPage(page);
+    }
+
+    protected final void createMenuItem(final String title, final String token) {
+        this.alertNavItems.add(new NavMenuItem(title, token));
     }
 
 }
