@@ -87,6 +87,33 @@ body {
     text-decoration: underline;
 }
 
+.alert-row-unread {
+}
+
+.alert-row-unread .x-grid3-cell-inner {
+    font-weight: bold;
+}
+
+.alert-expanded-text {
+    padding-left: 3px;
+    font-weight: normal;
+}
+
+.x-toolbar-cell .alert-select-all-label {
+    font-size: 12px;
+    padding-left: 5px;
+}
+
+.x-toolbar-cell .alert-select-all-anchor a {
+    font-size: 12px;
+    padding-left: 5px;
+}
+
+.x-toolbar-cell a {
+    font-size: 12px;
+    padding-left: 5px;
+}
+
 .quickstart-title {
     font-size: 30px;
     color: #336699;
