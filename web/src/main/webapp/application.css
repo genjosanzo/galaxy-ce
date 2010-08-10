@@ -145,8 +145,8 @@ body {
 }
 
 .dashboard-portlet-header {
-    /*background: #FFF;*/
-    padding: 4px;
+    padding: 4px 4px 0 4px;
+    height: 22px;
     margin-left: auto;
     margin-right: auto;
     border-top: 1px solid #C0C0C0;
@@ -154,12 +154,16 @@ body {
     border-right: 1px solid #C0C0C0;
 }
 
+.server-dashboard-portlet-header {
+    font-size: 11px;
+    height: 20px;
+}
+
 .quickstart-panel-header-text {
     display: none;
 }
 
 .quickstart-panel .gwt-Label {
-    /*padding: 4px 4px 10px 4px; */ /* use with gxt panel */
     padding: 4px;
 }
 
