@@ -93,15 +93,18 @@ public class UserForm extends AbstractAdministrationForm {
 
         if (newItem) {
             usernameTB = new TextField<String>();
+            usernameTB.setValidateOnBlur(true);
             usernameTB.setAllowBlank(false);
             usernameTB.setValidator(new RegexValidator(".*/.*") {
                 @Override
                 public String validate(Field<?> field, String s) {
                     final String reason = super.validate(field, s);
-                    if (reason == null) {
-                        return null;
+                    if (reason != null) {
+                        return "Cannot contain '/'";
+                    } else if ((s == null || s.trim().length() < 1)) {
+                        return "This field is required";
                     }
-                    return "Cannot contain '/'";
+                    return null;
                 }
             });
             table.setWidget(row, 1, usernameTB);
