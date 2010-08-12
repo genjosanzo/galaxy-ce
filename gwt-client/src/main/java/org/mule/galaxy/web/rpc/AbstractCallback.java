@@ -104,6 +104,9 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         setErrorMessage(createErrorMessageFromException(caught));
     }
 
+    /**
+     * Do not call this method from {@link #onCallFailure(Throwable)} !
+     */
     public final void onFailure(final Throwable caught) {
         cancelLongRunningCallTimer();
         onCallFailure(caught);
@@ -111,6 +114,9 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     protected abstract void onCallSuccess(final T result);
 
+    /**
+     * Do not call this method from {@link #onCallSuccess(Object)} !
+     */
     public final void onSuccess(final T result) {
         cancelLongRunningCallTimer();
         onCallSuccess(result);
