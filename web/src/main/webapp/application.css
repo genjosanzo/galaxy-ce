@@ -32,7 +32,7 @@ body {
     font-size: 10pt;
     color: #707070 ; /* dark gray */
     text-align: right;
-    background: url("images/header_bg.jpg") no-repeat right;
+    background: url("galaxy-plugins/images/header_bg.jpg") no-repeat right;
     font-size: 9pt;
     text-align: right;
     height: 65px;
@@ -278,19 +278,19 @@ a:visited {
 }
 
 .grid-ajax-loader {
-    background:url("images/grid-ajax-loader.gif") no-repeat;
+    background:url("galaxy-plugins/images/grid-ajax-loader.gif") no-repeat;
 }
 .grid-ajax-loader-msg {
-    background:url("images/grid-ajax-loader.gif") no-repeat;
+    background:url("galaxy-plugins/images/grid-ajax-loader.gif") no-repeat;
 	font-style: italic;
     padding: 2px 2px 2px 20px;
 }
 
 .small-ajax-loader {
-    background:url("images/small-ajax-loader.gif") no-repeat;
+    background:url("galaxy-plugins/images/small-ajax-loader.gif") no-repeat;
 }
 .small-ajax-padded-msg {
-    background:url("images/small-ajax-loader.gif") no-repeat;
+    background:url("galaxy-plugins/images/small-ajax-loader.gif") no-repeat;
 	font-style: italic;
     padding: 2px 2px 2px 20px;
 }
@@ -577,7 +577,7 @@ a:visited {
 .footer {
     border-top: 1px solid black;
     color: #707070 ; /* dark gray */
-    background: #fff url("images/footer_bg.jpg") no-repeat right;
+    background: #fff url("galaxy-plugins/images/footer_bg.jpg") no-repeat right;
     text-align: right;
     font-size: 11px;
     font-family: arial, tahoma, helvetica, sans-serif;
