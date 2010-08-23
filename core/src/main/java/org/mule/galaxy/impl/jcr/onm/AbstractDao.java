@@ -174,13 +174,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         if (criteria.size() > 0) {
             stmt += "[";
         }
-        String join = "";
-        for (Map.Entry<String, Object> e : criteria.entrySet()) {
-            stmt += join;
-            join = " and ";
-            
-            stmt = buildFindPredicate(stmt, e.getKey(), e.getValue());
-        }
+        stmt += createPredicate(criteria);
         if (criteria.size() > 0) {
             stmt += "]";
         }
@@ -192,6 +186,18 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
             } else {
                 stmt += " descending";
             }
+        }
+        return stmt;
+    }
+
+    protected String createPredicate(final Map<String, Object> criteria) {
+        String join = "";
+        String stmt = "";
+        for (Map.Entry<String, Object> e : criteria.entrySet()) {
+            stmt += join;
+            join = " and ";
+            
+            stmt = buildFindPredicate(stmt, e.getKey(), e.getValue());
         }
         return stmt;
     }
@@ -491,19 +497,21 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         NodeIterator iterator = qr.getNodes();
         iterator.skip(start);
         
-        for (NodeIterator nodes = iterator; nodes.hasNext();) {
-            try {
-                values.add(build(nodes.nextNode(), session));
-            } catch (Exception e) {
-                if (e instanceof RepositoryException) {
-                    throw ((RepositoryException) e);
-                } else if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
+        if (maxResults != 0) {
+            for (NodeIterator nodes = iterator; nodes.hasNext();) {
+                try {
+                    values.add(build(nodes.nextNode(), session));
+                } catch (Exception e) {
+                    if (e instanceof RepositoryException) {
+                        throw ((RepositoryException) e);
+                    } else if (e instanceof RuntimeException) {
+                        throw (RuntimeException) e;
+                    }
+                    throw new RuntimeException(e);
                 }
-                throw new RuntimeException(e);
-            }
-            if (maxResults == values.size()) {
-                break;
+                if (maxResults == values.size()) {
+                    break;
+                }
             }
         }
         
