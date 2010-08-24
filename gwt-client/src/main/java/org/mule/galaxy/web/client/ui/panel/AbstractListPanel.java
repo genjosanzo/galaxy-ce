@@ -1,6 +1,10 @@
 package org.mule.galaxy.web.client.ui.panel;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.store.StoreEvent;
+import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
@@ -31,15 +35,30 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         
         public ControlToolbarButtonBar(final Grid<BeanModel> grid) {
             this.grid = grid;
+
+            grid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
+                public void selectionChanged(final SelectionChangedEvent<BeanModel> event) {
+                    refreshSelection();
+                }
+            });
+            grid.getStore().addStoreListener(new StoreListener<BeanModel>() {
+                @Override
+                public void handleEvent(final StoreEvent<BeanModel> e) {
+                    refreshSelection();
+                }
+            });
         }
 
         public Grid<BeanModel> getGrid() {
             return this.grid;
         }
 
+        protected abstract void refreshSelection();
+
     }
 
     private final FlowPanel panel = new FlowPanel();
+    private ControlToolbarButtonBar toolbarButtonBar;
 
     public AbstractListPanel() {
         initWidget(this.panel);
@@ -74,13 +93,13 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
         final CheckBoxSelectionModel<M> selectionModel = new CheckBoxSelectionModel<M>();
         grid.setSelectionModel(selectionModel);
-        final ControlToolbarButtonBar toolbarButtonBar = createToolbarButtonBar(grid);
-        if (toolbarButtonBar != null) {
+        this.toolbarButtonBar = createToolbarButtonBar(grid);
+        if (this.toolbarButtonBar != null) {
             selectionModel.bind(grid.getStore());
             grid.addPlugin(selectionModel);
             grid.getColumnModel().getColumns().add(0, selectionModel.getColumn());
 
-            buttonBar.add(toolbarButtonBar);
+            buttonBar.add(this.toolbarButtonBar);
         }
 
         final ContentPanel contentPanel = new FullContentPanel();
@@ -95,6 +114,10 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
     protected Panel getPanel() {
         return this.panel;
+    }
+
+    public ControlToolbarButtonBar getToolbarButtonBar() {
+        return this.toolbarButtonBar;
     }
 
 }
