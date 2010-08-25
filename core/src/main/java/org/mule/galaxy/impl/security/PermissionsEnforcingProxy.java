@@ -61,13 +61,17 @@ public class PermissionsEnforcingProxy implements FactoryBean {
         this.proxyClass = proxyClass;
     }
     
+    protected void checkPermission(String perm) {
+        accessControlManager.assertAccess(perm);
+    }
+
     private final class PermissionInvocationHandler implements InvocationHandler {
 
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             String perm = methodPermissions.get(method.getName());
             
             if (perm != null) {
-                accessControlManager.assertAccess(perm);
+                checkPermission(perm);
             }
             return method.invoke(target, args);
         }
