@@ -24,18 +24,22 @@ import org.mule.galaxy.web.rpc.WUser;
 
 public class GalaxyServiceImpl implements GalaxyService {
 
-    private Registry registry;
-    private WebManager webManager;
-    private UserManager userManager;
-    private AccessControlManager accessControlManager;
+    protected Registry registry;
+    protected WebManager webManager;
+    protected UserManager userManager;
+    protected AccessControlManager accessControlManager;
     
     public ApplicationInfo getApplicationInfo() throws RPCException {
         ApplicationInfo info = new ApplicationInfo();
+        setBasicApplicationInfo(info);
+        return info;
+    }
+
+    protected void setBasicApplicationInfo(ApplicationInfo info) throws RPCException {
         info.setPluginTabs(getPluginTabs());
         info.setUser(getUserInfo());
         info.setUserManagementSupported(userManager.isManagementSupported());
         info.setExtensions(getExtensions());
-        return info;
     }
 
     protected Collection<PluginTabInfo> getPluginTabs() {
