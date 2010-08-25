@@ -48,8 +48,6 @@
         <property name="scriptJobDao" ref="scriptJobDao"/>
     </bean>
     
-    <bean id="demoArtifactPlugin" class="org.mule.galaxy.web.DemoArtifactPlugin" parent="abstractArtifactPlugin"/>
-    
     <bean id="formHandlerMappings" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
     
     <bean id="gwtHandlerMappings" class="org.mule.galaxy.web.GwtRpcHandlerMapping"/>
