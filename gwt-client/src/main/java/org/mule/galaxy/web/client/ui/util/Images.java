@@ -8,6 +8,7 @@ public class Images {
     public static final String CLEAR_PIXEL = "images/clearpixel.gif";
     public static final String ICON_DELETE = "images/delete_config.gif";
     public static final String ICON_RECYCLE = "images/recycle_icon.gif";
+    public static final String ICON_ADD = "images/add.gif";
 
 
 }
