@@ -282,19 +282,19 @@ a:visited {
 }
 
 .grid-ajax-loader {
-    background:url("galaxy-plugins/images/grid-ajax-loader.gif") no-repeat;
+    background:url("images/grid-ajax-loader.gif") no-repeat;
 }
 .grid-ajax-loader-msg {
-    background:url("galaxy-plugins/images/grid-ajax-loader.gif") no-repeat;
+    background:url("images/grid-ajax-loader.gif") no-repeat;
 	font-style: italic;
     padding: 2px 2px 2px 20px;
 }
 
 .small-ajax-loader {
-    background:url("galaxy-plugins/images/small-ajax-loader.gif") no-repeat;
+    background:url("images/small-ajax-loader.gif") no-repeat;
 }
 .small-ajax-padded-msg {
-    background:url("galaxy-plugins/images/small-ajax-loader.gif") no-repeat;
+    background:url("images/small-ajax-loader.gif") no-repeat;
 	font-style: italic;
     padding: 2px 2px 2px 20px;
 }
