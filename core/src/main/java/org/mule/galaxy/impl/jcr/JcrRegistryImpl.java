@@ -877,20 +877,41 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                          String opName) throws QueryException {
         Restriction r1 = (Restriction) r.getLeft();
         Restriction r2 = (Restriction) r.getRight();
-        queryStr.append("(");
-        if (!handleOperator((OpRestriction) r1, query, queryStr, false)) {
-            return false;
+        StringBuilder subClause = new StringBuilder();
+        subClause.append("(");
+        StringBuilder subClause1 = new StringBuilder();
+        if (!handleOperator((OpRestriction) r1, query, subClause1, false)) {
+            if (!"or".equals(opName)) {
+                return false;
+            }
         }
-        queryStr.append(" ")
+        
+        subClause.append(subClause1)
+             .append(" ")
              .append(opName)
              .append(" ");
+
+        StringBuilder subClause2 = new StringBuilder();
+        if (!handleOperator((OpRestriction) r2, query, subClause2, false)) {
+            if ("or".equals(opName)) {
+                // only left side matched
+                queryStr.append(subClause1);
+                return true;
+            } else {
+                return false;
+            }
+        } 
         
-        if (!handleOperator((OpRestriction) r2, query, queryStr, false)) {
-            return false;
+        // only right side matched
+        if (subClause1.length() == 0) {
+            queryStr.append(subClause2);
+            return true;
+        } else {
+            subClause.append(subClause2)
+                     .append(")");
+            queryStr.append(subClause);
+            return true;
         }
-        queryStr.append(")");
-        
-        return true;
     }
 
     private QueryBuilder getQueryBuilder(String property) throws QueryException {
