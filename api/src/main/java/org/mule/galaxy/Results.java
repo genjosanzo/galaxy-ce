@@ -1,12 +1,13 @@
 package org.mule.galaxy;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Results from a search where the data is a subset or all of a specified search,
  * and total is the number of total results.
  */
-public class Results<Type> {
+public class Results<Type> implements Serializable {
     private List<Type> data;
     private long total;
     

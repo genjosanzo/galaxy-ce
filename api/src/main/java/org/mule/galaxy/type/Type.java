@@ -1,5 +1,6 @@
 package org.mule.galaxy.type;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,7 @@ import org.mule.galaxy.mapping.OneToMany;
 /**
  * Describes a type of item inside the registry.
  */
-public class Type implements Identifiable {
+public class Type implements Identifiable, Serializable {
     private String id;
     private String name;
     private List<PropertyDescriptor> properties;

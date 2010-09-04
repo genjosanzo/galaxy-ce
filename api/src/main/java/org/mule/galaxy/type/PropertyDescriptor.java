@@ -1,5 +1,6 @@
 package org.mule.galaxy.type;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,7 @@ import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.mapping.OneToMany;
 
-public class PropertyDescriptor implements Identifiable {
+public class PropertyDescriptor implements Identifiable, Serializable {
     private String id;
     private String property;
     private String description;
