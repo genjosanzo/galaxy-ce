@@ -956,8 +956,8 @@ public class RegistryServiceImpl implements RegistryService {
         ItemInfo info = toWeb(e, false);
         
         Set<Permission> permissions = accessControlManager.getPermissions(SecurityUtils.getCurrentUser(), e);
-        info.setModifiable(permissions.contains(Permission.MODIFY_ITEM));
-        info.setDeletable(permissions.contains(Permission.DELETE_ITEM));
+        info.setModifiable(hasPermission(permissions, Permission.MODIFY_ITEM));
+        info.setDeletable(hasPermission(permissions, Permission.DELETE_ITEM));
 
         if (e.isLocal()) {
             info.setDefaultLifecycleId(e.getDefaultLifecycle().getId());
@@ -990,6 +990,15 @@ public class RegistryServiceImpl implements RegistryService {
         populateProperties(e, info, showProperties);
         
         return info;
+    }
+
+    private boolean hasPermission(Set<Permission> permissions, String id) {
+        for (Permission p : permissions) {
+            if (p.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ItemInfo getItemInfo(String itemId, boolean showHidden) throws RPCException, ItemNotFoundException {

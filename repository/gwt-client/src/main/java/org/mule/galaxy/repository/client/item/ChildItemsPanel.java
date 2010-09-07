@@ -16,6 +16,7 @@ import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.panel.PaddedContentPanel;
 import org.mule.galaxy.web.client.ui.panel.ToolbarButtonBar;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
+import org.mule.galaxy.web.client.ui.renderer.FauxLinkRenderer;
 import org.mule.galaxy.web.client.ui.util.Images;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
@@ -162,7 +163,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         columns.add(icon);
 
 
-        columns.add(new ColumnConfig("name", "Name", 250));
+        ColumnConfig nameConfig = new ColumnConfig("name", "Name", 250);
+        nameConfig.setRenderer(new FauxLinkRenderer());
+        columns.add(nameConfig);
         columns.add(new ColumnConfig("authorName", "Author", 200));
         columns.add(new ColumnConfig("type", "Type", 200));
 

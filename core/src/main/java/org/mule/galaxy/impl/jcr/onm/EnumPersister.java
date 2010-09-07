@@ -18,7 +18,11 @@ public class EnumPersister implements FieldPersister {
 
     @SuppressWarnings("unchecked")
     public Object build(String id, FieldDescriptor fd, Session session) throws Exception {
-       return Enum.valueOf((Class<? extends Enum>)fd.getType(), id);
+       try {
+           return Enum.valueOf((Class<? extends Enum>)fd.getType(), id);
+       } catch (IllegalArgumentException e) {
+           return null;
+       }
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {

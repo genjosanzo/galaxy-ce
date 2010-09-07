@@ -53,7 +53,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
     public void testPermissions() throws Exception {
         Map group2Perm = gwtSecurityService.getGroupPermissions();
         
-        assertEquals(2, group2Perm.size());
+        assertEquals(1, group2Perm.size());
         
         WGroup g = null;
         Collection permGrants = null;
@@ -79,7 +79,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         Item artifact = importHelloWsdl();
         Map group2Perm = gwtSecurityService.getGroupPermissions(artifact.getId());
         
-        assertEquals(2, group2Perm.size());
+        assertEquals(1, group2Perm.size());
         
         WGroup g = null;
         Collection permGrants = null;
@@ -126,7 +126,6 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
                 assertEquals(WPermissionGrant.REVOKED, pg.getGrant());
             }
         }
-        
     }
     
     public void testGroups() throws Exception {
@@ -136,7 +135,7 @@ public class SecurityServiceTest extends AbstractGalaxyTest {
         
         Map<?, ?> groupPermissions = gwtSecurityService.getGroupPermissions();
         
-        assertEquals(3, groupPermissions.size());
+        assertEquals(2, groupPermissions.size());
         
         boolean found = false;
         for (Map.Entry<?, ?>  e: groupPermissions.entrySet()) {
