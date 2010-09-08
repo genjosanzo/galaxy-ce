@@ -39,13 +39,18 @@ public class MapPersister implements FieldPersister {
     }
 
     public void persist(Object o, Node n, FieldDescriptor fd, Session session) throws Exception {
-        Node mapNode = JcrUtil.getOrCreate(n, fd.getName());
-
-        if (o == null){
+        Node mapNode;
+        try {
+            mapNode = n.getNode(fd.getName());
             mapNode.remove();
+        } catch (PathNotFoundException e) {
+        }
+        
+        if (o == null){
             return;
         }
         
+        mapNode = JcrUtil.getOrCreate(n, fd.getName());
         Map<?,?> map = (Map<?,?>) o;
         
         // TODO: make this lazy and write a LazyNodeMap
