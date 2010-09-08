@@ -25,7 +25,7 @@ public class PermissionDaoImpl extends AbstractReflectionDao<Permission> {
         addPermission(objectsNode, "DELETE_ITEM", "Repository Item - Delete", true);
         addPermission(objectsNode, "VIEW_ACTIVITY", "View Activity", false);
         addPermission(objectsNode, "MANAGE_USERS", "Manage Users", false);
-        addPermission(objectsNode, "MANAGE_GROUPS", "Manage Groups", false);
+        addPermission(objectsNode, "MANAGE_GROUPS", "Manage User Groups", false);
         addPermission(objectsNode, "MANAGE_INDEXES", "Manage Indexes", false);
         addPermission(objectsNode, "MANAGE_POLICIES", "Manage Policies", true);
         addPermission(objectsNode, "MANAGE_PROPERTIES", "Manage Properties", false);
