@@ -17,7 +17,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
     
     public void testDao() throws Exception {
         List<Group> groups = accessControlManager.getGroups();
-        assertEquals(2, groups.size());
+        assertEquals(1, groups.size());
         
         Group group = getGroup("Administrators", groups);
         assertNotNull(group);
@@ -56,10 +56,11 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
     
     
     public void testGroupUserDelete() throws Exception {
-        List<Group> groups = accessControlManager.getGroups();
-        assertEquals(2, groups.size());
+        Group users = new Group();
+        users.setName("Users");
+        accessControlManager.save(users);
         
-        Group group = getGroup("Users", groups);
+        Group group = accessControlManager.getGroup(users.getId());
         assertNotNull(group);
         
         accessControlManager.deleteGroup(group.getId());
@@ -73,7 +74,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         Item artifact = importHelloWsdl();
         
         List<Group> groups = accessControlManager.getGroups();
-        assertEquals(2, groups.size());
+        assertEquals(1, groups.size());
         
         Group group = getGroup("Administrators", groups);
         assertNotNull(group);
