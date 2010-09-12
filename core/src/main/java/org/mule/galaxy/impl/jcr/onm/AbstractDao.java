@@ -28,6 +28,7 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Results;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springmodules.jcr.JcrCallback;
@@ -89,7 +90,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         });
     }
     
-    private void executeLockedAndDewrap(final JcrCallback jcrCallback) throws DuplicateItemException, NotFoundException {
+    protected void executeLockedAndDewrap(final JcrCallback jcrCallback) throws DuplicateItemException, NotFoundException {
         try {
             executeLocked(jcrCallback);
         } catch (RuntimeException e) {
@@ -115,7 +116,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         });
     }
     
-    private void executeLocked(final JcrCallback jcrCallback) {
+    protected void executeLocked(final JcrCallback jcrCallback) {
         execute(new JcrCallback() {
             
             public Object doInJcr(final Session session) throws IOException, RepositoryException {
@@ -160,17 +161,19 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     }
     
     public List<T> find(final String property, final String value) {
-        String stmt = "/*/" + rootNode + "/*[";
-        
-        stmt = buildFindPredicate(stmt, property, value);
-       
-        stmt += "]";
-        
-        return doQuery(stmt);
+        return find(GalaxyUtils.asMap(property, (Object)value));
     }
     
     protected final String createStatement(final Map<String, Object> criteria, String sortByField, boolean asc) {
-        String stmt = "/*/" + rootNode + "/*";
+        String stmt;
+        
+        String nodeType = getNodeType();
+        if ("galaxy:item".equals(nodeType) || "nt:unstructured".equals(nodeType)) {
+            stmt = "/*/" + rootNode + "/*";
+        } else {
+            stmt = "//element(*, " + nodeType + ")";
+        }
+        
         if (criteria.size() > 0) {
             stmt += "[";
         }
