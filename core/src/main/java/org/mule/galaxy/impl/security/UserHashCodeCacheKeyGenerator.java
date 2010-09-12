@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.mule.galaxy.security.User;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.cache.key.CacheKeyGenerator;
 import org.springmodules.cache.key.HashCodeCacheKey;
@@ -80,8 +81,11 @@ public class UserHashCodeCacheKeyGenerator implements CacheKeyGenerator {
         }
         
         // append the logged in user so we perms don't screw things up
-        hashCodeCalculator.append(SecurityUtils.getCurrentUser().hashCode());
-
+        User user = SecurityUtils.getCurrentUser();
+        if (user != null) {
+            hashCodeCalculator.append(user.hashCode());
+        }
+        
         long checkSum = hashCodeCalculator.getCheckSum();
         int hashCode = hashCodeCalculator.getHashCode();
 
