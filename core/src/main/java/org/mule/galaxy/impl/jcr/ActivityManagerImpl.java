@@ -179,28 +179,11 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
     protected Node getNodeForObject(Node parent, Activity t) throws RepositoryException {
         Calendar date = t.getDate();
         
-        parent = getDateNode(parent, date);
+        parent = JcrUtil.getDateNode(parent, date);
         
         return parent;
     }
-
-    private Node getDateNode(Node parent, Calendar date) throws InvalidItemStateException,
-        RepositoryException, ItemExistsException, PathNotFoundException, VersionException,
-        ConstraintViolationException, LockException, NoSuchNodeTypeException {
-        String year = new Integer(date.get(Calendar.YEAR)).toString();
-        
-        String month = new Integer(date.get(Calendar.MONTH)).toString();
-        String day = new Integer(date.get(Calendar.DAY_OF_MONTH)).toString();
-        String hour = new Integer(date.get(Calendar.HOUR_OF_DAY)).toString();
-        
-        parent = JcrUtil.getOrCreate(parent, year);
-        parent = JcrUtil.getOrCreate(parent, month);
-        parent = JcrUtil.getOrCreate(parent, day);
-        parent = JcrUtil.getOrCreate(parent, hour);
-
-        return parent;
-    }
-
+    
     @Override
     protected void doCreateInitialNodes(Session session, Node objects) throws RepositoryException {
         super.doCreateInitialNodes(session, objects);
@@ -212,7 +195,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
         
         // Create an initial log for activities so that we don't get concurrency
         // problems when we first start.
-        getDateNode(objectsNode, c);
+        JcrUtil.getDateNode(objectsNode, c);
     }
 
     @Override

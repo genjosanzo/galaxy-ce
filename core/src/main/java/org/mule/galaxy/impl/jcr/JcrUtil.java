@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -23,6 +25,7 @@ import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
@@ -44,6 +47,22 @@ public class JcrUtil {
     public static final String TYPE_SUFFIX = ".type";
     public static final String COMPONENT_TYPE = "__componentType";
     private static final String COMPONENT_TYPE_SUFFIX = ".componentType";
+
+    public static Node getDateNode(Node parent, Calendar date) throws RepositoryException {
+        String year = new Integer(date.get(Calendar.YEAR)).toString();
+        
+        String month = new Integer(date.get(Calendar.MONTH)).toString();
+        String day = new Integer(date.get(Calendar.DAY_OF_MONTH)).toString();
+        String hour = new Integer(date.get(Calendar.HOUR_OF_DAY)).toString();
+        
+        parent = JcrUtil.getOrCreate(parent, year);
+        parent = JcrUtil.getOrCreate(parent, month);
+        parent = JcrUtil.getOrCreate(parent, day);
+        parent = JcrUtil.getOrCreate(parent, hour);
+
+        return parent;
+    }
+
     
     public static String escape(String name) {
         String ret = name.replace('/', ' ');
