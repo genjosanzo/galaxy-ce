@@ -200,4 +200,20 @@
     </supertypes>
     
   </nodeType>
+
+  <nodeType name="galaxy:alert" 
+    isMixin="false" 
+    hasOrderableChildNodes="false"
+    primaryItemName="">
+    
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" />
+    <propertyDefinition name="*" requiredType="undefined" onParentVersion="COPY" multiple="true"/>
+    <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured" onParentVersion="COPY" sameNameSiblings="false" />
+    <supertypes>
+        <supertype>nt:base</supertype>
+        <supertype>mix:referenceable</supertype>
+        <supertype>mix:lockable</supertype>
+    </supertypes>
+    
+  </nodeType>
 </nodeTypes>
