@@ -36,7 +36,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
         
         User admin = getAdmin();
         assertNotNull(admin.getGroups());
-        assertEquals(2, admin.getGroups().size());
+        assertEquals(1, admin.getGroups().size());
         
         perms = accessControlManager.getGrantedPermissions(admin);
         assertTrue(perms.size() > 0);
