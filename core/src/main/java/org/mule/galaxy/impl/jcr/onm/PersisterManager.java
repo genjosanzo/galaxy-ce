@@ -12,6 +12,7 @@ import org.mule.galaxy.Dao;
 import org.mule.galaxy.impl.jcr.CollectionPersister;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springmodules.jcr.SessionFactory;
 
 /**
  * 
@@ -21,6 +22,7 @@ public class PersisterManager implements BeanPostProcessor {
     private Map<String, ClassPersister> classPersisters = new HashMap<String, ClassPersister>();
     private FieldPersister defaultPersister = new DefaultPersister();
     private EnumPersister enumPersister = new EnumPersister();
+    private SessionFactory sessionFactory;
     
     public PersisterManager() {
         super();
@@ -104,6 +106,14 @@ public class PersisterManager implements BeanPostProcessor {
     
     public void setClassPersisters(Map<String, ClassPersister> classPersister) {
         this.classPersisters = classPersister;
+    }
+
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
     
 }

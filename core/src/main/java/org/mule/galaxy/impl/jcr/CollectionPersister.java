@@ -1,5 +1,6 @@
 package org.mule.galaxy.impl.jcr;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.query.Query;
@@ -25,6 +27,8 @@ import org.mule.galaxy.impl.jcr.onm.FieldDescriptor;
 import org.mule.galaxy.impl.jcr.onm.FieldPersister;
 import org.mule.galaxy.impl.jcr.onm.PersisterManager;
 import org.mule.galaxy.mapping.OneToMany;
+import org.springmodules.jcr.JcrCallback;
+import org.springmodules.jcr.SessionFactory;
 
 public class CollectionPersister implements FieldPersister {
 
@@ -99,7 +103,44 @@ public class CollectionPersister implements FieldPersister {
         }
     }
     
-    protected void initializeCollection(Collection c, Node n, FieldDescriptor fd, Session session, String parentField) {
+    protected void initializeCollection(final Collection c, 
+                                        final Node node,
+                                        final String nodeId, 
+                                        final FieldDescriptor fd, 
+                                        final Session session, 
+                                        final String parentField) {
+      
+        if (session.isLive()) {
+            initializeCollection(c, node, fd, session, parentField);
+            return;
+        }
+        
+        // reattach to a new session
+        SessionFactory sf = persisterManager.getSessionFactory();
+        
+        JcrCallback callback = new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                Node node = session.getNodeByUUID(nodeId);
+                initializeCollection(c, node, fd, session, parentField); 
+                return null;
+            }
+            
+        };
+        
+        try {
+            JcrUtil.doInTransaction(sf, callback);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    protected void initializeCollection(Collection c, 
+                                        Node n, 
+                                        FieldDescriptor fd, 
+                                        Session session, 
+                                        String parentField) {
+        
         if (!parentField.equals("")) {
             try {
                 String parentId = n.getUUID();
@@ -147,24 +188,26 @@ public class CollectionPersister implements FieldPersister {
         private transient String parentField;
         private transient CollectionPersister persister;
         private boolean initialized;
+        private String nodeId;
 
         public LazySet(CollectionPersister persister, 
                        Node n, 
                        FieldDescriptor fd, 
                        Session session,
-                       String parentField) {
+                       String parentField) throws RepositoryException {
             this.persister = persister;
             this.n = n;
+            this.nodeId = n.getUUID();
             this.fd = fd;
             this.session = session;
             this.parentField = parentField;
         }
 
-        public void initialize() {
+        public synchronized void initialize() {
             if (initialized) return;
 
             initialized = true;
-            persister.initializeCollection(this, n, fd, session, parentField);
+            persister.initializeCollection(this, n, nodeId, fd, session, parentField);
         }
         
         @Override
@@ -279,24 +322,26 @@ public class CollectionPersister implements FieldPersister {
         private transient String parentField;
         private transient CollectionPersister persister;
         private boolean initialized;
+        private String nodeId;
 
         public LazyList(CollectionPersister persister,
                         Node n, 
                         FieldDescriptor fd, 
                         Session session, 
-                        String parentField) {
+                        String parentField) throws RepositoryException {
             this.persister = persister;
             this.n = n;            
+            this.nodeId = n.getUUID();
             this.fd = fd;
             this.session = session;
             this.parentField = parentField;
         }
 
-        public void initialize() {
+        public synchronized void initialize() {
             if (initialized) return;
             initialized = true;
             
-            persister.initializeCollection(this, n, fd, session, parentField);
+            persister.initializeCollection(this, n, nodeId, fd, session, parentField);
         }
         
         @Override

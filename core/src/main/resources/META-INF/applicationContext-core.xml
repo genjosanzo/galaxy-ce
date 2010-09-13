@@ -366,6 +366,7 @@
   </bean>
   
   <bean id="persisterManager" class="org.mule.galaxy.impl.jcr.onm.PersisterManager">
+    <property name="sessionFactory" ref="sessionFactory" />
     <property name="persisters">
       <map>
         <entry key="org.mule.galaxy.lifecycle.Phase">
