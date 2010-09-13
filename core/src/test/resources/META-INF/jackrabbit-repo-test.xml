@@ -24,7 +24,7 @@
         (e.g. registered namespaces, custom node types, etc.)
     -->
 
-    <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem">
+    <FileSystem class="org.mule.galaxy.test.ClearableMemoryFileSystem">
     </FileSystem>
 
     <!--
@@ -63,7 +63,7 @@
             virtual file system of the workspace:
             class: FQN of class implementing the FileSystem interface
         -->
-        <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem">
+        <FileSystem class="org.mule.galaxy.test.ClearableMemoryFileSystem">
         </FileSystem>
         <!--
             persistence manager of the workspace:
@@ -90,7 +90,7 @@
             Configures the filesystem to use for versioning for the respective
             persistence manager
         -->
-        <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem">
+        <FileSystem class="org.mule.galaxy.test.ClearableMemoryFileSystem">
         </FileSystem>
 
         <!--
