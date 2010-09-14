@@ -356,7 +356,7 @@ public class XBufferView extends GridView {
     int start = (int) (sc == 0 ? 0 : Math.floor(sc / getCalculatedRowHeight()) - 1);
     int first = Math.max(start, 0);
     //int last = Math.min(start + count + 2, grid.getStore().getCount() - 1);
-    int last = grid.getStore().getCount() - 1;
+    int last = (start == 0) ? grid.getStore().getCount() - 1 : Math.min(start + count + 2, grid.getStore().getCount() - 1);
     return new int[] {first, last};
   }
 
