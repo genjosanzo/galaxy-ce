@@ -5,7 +5,7 @@ package org.mule.galaxy.security;
  * they can be applied to specific objects (Items, Scripts, Servers, etc), then 
  * objectPermission is set to true.
  */
-public class Permission {
+public class Permission implements Serializable {
 
     public static final String READ_ITEM = "READ_ITEM";
     public static final String MODIFY_ITEM = "MODIFY_ITEM";
