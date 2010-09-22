@@ -33,20 +33,25 @@
   </property>
  </bean>
 
- <ehcache:config id="cacheProvider" failQuietly="true"
-  configLocation="classpath:META-INF/ehcache.xml" />
-
+ <bean id="ldapCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+    <property name="configLocation" value="classpath:META-INF/ehcache-ldap.xml"/>
+ </bean>
+ 
+ <bean id="ldapCacheProvider" class="org.springmodules.cache.provider.ehcache.EhCacheFacade">
+    <property name="cacheManager" ref="ldapCacheManager"/>
+ </bean>
+ 
  <bean id="ldapCacheKeyGenerator" class="org.springmodules.cache.key.HashCodeCacheKeyGenerator" />
 
  <ehcache:methodMapInterceptors
-  providerId="cacheProvider" cachingInterceptorId="cachingInterceptor"
-  flushingInterceptorId="flushingInterceptor">
+   providerId="ldapCacheProvider"  
+   cachingInterceptorId="ldapCachingInterceptor"
+   flushingInterceptorId="ldapFlushingInterceptor">
 
   <ehcache:cacheKeyGenerator refId="ldapCacheKeyGenerator" />
 
   <ehcache:caching cacheName="daoCache" methodFQN="org.mule.galaxy.Dao.get*" />
-  <ehcache:caching cacheName="daoCache"
-   methodFQN="org.mule.galaxy.Dao.listAll*" />
+  <ehcache:caching cacheName="daoCache" methodFQN="org.mule.galaxy.Dao.listAll*" />
   <ehcache:caching cacheName="daoCache"
    methodFQN="org.mule.galaxy.security.UserManager.get*" />
 
@@ -65,8 +70,8 @@
   </property>
   <property name="interceptorNames">
    <list>
-    <value>cachingInterceptor</value>
-    <value>flushingInterceptor</value>
+    <value>ldapCachingInterceptor</value>
+    <value>ldapFlushingInterceptor</value>
    </list>
   </property>
  </bean>
