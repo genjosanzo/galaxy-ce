@@ -1,0 +1,15 @@
+<ehcache name="ldapCacheManager">
+    
+  <defaultCache maxElementsInMemory="1000" eternal="false"
+    timeToIdleSeconds="0" timeToLiveSeconds="500" overflowToDisk="false"
+    diskPersistent="false" diskExpiryThreadIntervalSeconds="500" />
+    
+  <cache name="daoCache" 
+    maxElementsInMemory="10000"
+    eternal="false" 
+    timeToIdleSeconds="900" 
+    timeToLiveSeconds="900"
+    overflowToDisk="false" 
+    diskPersistent="false"
+    diskExpiryThreadIntervalSeconds="3600" />
+</ehcache>
