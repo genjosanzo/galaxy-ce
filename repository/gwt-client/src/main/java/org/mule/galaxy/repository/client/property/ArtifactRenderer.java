@@ -35,10 +35,13 @@ public class ArtifactRenderer extends AbstractPropertyRenderer {
     public static Widget createWidget(String txt) {
         return new ExternalHyperlink("View", txt);
     }
+    
+    public static Widget createWidget(String txt, String id) {
+        return new ExternalHyperlink("View", txt, id);
+    }
 
     @Override
     public boolean validate() {
         return upload.getFilename() != null;
     }
-    
 }
