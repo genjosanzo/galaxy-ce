@@ -23,28 +23,43 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
 /**
- * This is an adapted version of GWanTed's ExternalHyperlink (original class under LGPL).
+ * This is an adapted version of GWanTed's ExternalHyperlink (original class under
+ * LGPL).
  */
 public class ExternalHyperlink extends Component {
     private final Element anchorElem;
 
     public ExternalHyperlink(final String text, final String link) {
-        this(text, link, null);
+        this.anchorElem = getAnchorElement(text, link, null, null);
+    }
+    
+    public ExternalHyperlink(final String text, final String link, final String id) {
+        this.anchorElem = getAnchorElement(text, link, null, id);
     }
 
-    public ExternalHyperlink(final String text, final String link,
-                             final String target) {
+    public ExternalHyperlink(final String text, final String link, final String target, final String id) {
         super();
+        this.anchorElem = getAnchorElement(text, link, target, id);
+    }
 
+    private Element getAnchorElement(final String text,
+                                     final String link,
+                                     final String target,
+                                     final String id) {
         setElement(DOM.createDiv());
-        this.anchorElem = DOM.createAnchor();
+        final Element anchorElem = DOM.createAnchor();
         DOM.appendChild(getElement(), this.anchorElem);
         setLink(link);
         setText(text);
 
+        if (id != null) {
+            anchorElem.setId(id);
+        }
+
         if (target != null) {
             setTarget(target);
         }
+        return anchorElem;
     }
 
     public final void setText(final String text) {
@@ -71,4 +86,3 @@ public class ExternalHyperlink extends Component {
         DOM.setAttribute(this.anchorElem, "target", target);
     }
 }
-
