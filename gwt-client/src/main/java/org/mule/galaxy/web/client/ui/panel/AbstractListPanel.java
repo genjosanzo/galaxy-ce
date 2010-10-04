@@ -103,10 +103,6 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         }
 
         final ContentPanel contentPanel = new FullContentPanel();
-        final String title = getTitle();
-        if (title != null) {
-            contentPanel.setHeading(title);
-        }
         contentPanel.add(buttonBar);
         contentPanel.add(grid);
 
@@ -118,10 +114,6 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
     protected Panel getPanel() {
         return this.panel;
-    }
-
-    public String getTitle() {
-        return null;
     }
 
     public ControlToolbarButtonBar getToolbarButtonBar() {

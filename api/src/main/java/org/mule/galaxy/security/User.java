@@ -17,7 +17,7 @@ public class User implements Identifiable, Serializable
     private String name;
     private String email;
     private Calendar created;
-    private Set<Group> groups;
+    private transient Set<Group> groups;
     private Map<String,Object> properties;
     
     public User(String username) {

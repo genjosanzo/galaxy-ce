@@ -9,11 +9,10 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springmodules.org/schema/ehcache http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd">
 
-    <bean id="propertiesLDAP" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" /> <!-- Existing system properties override local ones -->
         <property name="location" value="file:ldap.properties" />
-        <property name="ignoreResourceNotFound" value="true" />
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="ignoreResourceNotFound" value="true" /> 
         <property name="properties">
             <props>
                 <prop key="providerURL">ldap://localhost:62009/</prop>

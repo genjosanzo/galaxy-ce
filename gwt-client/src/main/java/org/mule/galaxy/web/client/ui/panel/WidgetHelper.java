@@ -147,6 +147,7 @@ public class WidgetHelper extends Composite {
         return commentTitlePanel;
     }
 
+
     public static ContentPanel createAccodionWrapperPanel(boolean hideWidget) {
         AccordionLayout layout = new AccordionLayout();
         layout.setHideCollapseTool(hideWidget);
@@ -185,6 +186,7 @@ public class WidgetHelper extends Composite {
 
     }
 
+
     /**
      * Creates a simple toolbar button that links to a History item
      *
@@ -208,6 +210,7 @@ public class WidgetHelper extends Composite {
             }
         });
         return newBtn;
+
     }
 
     /*
@@ -250,24 +253,10 @@ public class WidgetHelper extends Composite {
         l.addStyleName("bold-right-label");
         return l;
     }
-    
-    public static Label columnLabel(String s, String id) {
-        Label l = new Label(s);
-        l.addStyleName("bold-right-label");
-        l.getElement().setId(id);
-        return l;
-    }
 
     public static Label leftColumnLabel(String s) {
         Label l = new Label(s);
         l.addStyleName("bold-left-label");
-        return l;
-    }
-    
-    public static Label leftColumnLabel(String s, String id) {
-        Label l = new Label(s);
-        l.addStyleName("bold-left-label");
-        l.getElement().setId(id);
         return l;
     }
 
@@ -276,22 +265,9 @@ public class WidgetHelper extends Composite {
         l.addStyleName("cell-alt");
         return l;
     }
-    
-    public static Label cellLabel(String s, String id) {
-        Label l = new Label(s);
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
-        return l;
-    }
 
     public static Label cellLabel(Label l) {
         l.addStyleName("cell-alt");
-        return l;
-    }
-    
-    public static Label cellLabel(Label l, String id) {
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
         return l;
     }
 
@@ -300,49 +276,26 @@ public class WidgetHelper extends Composite {
         l.addStyleName("cell-alt");
         return l;
     }
-    
-    public static Label cellLabel(Long lg, String id) {
-        Label l = longLabel(lg);
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
-        return l;
-    }
 
     public static Label cellLabel(Boolean b) {
         Label l = new Label(b.toString());
         l.addStyleName("cell-alt");
         return l;
     }
-    
-    public static Label cellLabel(Boolean b, String id) {
-        Label l = new Label(b.toString());
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
-        return l;
-    }
 
     public static Label cellLabel(int i) {
         return cellLabel(Integer.toString(i));
     }
-    
-    public static Label cellLabel(int i, String id) {
-        return cellLabel(Integer.toString(i), id);
-    }
 
     public static Label longLabel(Long l) {
         return new Label(Long.toString(l));
-    }
-    
-    public static Label longLabel(Long l, String id) {
-        Label label = new Label(Long.toString(l));
-        label.getElement().setId(id);
-        return label;
     }
 
     public static String stringIsBold(String s, boolean isBold) {
         String w = (isBold) ? "bold" : "normal";
         return "<span style=\"font-weight:" + w + ";\">" + s + "</span>";
     }
+
 
     public static WidgetComponent clearPixel(String height, String width, String tooltip) {
         // can be used as a spacer or as a tooltip for grid cells, etc.
@@ -385,11 +338,13 @@ public class WidgetHelper extends Composite {
         return td;
     }
 
+
     public static TableData paddedCell(int value) {
         TableData td = new TableData();
         td.setPadding(value);
         return td;
     }
+
 
     /**
      * @param heading
@@ -449,4 +404,5 @@ public class WidgetHelper extends Composite {
     public static Label navSeparator() {
         return new Label(">");
     }
+
 }

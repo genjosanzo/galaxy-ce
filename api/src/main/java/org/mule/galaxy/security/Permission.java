@@ -1,7 +1,5 @@
 package org.mule.galaxy.security;
 
-import java.io.Serializable;
-
 /**
  * A permission in the system. Permissions have a unique ID and a descriptive name. If
  * they can be applied to specific objects (Items, Scripts, Servers, etc), then 

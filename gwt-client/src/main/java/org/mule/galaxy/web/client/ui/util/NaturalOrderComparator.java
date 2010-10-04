@@ -94,7 +94,7 @@ public class NaturalOrderComparator implements Comparator
             cb = charAt(b, ib);
 
             // skip over leading spaces or zeros
-            while (Character.isSpace(ca) || ca == '0')
+            while (Character.isSpaceChar(ca) || ca == '0')
             {
                 if (ca == '0')
                 {
@@ -109,7 +109,7 @@ public class NaturalOrderComparator implements Comparator
                 ca = charAt(a, ++ia);
             }
 
-            while (Character.isSpace(cb) || cb == '0')
+            while (Character.isSpaceChar(cb) || cb == '0')
             {
                 if (cb == '0')
                 {
