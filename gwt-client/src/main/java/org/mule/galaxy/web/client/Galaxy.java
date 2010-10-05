@@ -68,7 +68,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
-
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -82,7 +81,7 @@ public class Galaxy {
     protected WUser user;
     protected int adminTabIndex;
     protected Viewport base;
-    protected List extensions;
+    protected List<WExtensionInfo> extensions;
     protected Label product;
     protected InlineFlowPanel footerPanel;
 
@@ -166,7 +165,7 @@ public class Galaxy {
         // always the left most item
         rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
         
-        extensions = (List) appInfo.getExtensions();
+        extensions = (List<WExtensionInfo>) appInfo.getExtensions();
         Collections.sort(extensions);
         
         plugins = appInfo.getPluginTabs();
@@ -205,7 +204,6 @@ public class Galaxy {
         base.add(southPanel, data);
     }
 
-
     /**
      * adds to the left of the  copyright info
      */
@@ -234,7 +232,6 @@ public class Galaxy {
     protected AboutPanel getAboutPanel() {
         return new AboutPanel();
     }
-
 
     protected void createHeader() {
         ContentPanel northPanel = new ContentPanel();
@@ -374,8 +371,7 @@ public class Galaxy {
             pageManager.show(getFirstPage());
         }
     }
-
-    
+  
     protected String getFirstPage() {
         return firstPage;
     }
@@ -404,7 +400,7 @@ public class Galaxy {
         return userManagementSupported;
     }
 
-    public List getExtensions() {
+    public List<WExtensionInfo> getExtensions() {
         return extensions;
     }
 
@@ -446,8 +442,8 @@ public class Galaxy {
     }
 
     public WExtensionInfo getExtension(String id) {
-        for (Iterator itr = extensions.iterator(); itr.hasNext();) {
-            WExtensionInfo ei = (WExtensionInfo) itr.next();
+        for (Iterator<WExtensionInfo> itr = extensions.iterator(); itr.hasNext();) {
+            WExtensionInfo ei = itr.next();
 
             if (id.equals(ei.getId())) {
                 return ei;
@@ -460,7 +456,6 @@ public class Galaxy {
         return administrationConstants;
     }
 
-
     public void setMessageAndGoto(String successToken, String successMessage) {
         pageManager.setMessageAndGoto(successToken, successMessage);
     }
@@ -472,5 +467,4 @@ public class Galaxy {
     public void setLogoHref(String logoHref) {
         this.logoHref = logoHref;
     }
-
 }

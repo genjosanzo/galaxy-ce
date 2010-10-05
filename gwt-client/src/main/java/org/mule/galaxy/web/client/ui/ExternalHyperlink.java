@@ -27,39 +27,33 @@ import com.google.gwt.user.client.Element;
  * LGPL).
  */
 public class ExternalHyperlink extends Component {
-    private Element anchorElem;
+    private final Element anchorElem;
 
     public ExternalHyperlink(final String text, final String link) {
-        this.anchorElem = getAnchorElement(text, link, null, null);
-    }
-    
-    public ExternalHyperlink(final String text, final String link, final String id) {
-        this.anchorElem = getAnchorElement(text, link, null, id);
+        this.anchorElem = getAnchorElement(text, link, null);
     }
 
-    public ExternalHyperlink(final String text, final String link, final String target, final String id) {
-        super();
-        this.anchorElem = getAnchorElement(text, link, target, id);
+    public ExternalHyperlink(final String text, final String link, final String target) {
+        this.anchorElem = getAnchorElement(text, link, target);
     }
 
     private Element getAnchorElement(final String text,
                                      final String link,
-                                     final String target,
-                                     final String id) {
+                                     final String target) {
         setElement(DOM.createDiv());
-        this.anchorElem = DOM.createAnchor();
+        final Element anchorElem = DOM.createAnchor();
         DOM.appendChild(getElement(), this.anchorElem);
         setLink(link);
         setText(text);
-
-        if (id != null) {
-            anchorElem.setId(id);
-        }
 
         if (target != null) {
             setTarget(target);
         }
         return anchorElem;
+    }
+    
+    public final void setId(String id) {
+        anchorElem.setId(id);
     }
 
     public final void setText(final String text) {
