@@ -27,7 +27,7 @@ import com.google.gwt.user.client.Element;
  * LGPL).
  */
 public class ExternalHyperlink extends Component {
-    private final Element anchorElem;
+    private Element anchorElem;
 
     public ExternalHyperlink(final String text, final String link) {
         this.anchorElem = getAnchorElement(text, link, null, null);
@@ -47,7 +47,7 @@ public class ExternalHyperlink extends Component {
                                      final String target,
                                      final String id) {
         setElement(DOM.createDiv());
-        final Element anchorElem = DOM.createAnchor();
+        this.anchorElem = DOM.createAnchor();
         DOM.appendChild(getElement(), this.anchorElem);
         setLink(link);
         setText(text);
