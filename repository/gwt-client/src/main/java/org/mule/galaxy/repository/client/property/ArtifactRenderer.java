@@ -37,7 +37,9 @@ public class ArtifactRenderer extends AbstractPropertyRenderer {
     }
     
     public static Widget createWidget(String txt, String id) {
-        return new ExternalHyperlink("View", txt, id);
+        final ExternalHyperlink externalHyperlink = new ExternalHyperlink("View", txt);
+        externalHyperlink.setId(id);
+        return externalHyperlink;
     }
 
     @Override
