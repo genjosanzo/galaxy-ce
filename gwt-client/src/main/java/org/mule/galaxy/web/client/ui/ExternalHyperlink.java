@@ -27,6 +27,10 @@ import com.google.gwt.user.client.Element;
  * LGPL).
  */
 public class ExternalHyperlink extends Component {
+    
+    private static final String HREF = "href";
+    private static final String TARGET = "target";
+    
     private final Element anchorElem;
 
     public ExternalHyperlink(final String text, final String link) {
@@ -37,17 +41,15 @@ public class ExternalHyperlink extends Component {
         this.anchorElem = getAnchorElement(text, link, target);
     }
 
-    private Element getAnchorElement(final String text,
-                                     final String link,
-                                     final String target) {
+    private Element getAnchorElement(final String text, final String link, final String target) {
         setElement(DOM.createDiv());
+        
         final Element anchorElement = DOM.createAnchor();
         DOM.appendChild(getElement(), anchorElement);
-        setLink(link);
-        setText(text);
-
+        DOM.setElementProperty(anchorElement, HREF, link);
+        DOM.setInnerHTML(anchorElement, text);
         if (target != null) {
-            setTarget(target);
+            DOM.setElementProperty(anchorElement, TARGET, target);
         }
         return anchorElement;
     }
@@ -61,7 +63,7 @@ public class ExternalHyperlink extends Component {
     }
 
     public final void setLink(final String link) {
-        DOM.setAttribute(this.anchorElem, "href", link);
+        DOM.setElementProperty(this.anchorElem, HREF, link);
     }
 
     public final String getText() {
@@ -69,14 +71,14 @@ public class ExternalHyperlink extends Component {
     }
 
     public final String getLink() {
-        return DOM.getAttribute(this.anchorElem, "href");
+        return DOM.getElementProperty(this.anchorElem, HREF);
     }
 
     public final String getTarget() {
-        return DOM.getAttribute(this.anchorElem, "target");
+        return DOM.getElementProperty(this.anchorElem, TARGET);
     }
 
     public final void setTarget(final String target) {
-        DOM.setAttribute(this.anchorElem, "target", target);
+        DOM.setElementProperty(this.anchorElem, TARGET, target);
     }
 }
