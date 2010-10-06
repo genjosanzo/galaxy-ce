@@ -41,15 +41,15 @@ public class ExternalHyperlink extends Component {
                                      final String link,
                                      final String target) {
         setElement(DOM.createDiv());
-        final Element anchorElem = DOM.createAnchor();
-        DOM.appendChild(getElement(), this.anchorElem);
+        final Element anchorElement = DOM.createAnchor();
+        DOM.appendChild(getElement(), anchorElement);
         setLink(link);
         setText(text);
 
         if (target != null) {
             setTarget(target);
         }
-        return anchorElem;
+        return anchorElement;
     }
     
     public final void setId(String id) {
