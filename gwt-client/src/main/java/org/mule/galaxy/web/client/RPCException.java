@@ -22,12 +22,21 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RPCException extends Exception implements IsSerializable {
 
+    private static final long serialVersionUID = 1L;
+
     public RPCException() {
-        super();
     }
 
-    public RPCException(String message) {
+    public RPCException(final String message) {
         super(message);
+    }
+
+    /**
+     * @param message
+     * @param cause must be GWT Serializable
+     */
+    public RPCException(final String message, final Exception cause) {
+        super(message, cause);
     }
 
 }
