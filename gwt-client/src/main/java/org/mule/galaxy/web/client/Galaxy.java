@@ -366,7 +366,11 @@ public class Galaxy {
         // Show the initial screen.
         String initToken = History.getToken();
         if (initToken != null && initToken.length() > 0) {
-            pageManager.show(initToken);
+            try {
+                pageManager.show(initToken);
+            } catch (IllegalStateException e) {
+                pageManager.show(getFirstPage());
+            }
         } else {
             pageManager.show(getFirstPage());
         }
