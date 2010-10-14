@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import java.util.List;
-
 import org.mule.galaxy.web.client.ui.panel.BasicContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScript;
@@ -48,6 +46,8 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
 
 public class AdminShellPanel extends AbstractAdministrationComposite
         implements KeyboardListener {
@@ -293,6 +293,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         } else {
             if (ws.getId() == null) {
                 adminPanel.setMessage("Check 'Save As' if saving for the first time.");
+                // reenable all save related buttons
+                saveAsTB.enable();
+                saveBtn.enable();
                 return;
             }
         }
