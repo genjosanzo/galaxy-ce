@@ -18,6 +18,18 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_CHECKBOX_PASSWORD_RESET_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_EMAIL_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_GROUPS_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NAME_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD2_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_BUTTON_CANCEL_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_BUTTON_OK_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_PASSWORD2_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_PASSWORD_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_USERNAME_ID;
+
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.AbstractErrorHandlingPopup;
 import org.mule.galaxy.web.client.ui.dialog.LightBox;
@@ -47,10 +59,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 public class UserForm extends AbstractAdministrationForm {
 
+    private static final int PASSWORD_MIN_LENGTH = 5;
+    
+    private static final String UBER_USER = "admin";
+    private static final String UBER_GROUP = "Administrators";
+    
     private WUser user;
     private TextField<String> passTB;
     private TextField<String> confirmTB;
@@ -59,10 +75,9 @@ public class UserForm extends AbstractAdministrationForm {
     private TextField<String> usernameTB;
     private SelectionPanel groupPanel;
     private CheckBox resetPassword;
-    private static final int PASSWORD_MIN_LENGTH = 5;
-    private Collection wgroups;
-    private static final String UBER_USER = "admin";
-    private static final String UBER_GROUP = "Administrators";
+    
+    private Collection<WGroup> wgroups;
+    
 
     public UserForm(AdministrationPanel adminPanel) {
         super(adminPanel, "users", "User was saved.", "User was deleted.",
@@ -93,6 +108,7 @@ public class UserForm extends AbstractAdministrationForm {
 
         if (newItem) {
             usernameTB = new TextField<String>();
+            usernameTB.setId(MANAGE_USER_USERNAME_ID);
             usernameTB.setValidateOnBlur(true);
             usernameTB.setAllowBlank(false);
             usernameTB.setValidator(new RegexValidator(".*/.*") {
@@ -119,36 +135,41 @@ public class UserForm extends AbstractAdministrationForm {
 
         row++;
         nameTB = new TextField<String>();
+        nameTB.setId(MANAGE_USER_NAME_ID);
         nameTB.setAllowBlank(false);
         nameTB.setValue(user.getName());
         table.setWidget(row, 1, nameTB);
-        // add an extender in the table to align the validation label
-        // otherwise groups cell stretches and deforms the cell
+        /*
+         * Add an extender in the table to align the validation label 
+         * otherwise groups cell stretches and deforms the cell
+         */
         table.setWidget(row, 2, new Label(" "));
         table.getCellFormatter().setWidth(row, 2, "100%");
 
         row++;
         emailTB = new TextField<String>();
+        emailTB.setId(MANAGE_USER_EMAIL_ID);
         emailTB.setAllowBlank(false);
         emailTB.setValue(user.getEmail());
         table.setWidget(row, 1, emailTB);
 
         if (newItem) {
             row++;
-            passTB = createPasswordTextBox();
+            passTB = createPasswordTextBox(MANAGE_USER_PASSWORD_ID);
             table.setWidget(row, 1, passTB);
 
             row++;
-            confirmTB = createPasswordConfirmTextBox();
+            confirmTB = createPasswordConfirmTextBox(MANAGE_USER_PASSWORD2_ID);
             table.setWidget(row, 1, confirmTB);
         } else {
             row++;
             resetPassword = new CheckBox(" Reset Password ");
+            resetPassword.getElement().setId(MANAGE_USER_CHECKBOX_PASSWORD_RESET_ID);
             table.setWidget(row, 1, resetPassword);
             resetPassword.addClickListener(new ClickListener() {
                 public void onClick(final Widget widget) {
                     // It's critical to use the passed in event source, otherwise the event fires 3 times (?!)
-                    if (((CheckBox) widget).isChecked()) {
+                    if (((CheckBox) widget).getValue()) {
                         // only show the dialog if enabling the checkbox
                         new LightBox(new ResetPasswordDialog()).show();
                     }
@@ -161,16 +182,20 @@ public class UserForm extends AbstractAdministrationForm {
         // temp var for anonymous class
         final int groupRow = row;
         getSecurityService().getGroups(new AbstractCallback(adminPanel) {
+            @Override
             public void onCallSuccess(Object groups) {
-                receiveGroups((Collection) groups, table, groupRow);
+                receiveGroups((Collection<WGroup>) groups, table, groupRow);
             }
         });
 
         styleHeaderColumn(table);
     }
 
-    private TextField<String> createPasswordConfirmTextBox() {
+    private TextField<String> createPasswordConfirmTextBox(String id) {
         TextField<String> confirmTB = new TextField<String>();
+        if(id != null) {
+            confirmTB.setId(id); 
+        }
         confirmTB.setAllowBlank(false);
         confirmTB.setPassword(true);
         confirmTB.setMinLength(PASSWORD_MIN_LENGTH);
@@ -178,8 +203,11 @@ public class UserForm extends AbstractAdministrationForm {
         return confirmTB;
     }
 
-    private TextField<String> createPasswordTextBox() {
+    private TextField<String> createPasswordTextBox(String id) {
         TextField<String> passTB = new TextField<String>();
+        if(id != null) {
+            passTB.setId(id); 
+        }
         passTB.setAllowBlank(false);
         passTB.setPassword(true);
         passTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
@@ -207,7 +235,7 @@ public class UserForm extends AbstractAdministrationForm {
         this.user = new WUser();
     }
 
-    protected void receiveGroups(Collection groups, FlexTable table, final int currentRow) {
+    protected void receiveGroups(Collection<WGroup> groups, FlexTable table, final int currentRow) {
         this.wgroups = groups;
         ItemInfo itemInfo = new ItemInfo() {
             public String getText(Object o) {
@@ -218,9 +246,8 @@ public class UserForm extends AbstractAdministrationForm {
                 return ((WGroup) o).getId();
             }
         };
-        groupPanel = new SelectionPanel(groups, itemInfo,
-                user.getGroupIds(), 6,
-                "Available Groups", "Joined Groups");
+        groupPanel = new SelectionPanel(groups, itemInfo, user.getGroupIds(), 6, "Available Groups", "Joined Groups");
+        groupPanel.getElement().setId(MANAGE_USER_GROUPS_ID);
         table.setWidget(currentRow, 1, groupPanel);
         FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
         cellFormatter.setColSpan(currentRow, 1, 2);
@@ -230,7 +257,6 @@ public class UserForm extends AbstractAdministrationForm {
         if (!validate()) {
             return;
         }
-
         super.save();
 
         if (usernameTB != null) {
@@ -241,14 +267,14 @@ public class UserForm extends AbstractAdministrationForm {
         user.setName(nameTB.getValue());
         user.setGroupIds(groupPanel.getSelectedValues());
 
-        String p = passTB != null ? passTB.getValue() : null;
-        String c = confirmTB != null ? confirmTB.getValue() : null;
+        String password = passTB != null ? passTB.getValue() : null;
+        String confirmationPassword = confirmTB != null ? confirmTB.getValue() : null;
 
         SecurityServiceAsync svc = getSecurityService();
         if (newItem) {
-            save(svc, p, c);
+            save(svc, password, confirmationPassword);
         } else {
-            update(svc, p, c);
+            update(svc, password, confirmationPassword);
         }
     }
 
@@ -256,51 +282,47 @@ public class UserForm extends AbstractAdministrationForm {
         getErrorPanel().clearErrorMessage();
         boolean isOk = true;
 
-        // username textbox is not there on Edit screen, only Add
+        // Username textbox is not there on Edit screen, only Add.
         if (newItem) {
             isOk &= usernameTB.validate();
         }
         isOk &= nameTB.validate();
         isOk &= emailTB.validate();
-        if (newItem || (resetPassword != null && resetPassword.isChecked())) {
+        if (newItem || (resetPassword != null && resetPassword.getValue())) {
             isOk &= passTB.validate();
             isOk &= confirmTB.validate();
-            // passwords must match
+            // Passwords must match.
             if (!passTB.getValue().equals(confirmTB.getValue())) {
                 getErrorPanel().addMessage("Passwords must match");
                 isOk = false;
             }
         }
 
-        // at least one group must be selected
+        // At least one group must be selected.
         if (groupPanel.getSelectedValues().isEmpty()) {
             getErrorPanel().addMessage("User must be a member of at least one group");
             isOk = false;
         }
 
-        // make sure admin user is still a member of the Administrators group
+        // Make sure admin user is still a member of the Administrators group.
         if (!(newItem) && user.getUsername().equals(UBER_USER)) {
             if (!(groupPanel.getSelectedValues().contains(getAdminGroupKey(this.wgroups)))) {
                 getErrorPanel().addMessage(UBER_USER + " user must be a member of the " + UBER_GROUP + " group");
                 isOk = false;
             }
         }
-
         return isOk;
     }
 
-
     /* find the key that maps to the Administrator group and verify */
-    private String getAdminGroupKey(Collection groups) {
-        for (Iterator itr = groups.iterator(); itr.hasNext();) {
-            WGroup wg = (WGroup) itr.next();
+    private String getAdminGroupKey(Collection<WGroup> groups) {
+        for( WGroup wg : groups) {
             if (wg.getName().equals(UBER_GROUP)) {
                 return wg.getId();
             }
         }
         return null;
     }
-
 
     private void update(SecurityServiceAsync svc, String p, String c) {
         svc.updateUser(user, p, c, getSaveCallback());
@@ -322,7 +344,6 @@ public class UserForm extends AbstractAdministrationForm {
                 }
             }
         };
-
         MessageBox.confirm("Confirm", "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?", l);
     }
 
@@ -333,16 +354,17 @@ public class UserForm extends AbstractAdministrationForm {
             fpanel.setHeaderVisible(true);
             fpanel.setHeading("Reset&nbsp;Password");
 
-            passTB = createPasswordTextBox();
+            passTB = createPasswordTextBox(MANAGE_USER_NEW_PASSWORD_ID);
             passTB.setFieldLabel("New Password");
 
-            confirmTB = createPasswordConfirmTextBox();
+            confirmTB = createPasswordConfirmTextBox(MANAGE_USER_NEW_PASSWORD2_ID);
             confirmTB.setFieldLabel("Confirm Password");
 
             fpanel.add(passTB);
             fpanel.add(confirmTB);
 
             Button okButton = new Button("OK");
+            okButton.setId(MANAGE_USER_NEW_PASSWORD_BUTTON_OK_ID);
             okButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
                 @Override
@@ -356,6 +378,7 @@ public class UserForm extends AbstractAdministrationForm {
             });
 
             Button cancelButton = new Button("Cancel");
+            cancelButton.setId(MANAGE_USER_NEW_PASSWORD_BUTTON_CANCEL_ID);
             cancelButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
                 @Override
@@ -363,7 +386,7 @@ public class UserForm extends AbstractAdministrationForm {
                     ResetPasswordDialog.this.hide();
                     passTB.setValue(null);
                     confirmTB.setValue(null);
-                    resetPassword.setChecked(false);
+                    resetPassword.setValue(false);
                 }
             });
 
@@ -386,5 +409,4 @@ public class UserForm extends AbstractAdministrationForm {
     public TextField<String> getEmailField() {
         return emailTB;
     }
-
 }

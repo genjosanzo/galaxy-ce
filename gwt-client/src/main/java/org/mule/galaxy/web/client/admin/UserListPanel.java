@@ -18,12 +18,15 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.mule.galaxy.web.client.ClientId.GROUP_LIST_PANEL_USERS_BUTTON_NEW_ID;
+import static org.mule.galaxy.web.client.ClientId.GROUP_LIST_PANEL_USERS_GRID_ID;
+import static org.mule.galaxy.web.client.ClientId.GROUP_LIST_PANEL_USERS_ID;
+import static org.mule.galaxy.web.client.ClientId.GROUP_LIST_PANEL_USERS_SEARCH_ID;
 
+import org.mule.galaxy.web.client.ui.button.ToolbarButton;
+import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.renderer.FauxLinkRenderer;
-import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
 
@@ -46,7 +49,11 @@ import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserListPanel extends AbstractAdministrationComposite {
+
     public UserListPanel(AdministrationPanel a) {
         super(a);
     }
@@ -65,11 +72,13 @@ public class UserListPanel extends AbstractAdministrationComposite {
 
     private void showUsers(List<WUser> users) {
         ContentPanel contentPanel = new FullContentPanel();
+        contentPanel.setId(GROUP_LIST_PANEL_USERS_ID);
         contentPanel.setHeading("Users");
 
-        // add inline help string and widget
-        contentPanel.setTopComponent(
-                new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Users_Tip(), 19));
+        // Add inline help string and widget.
+        contentPanel.setTopComponent(new InlineHelpPanel(adminPanel.getGalaxy()
+            .getAdministrationConstants()
+            .admin_Users_Tip(), 19));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WUser.class);
 
@@ -88,6 +97,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         ColumnModel cm = new ColumnModel(columns);
 
         Grid grid = new Grid<BeanModel>(store, cm);
+        grid.setId(GROUP_LIST_PANEL_USERS_GRID_ID);
         grid.setStripeRows(true);
         grid.addPlugin(r);
         grid.setAutoWidth(true);
@@ -101,12 +111,14 @@ public class UserListPanel extends AbstractAdministrationComposite {
             }
         });
 
-        // search filter
+        // Search filter.
         StoreFilterField<BeanModel> filter = new StoreFilterField<BeanModel>() {
             @Override
-            protected boolean doSelect(Store<BeanModel> store, BeanModel parent,
-                                       BeanModel record, String property, String filter) {
-
+            protected boolean doSelect(Store<BeanModel> store,
+                                       BeanModel parent,
+                                       BeanModel record,
+                                       String property,
+                                       String filter) {
                 String name = record.get("name");
                 name = name.toLowerCase();
 
@@ -116,9 +128,8 @@ public class UserListPanel extends AbstractAdministrationComposite {
                 String email = record.get("email");
                 email = email.toLowerCase();
 
-                if (name.indexOf(filter.toLowerCase()) != -1 ||
-                        username.indexOf(filter.toLowerCase()) != -1 ||
-                        email.indexOf(filter.toLowerCase()) != -1) {
+                if (name.indexOf(filter.toLowerCase()) != -1 || username.indexOf(filter.toLowerCase()) != -1
+                        || email.indexOf(filter.toLowerCase()) != -1) {
                     return true;
                 }
                 return false;
@@ -126,6 +137,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         };
 
         filter.setName("Search");
+        filter.setId(GROUP_LIST_PANEL_USERS_SEARCH_ID);
         filter.setFieldLabel("Search");
         filter.setWidth(300);
         filter.setTriggerStyle("x-form-search-trigger");
@@ -138,13 +150,13 @@ public class UserListPanel extends AbstractAdministrationComposite {
         toolbar.add(new FillToolItem());
 
         String buttonTip = adminPanel.getGalaxy().getAdministrationConstants().admin_Users_New();
-        toolbar.add(createToolbarHistoryButton("New", "users/new", buttonTip));
+        ToolbarButton button = createToolbarHistoryButton("New", "users/new", buttonTip);
+        button.setId(GROUP_LIST_PANEL_USERS_BUTTON_NEW_ID);
+        toolbar.add(button);
 
         contentPanel.add(toolbar);
         contentPanel.add(grid);
 
         panel.add(contentPanel);
-
     }
-
 }

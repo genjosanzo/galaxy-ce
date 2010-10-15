@@ -215,7 +215,6 @@ public abstract class AbstractForm extends AbstractShowable {
                 ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
                         successMessage);
             }
-
         };
     }
 
@@ -242,7 +241,6 @@ public abstract class AbstractForm extends AbstractShowable {
                 ((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
                         deleteMessage);
             }
-
         };
     }
 
@@ -282,6 +280,4 @@ public abstract class AbstractForm extends AbstractShowable {
     public void setHelpPanel(InlineHelpPanel helpPanel) {
         this.helpPanel = helpPanel;
     }
-
-
 }

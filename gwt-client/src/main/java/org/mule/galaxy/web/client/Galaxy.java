@@ -150,7 +150,6 @@ public class Galaxy {
             }
         });
 
-
         new HeartbeatTimer(Galaxy.this);
 
         // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
@@ -205,7 +204,7 @@ public class Galaxy {
     }
 
     /**
-     * adds to the left of the  copyright info
+     * Adds to the left of the  copyright info.
      */
     protected void prependFooterConent() {
         product = new Label("About " + getProductName());
@@ -270,10 +269,7 @@ public class Galaxy {
     }
 
     /**
-     *
      * Intercepts click event on logo.
-     *
-     * @param clickEvent
      */
     protected void onLogoClick(final ClickEvent clickEvent) {
         History.newItem("browse");
