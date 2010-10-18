@@ -346,7 +346,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-core</artifactId>
-            <version>1.6-07202009-MuleSource</version>
+            <version>1.6.4-galaxy</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -366,7 +366,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-spi-commons</artifactId>
-            <version>1.6-07202009-MuleSource</version>
+            <version>1.6.4-galaxy</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
@@ -381,7 +381,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-server</artifactId>
-            <version>1.6-07072009-MuleSource</version>
+            <version>1.6.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
