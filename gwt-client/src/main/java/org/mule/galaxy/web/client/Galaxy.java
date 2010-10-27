@@ -437,6 +437,19 @@ public class Galaxy {
         return false;
     }
 
+    /**
+     * @param permissions
+     * @return true if at least one of specified permissions applies
+     */
+    public boolean hasAtLeastOnePermission(final String ... permissions) {
+        for (final String permission : permissions) {
+            if (hasPermission(permission)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int getAdminTab() {
         return adminTabIndex;
     }
