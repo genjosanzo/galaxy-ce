@@ -36,7 +36,7 @@ public interface RegistryServiceAsync {
      */
     void getItemsWithAllChildren(String parentPath, AsyncCallback<Collection<ItemInfo>> callback);
     
-    void getItemsInPath(String parentPath, AsyncCallback callback);
+    void getItemsInPath(String parentPath, AsyncCallback<Collection<ItemInfo>> callback);
     
     void addItem(String parentId, 
                  String workspaceName,
