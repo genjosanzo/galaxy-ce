@@ -114,7 +114,6 @@ public class LdapUserManager
             LdapUserMetadata metadata = ldapUserMetadataDao.get(id);
             return metadata.getProperties();
         } catch (NotFoundException e) {
-            //TODO Exception should certainly not be trapped. Investigate side effects.
             return null;
         }
     }
@@ -184,6 +183,7 @@ public class LdapUserManager
         }
         metadata.setProperties(user.getProperties());
         ldapUserMetadataDao.save(metadata);
+        
     }
 
     public List<User> find(Map<String, Object> criteria) {

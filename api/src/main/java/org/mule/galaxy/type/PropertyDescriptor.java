@@ -90,7 +90,7 @@ public class PropertyDescriptor implements Identifiable, Serializable {
         this.extension = extension;
     }
 
-    @OneToMany(treatAsField=true)
+    @OneToMany(deref=false)
     public List<Class> getAppliesTo() {
         return appliesTo;
     }

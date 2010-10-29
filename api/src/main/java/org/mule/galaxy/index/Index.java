@@ -75,7 +75,7 @@ public class Index implements Identifiable {
         this.mediaType = mediaType;
     }
 
-    @OneToMany(treatAsField=true)
+    @OneToMany(deref=false)
     public Set<QName> getDocumentTypes() {
         return documentTypes;
     }
@@ -113,7 +113,7 @@ public class Index implements Identifiable {
         this.description = description;
     }
 
-    @OneToMany(componentType=PropertyDescriptor.class)
+    @OneToMany
     public List<PropertyDescriptor> getPropertyDescriptors() {
         return propertyDescriptors;
     }

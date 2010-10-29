@@ -12,7 +12,7 @@ public class FieldDescriptor {
     private Method readMethod;
     private Method writeMethod;
     private ClassPersister classPersister;
-    
+    private Class componentType;
     
     public ClassPersister getClassPersister() {
         return classPersister;
@@ -55,6 +55,12 @@ public class FieldDescriptor {
     }
     public void setWriteMethod(Method writeMethod) {
         this.writeMethod = writeMethod;
+    }
+    public Class getComponentType() {
+        return componentType;
+    }
+    public void setComponentType(Class componentType) {
+        this.componentType = componentType;
     }
     
 }

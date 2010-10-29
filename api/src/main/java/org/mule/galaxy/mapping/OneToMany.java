@@ -6,6 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OneToMany {
     String mappedBy() default "";
-    Class componentType() default Object.class;
-    boolean treatAsField() default false;
+
+    /**
+     * Whether or not the items in this collection should be dereferenced and stored outside
+     * the parent node.
+     * @return
+     */
+    boolean deref() default true;
 }

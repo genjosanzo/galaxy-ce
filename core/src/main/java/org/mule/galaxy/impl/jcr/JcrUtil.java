@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -25,7 +23,6 @@ import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 import javax.xml.namespace.QName;
 
@@ -473,6 +470,22 @@ public class JcrUtil {
         }
     }
 
+    /**
+     * Whether or not this class is a simple type which can be stored with the setProperty method.
+     * @param cls
+     * @return
+     */
+    public static boolean isSimpleType(Class<?> cls) {
+        return cls.isAssignableFrom(Number.class) || cls == long.class || cls == double.class || cls == short.class
+                || cls == String.class
+                || cls == Calendar.class
+                || cls == Identifiable.class
+                || cls == Boolean.class || cls == boolean.class
+                || Collection.class.isAssignableFrom(cls)
+                || cls == Class.class
+                || cls.isAssignableFrom(QName.class);
+    }
+    
     public static Object doInTransaction(SessionFactory sf, JcrCallback jcrCallback) throws IOException, RepositoryException {
         Session session = null;
         boolean participate = false;

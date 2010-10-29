@@ -4,7 +4,10 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +54,8 @@ public class ClassPersister {
                 continue;
             }
             
-            if (pd.getName().equals("id")) {
+            // Only persist the id field if we are not a top level node
+            if (pd.getName().equals("id") && path != null) {
                 continue;
             }
             
@@ -61,6 +65,19 @@ public class ClassPersister {
             fd.setWriteMethod(write);
             fd.setType(pd.getPropertyType());
             
+            if (Collection.class.isAssignableFrom(fd.getType())) {
+                Type returnType = read.getGenericReturnType();
+                
+                if(returnType instanceof ParameterizedType){
+                    ParameterizedType pType = (ParameterizedType) returnType;
+                    Type[] typeArguments = pType.getActualTypeArguments();
+                    for(Type typeArgument : typeArguments){
+                        Class typeArgClass = (Class) typeArgument;
+                        
+                        fd.setComponentType(typeArgClass);
+                    }
+                }
+            }
             OneToMany otm = read.getAnnotation(OneToMany.class);
             if (otm != null) {
                 fd.setOneToMany(otm);

@@ -59,7 +59,7 @@ public class ArtifactType implements Identifiable, Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    @OneToMany(treatAsField=true)
+    @OneToMany(deref=false)
     public Set<QName> getDocumentTypes() {
         return documentTypes;
     }
@@ -80,7 +80,7 @@ public class ArtifactType implements Identifiable, Serializable {
         documentTypes.add(q);
     }
     
-    @OneToMany(treatAsField=true)
+    @OneToMany(deref=true)
     public Set<String> getFileExtensions() {
         return fileExtensions;
     }

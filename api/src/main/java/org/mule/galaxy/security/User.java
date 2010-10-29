@@ -57,7 +57,7 @@ public class User implements Identifiable, Serializable
         this.email = email;
     }
 
-    @OneToMany(componentType=Group.class)
+    @OneToMany
     public Set<Group> getGroups() {
         return groups;
     }

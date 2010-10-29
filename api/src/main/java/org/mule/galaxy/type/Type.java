@@ -35,7 +35,7 @@ public class Type implements Identifiable, Serializable {
         this.name = name;
     }
     
-    @OneToMany(componentType = Type.class)
+    @OneToMany
     public List<Type> getMixins() {
         return mixins;
     }
@@ -44,7 +44,7 @@ public class Type implements Identifiable, Serializable {
         this.mixins = mixins;
     }
 
-    @OneToMany(componentType = PropertyDescriptor.class)
+    @OneToMany
     public List<PropertyDescriptor> getProperties() {
         return properties;
     }
@@ -53,7 +53,7 @@ public class Type implements Identifiable, Serializable {
         this.properties = properties;
     }
 
-    @OneToMany(componentType = Type.class)
+    @OneToMany
     public List<Type> getAllowedChildren() {
         return allowedChildren;
     }

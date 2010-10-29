@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -34,6 +38,8 @@ public class CollectionPersister implements FieldPersister {
 
     private Class implementation;
     private PersisterManager persisterManager;
+
+    private Map<Class, ClassPersister> classPersisters = Collections.synchronizedMap(new HashMap<Class, ClassPersister>());
     
     public CollectionPersister(Class implementation, PersisterManager persisterManager) {
         super();
@@ -46,8 +52,26 @@ public class CollectionPersister implements FieldPersister {
         OneToMany otm = fd.getOneToMany();
         boolean hasAnnotation = otm != null;
         
-        if (!hasAnnotation || otm.treatAsField()) {
-            return JcrUtil.getProperty(fd.getName(), n);
+        if (!hasAnnotation || !otm.deref()) {
+            if (fd.getComponentType() == null || JcrUtil.isSimpleType(fd.getComponentType())) {
+                return JcrUtil.getProperty(fd.getName(), n);
+            } else {
+                ClassPersister persister = getPersister(fd.getComponentType());
+                Collection collection;
+                if (Set.class.isAssignableFrom(implementation)) {
+                    collection = new HashSet();
+                } else {
+                    collection = new ArrayList();
+                }
+                for (NodeIterator children = n.getNodes(); children.hasNext();) {
+                    Node child = children.nextNode();
+                    
+                    if (child.getName().startsWith(fd.getName() + "-")) {
+                        collection.add(persister.build(child, session));
+                    }
+                }
+                return collection;
+            }
         }
 
         String parentField = otm.mappedBy();
@@ -66,12 +90,38 @@ public class CollectionPersister implements FieldPersister {
         OneToMany otm = fd.getOneToMany();
         boolean hasAnnotation = otm != null;
         
-        if (!hasAnnotation || otm.treatAsField()) {
-            JcrUtil.setProperty(fd.getName(), o, n);
+        if (!hasAnnotation || !otm.deref()) {
+            if (fd.getComponentType() == null || JcrUtil.isSimpleType(fd.getComponentType())) {
+                // store simple objects as properties
+                JcrUtil.setProperty(fd.getName(), o, n);
+            } else {
+                // Store more complex objects as child nodes
+                String pathPrefix = fd.getName() + "-";
+                // clear previous items
+                for (NodeIterator children = n.getNodes(); children.hasNext();) {
+                    Node child = children.nextNode();
+                    if (child.getName().startsWith(pathPrefix)) {
+                        child.remove();
+                    }
+                }
+                
+                
+                // Serialize the items of the collection as sub nodes
+                Collection c = (Collection) o;
+                if (c != null) {
+                    ClassPersister persister = getPersister(fd.getComponentType());
+                    for (Object item : c) {
+                        Node collectionItemNode = n.addNode(pathPrefix + UUID.randomUUID().toString());
+                        
+                        persister.persist(item, collectionItemNode, session);
+                    }
+                }
+            }
         } else if (fd.getOneToMany().mappedBy().equals("")) {
-            List<String> values = new ArrayList<String>();
-            
+            // Store items which can be derefenced as a list of ids
             Collection c = (Collection) o;
+            
+            List<String> values = new ArrayList<String>();
             
             if (c != null) {
                 for (Object cObj : c) {
@@ -83,6 +133,17 @@ public class CollectionPersister implements FieldPersister {
         }
     }
 
+    private ClassPersister getPersister(Class<?> type) throws Exception {
+        ClassPersister p = classPersisters.get(type);
+        
+        if (p == null) {
+            p = new ClassPersister(type, null);
+            p.setPersisterManager(persisterManager);
+            classPersisters.put(type, p);
+        }
+        return p;
+    }
+    
     private String getId(Object cObj) {
         if (cObj instanceof Identifiable) {
             return ((Identifiable) cObj).getId();
@@ -167,7 +228,7 @@ public class CollectionPersister implements FieldPersister {
             }
         } else {
            try {
-               FieldPersister fp = persisterManager.getPersister(fd.getOneToMany().componentType());
+               FieldPersister fp = persisterManager.getPersister(fd.getComponentType());
                Property property = n.getProperty(fd.getName());
                
                for (Value v : property.getValues()) {
