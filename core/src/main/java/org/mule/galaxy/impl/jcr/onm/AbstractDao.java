@@ -357,7 +357,9 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     
     protected void doDelete(String id, Session session) throws RepositoryException {
         Node node = findNode(id, session);
-        doDeleteNode(session, node);
+        if (node != null) {
+            doDeleteNode(session, node);
+        }
     }
 
     protected void doDeleteNode(Session session, Node node) throws RepositoryException {
