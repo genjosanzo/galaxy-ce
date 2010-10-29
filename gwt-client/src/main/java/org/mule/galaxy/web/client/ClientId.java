@@ -42,6 +42,15 @@ public final class ClientId {
     public static final String MANAGE_USER_BUTTON_CANCEL_ID = "MANAGE_USER_BUTTON_CANCEL_ID";
     public static final String MANAGE_USER_GROUPS_ID = "MANAGE_USER_GROUPS_ID";
     
+    //Administration Panel.
+    public static final String ADMIN_PANEL_ID = "ADMIN_PANEL_ID";
+    public static final String ADMIN_PANEL_LIST_VIEW_MANAGE_ID = "ADMIN_PANEL_LIST_VIEW_MANAGE_ID";
+    public static final String ADMIN_PANEL_LIST_VIEW_UTILITY_ID = "ADMIN_PANEL_LIST_VIEW_UTILITY_ID";
+    
+    public static final String GRAL_FORM_SAVE_ID = "GRAL_FORM_SAVE_ID";
+    public static final String GRAL_FORM_CANCEL_ID = "GRAL_FORM_CANCEL_ID";
+    public static final String GRAL_FORM_DELETE_ID = "GRAL_FORM_DELETE_ID";
+    
     private ClientId() {
     }
 }

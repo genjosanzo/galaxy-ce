@@ -167,11 +167,7 @@ public class WidgetHelper extends Composite {
     }
 
     /**
-     * Creates a simple button that links to a History item
-     *
-     * @param buttonLabel
-     * @param token
-     * @return
+     * Creates a simple button that links to a History item.
      */
     public static Button createHistoryButton(String buttonLabel, final String token) {
         Button newBtn = new Button(buttonLabel);
@@ -182,19 +178,14 @@ public class WidgetHelper extends Composite {
             }
         });
         return newBtn;
-
     }
 
     /**
      * Creates a simple toolbar button that links to a History item
      *
-     * @param buttonLabel
-     * @param token
      * @param style       - toolbar-btn_left, toolbar-btn_center, toolbar-btn_right
-     * @return
      */
-    public static ToolbarButton createToolbarHistoryButton(String buttonLabel,
-                                                           final String token, String style, String toolTip) {
+    public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token, String style, String toolTip) {
         ToolbarButton newBtn = new ToolbarButton(buttonLabel);
 
         newBtn.setStyleName(style);
@@ -252,10 +243,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label columnLabel(String s, String id) {
-        Label l = new Label(s);
-        l.addStyleName("bold-right-label");
-        l.getElement().setId(id);
-        return l;
+        final Label result = columnLabel(s);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static Label leftColumnLabel(String s) {
@@ -265,10 +255,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label leftColumnLabel(String s, String id) {
-        Label l = new Label(s);
-        l.addStyleName("bold-left-label");
-        l.getElement().setId(id);
-        return l;
+        final Label result = leftColumnLabel(s);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static Label cellLabel(String s) {
@@ -278,10 +267,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label cellLabel(String s, String id) {
-        Label l = new Label(s);
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
-        return l;
+        final Label result = cellLabel(s);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static Label cellLabel(Label l) {
@@ -290,9 +278,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label cellLabel(Label l, String id) {
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
-        return l;
+        final Label result = cellLabel(l);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static Label cellLabel(Long lg) {
@@ -302,10 +290,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label cellLabel(Long lg, String id) {
-        Label l = longLabel(lg);
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
-        return l;
+        final Label result = longLabel(lg);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static Label cellLabel(Boolean b) {
@@ -315,10 +302,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label cellLabel(Boolean b, String id) {
-        Label l = new Label(b.toString());
-        l.addStyleName("cell-alt");
-        l.getElement().setId(id);
-        return l;
+        final Label result = cellLabel(b);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static Label cellLabel(int i) {
@@ -326,7 +312,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label cellLabel(int i, String id) {
-        return cellLabel(Integer.toString(i), id);
+        final Label result = cellLabel(i);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static Label longLabel(Long l) {
@@ -334,9 +322,9 @@ public class WidgetHelper extends Composite {
     }
     
     public static Label longLabel(Long l, String id) {
-        Label label = new Label(Long.toString(l));
-        label.getElement().setId(id);
-        return label;
+        final Label result = longLabel(l);
+        result.getElement().setId(id);
+        return result;
     }
 
     public static String stringIsBold(String s, boolean isBold) {
@@ -345,7 +333,7 @@ public class WidgetHelper extends Composite {
     }
 
     public static WidgetComponent clearPixel(String height, String width, String tooltip) {
-        // can be used as a spacer or as a tooltip for grid cells, etc.
+        // Can be used as a spacer or as a tooltip for grid cells, etc.
         Image i = new Image(Images.CLEAR_PIXEL);
         i.setHeight(height);
         i.setWidth(width);
@@ -391,11 +379,6 @@ public class WidgetHelper extends Composite {
         return td;
     }
 
-    /**
-     * @param heading
-     * @param items
-     * @return
-     */
     public static ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items) {
         ContentPanel c = new ContentPanel();
         c.addStyleName("no-border");
@@ -405,31 +388,31 @@ public class WidgetHelper extends Composite {
         c.setAutoHeight(true);
         c.setAutoHeight(true);
 
-        // store for all menu items in container
+        // Store for all menu items in container.
         ListStore<NavMenuItem> ls = new ListStore<NavMenuItem>();
         ls.add(items);
 
         ListView<NavMenuItem> lv = new ListView<NavMenuItem>();
         lv.setStyleName("no-border");
-        lv.setDisplayProperty("title"); // from item
+        lv.setDisplayProperty("title"); // From item
         lv.setStore(ls);
 
         for (final NavMenuItem item : ls.getModels()) {
 
             lv.addListener(Events.Select, new Listener<BaseEvent>() {
                 public void handleEvent(BaseEvent be) {
-                    ListViewEvent lve = (ListViewEvent) be;
-                    NavMenuItem nmi = (NavMenuItem) lve.getModel();
+                    ListViewEvent<NavMenuItem> lve = (ListViewEvent) be;
+                    NavMenuItem nmi = lve.getModel();
                     History.newItem(nmi.getTokenBase());
                 }
             });
 
-            // double click gives us the "add form"
+            // Double click gives us the "add form".
             if (item.getFormPanel() != null) {
                 lv.addListener(Events.DoubleClick, new Listener<BaseEvent>() {
                     public void handleEvent(BaseEvent be) {
-                        ListViewEvent lve = (ListViewEvent) be;
-                        NavMenuItem nmi = (NavMenuItem) lve.getModel();
+                        ListViewEvent<NavMenuItem> lve = (ListViewEvent) be;
+                        NavMenuItem nmi = lve.getModel();
                         History.newItem(nmi.getTokenBase() + NavMenuItem.NEW);
                     }
                 });
@@ -437,6 +420,12 @@ public class WidgetHelper extends Composite {
         }
         c.add(lv);
         return c;
+    }
+    
+    public static ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items, String id) {
+        final ContentPanel result = createPanelWithListView(heading, items);
+        result.setId(id);
+        return result;
     }
 
     public static String noneIfNull(String s) {

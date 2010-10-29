@@ -18,6 +18,10 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
+import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_CANCEL_ID;
+import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_DELETE_ID;
+import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_SAVE_ID;
+
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
@@ -51,7 +55,6 @@ public abstract class AbstractForm extends AbstractShowable {
 
     public AbstractForm(ErrorPanel errorPanel, String successToken,
                         String successMessage, String deleteMessage, String existsMessage) {
-        super();
         this.errorPanel = errorPanel;
         this.successToken = successToken;
         this.successMessage = successMessage;
@@ -85,7 +88,6 @@ public abstract class AbstractForm extends AbstractShowable {
     }
 
     protected void onShowPostInitialize() {
-
         ContentPanel cp = new ContentPanel(new FormLayout());
         cp.setBodyBorder(false);
         cp.setAutoWidth(true);
@@ -96,10 +98,7 @@ public abstract class AbstractForm extends AbstractShowable {
         if (helpPanel != null) {
             cp.setTopComponent(helpPanel);
         }
-
-
         panel.clear();
-
         SelectionListener listener = new SelectionListener<ComponentEvent>() {
             public void componentSelected(ComponentEvent ce) {
                 Button btn = (Button) ce.getComponent();
@@ -111,13 +110,15 @@ public abstract class AbstractForm extends AbstractShowable {
                 } else if (btn == cancel) {
                     cancel();
                 }
-
             }
         };
 
         save = new Button("Save", listener);
+        save.setId(GRAL_FORM_SAVE_ID);
         delete = new Button("Delete", listener);
+        delete.setId(GRAL_FORM_DELETE_ID);
         cancel = new Button("Cancel", listener);
+        cancel.setId(GRAL_FORM_CANCEL_ID);
 
         FlexTable table = createFormTable();
         addFields(table);
@@ -189,7 +190,6 @@ public abstract class AbstractForm extends AbstractShowable {
         save.setText("Saving...");
     }
 
-
     /* Use the successToken page as the cancel redirect page */
     protected void cancel() {
         setEnabled(false);
@@ -199,7 +199,6 @@ public abstract class AbstractForm extends AbstractShowable {
                 */
         ((AdministrationPanel) errorPanel).getGalaxy().setInfoMessageAndGoto(successToken, CANCEL_MESSAGE);
     }
-
 
     public abstract String getTitle();
 

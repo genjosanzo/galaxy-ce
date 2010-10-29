@@ -18,6 +18,10 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import static org.mule.galaxy.web.client.ClientId.ADMIN_PANEL_ID;
+import static org.mule.galaxy.web.client.ClientId.ADMIN_PANEL_LIST_VIEW_MANAGE_ID;
+import static org.mule.galaxy.web.client.ClientId.ADMIN_PANEL_LIST_VIEW_UTILITY_ID;
+
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
@@ -42,10 +46,10 @@ public class AdministrationPanel extends MenuPanel {
 
     protected AdministrationPanel(Galaxy galaxy, boolean init) {
         this.galaxy = galaxy;
-
         if (init) {
             init();
         }
+        setId(ADMIN_PANEL_ID);
     }
 
     public AdministrationPanel(Galaxy galaxy) {
@@ -102,10 +106,10 @@ public class AdministrationPanel extends MenuPanel {
 
         // list of all items for this panel
         if (manageItems.size() > 0) {
-            accordionPanel.add(WidgetHelper.createPanelWithListView("Manage", manageItems));
+            accordionPanel.add(WidgetHelper.createPanelWithListView("Manage", manageItems, ADMIN_PANEL_LIST_VIEW_MANAGE_ID));
         }
         if (utilityItems.size() > 0) {
-            accordionPanel.add(WidgetHelper.createPanelWithListView("Utility", utilityItems));
+            accordionPanel.add(WidgetHelper.createPanelWithListView("Utility", utilityItems, ADMIN_PANEL_LIST_VIEW_UTILITY_ID));
         }
         addMenuItem(accordionPanel);
 
@@ -116,7 +120,6 @@ public class AdministrationPanel extends MenuPanel {
             }
         }
     }
-
 
     protected boolean showTypeSystem() {
         return true;
@@ -143,7 +146,6 @@ public class AdministrationPanel extends MenuPanel {
         };
         getGalaxy().getPageManager().addPage(page);
     }
-
 
     public Galaxy getGalaxy() {
         return galaxy;
@@ -193,7 +195,6 @@ public class AdministrationPanel extends MenuPanel {
         manageItems.add(pos, item);
         registerPage(item);
     }
-
 
     public ContentPanel getAccordionPanel() {
         return accordionPanel;

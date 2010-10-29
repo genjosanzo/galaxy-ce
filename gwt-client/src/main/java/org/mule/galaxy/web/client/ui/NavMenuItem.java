@@ -58,5 +58,4 @@ public class NavMenuItem extends BaseModel {
     public void setFormPanel(AbstractShowable formPanel) {
         set("formPanel", formPanel);
     }
-
 }

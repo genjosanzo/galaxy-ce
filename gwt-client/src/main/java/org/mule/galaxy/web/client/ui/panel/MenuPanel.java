@@ -182,5 +182,4 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
             leftMenu.hide();
         }
     }
-
 }
