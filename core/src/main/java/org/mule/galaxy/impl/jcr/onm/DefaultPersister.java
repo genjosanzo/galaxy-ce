@@ -14,7 +14,14 @@ import org.mule.galaxy.impl.jcr.JcrUtil;
 public class DefaultPersister implements FieldPersister {
 
     private Map<Class, ClassPersister> classPersisters = Collections.synchronizedMap(new HashMap<Class, ClassPersister>());
+    private PersisterManager persisterManager;
     
+    public DefaultPersister(PersisterManager persisterManager) {
+        super();
+        this.persisterManager = persisterManager;
+    }
+
+
     public Object build(Node node, FieldDescriptor fd, Session session) throws Exception {
         if (JcrUtil.isSimpleType(fd.getType())) {
             return JcrUtil.getProperty(fd.getName(), node);
@@ -50,6 +57,7 @@ public class DefaultPersister implements FieldPersister {
         ClassPersister p = classPersisters.get(type);
         if (p == null) {
             p = new ClassPersister(type, null);
+            p.setPersisterManager(persisterManager);
             classPersisters.put(type, p);
         }
         return p;

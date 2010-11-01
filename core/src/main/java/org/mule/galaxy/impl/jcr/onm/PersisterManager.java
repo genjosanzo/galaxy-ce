@@ -20,7 +20,7 @@ import org.springmodules.jcr.SessionFactory;
 public class PersisterManager implements BeanPostProcessor {
     private Map<String, FieldPersister> persisters = new HashMap<String, FieldPersister>();
     private Map<String, ClassPersister> classPersisters = new HashMap<String, ClassPersister>();
-    private FieldPersister defaultPersister = new DefaultPersister();
+    private FieldPersister defaultPersister = new DefaultPersister(this);
     private EnumPersister enumPersister = new EnumPersister();
     private SessionFactory sessionFactory;
     
