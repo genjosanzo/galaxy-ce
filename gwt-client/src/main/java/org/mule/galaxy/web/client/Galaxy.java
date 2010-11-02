@@ -18,6 +18,7 @@
 package org.mule.galaxy.web.client;
 
 import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
+import static org.mule.galaxy.web.client.ClientId.MAIN_WELCOME_MESSAGE_ID;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -162,7 +163,9 @@ public class Galaxy {
         
         user = (WUser) appInfo.getUser();
         // always the left most item
-        rightHeaderPanel.insert(new Label("Welcome, " + user.getName()), 0);
+        final Label welcomeLabel = new Label("Welcome, " + user.getName());
+        welcomeLabel.getElement().setId(MAIN_WELCOME_MESSAGE_ID);
+        rightHeaderPanel.insert(welcomeLabel, 0);
         
         extensions = (List<WExtensionInfo>) appInfo.getExtensions();
         Collections.sort(extensions);

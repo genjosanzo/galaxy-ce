@@ -28,7 +28,7 @@ public final class ClientId {
     public static final String GROUP_LIST_PANEL_USERS_BUTTON_NEW_ID = "GROUP_LIST_PANEL_USERS_BUTTON_NEW_ID";
     
     // Add New User.
-    public static final String MANAGE_USER_USERNAME_ID = "GROUP_LIST_PANEL_USERS_BUTTON_NEW_ID";
+    public static final String MANAGE_USER_USERNAME_ID = "MANAGE_USER_USERNAME_ID";
     public static final String MANAGE_USER_NAME_ID = "MANAGE_USER_NAME_ID";
     public static final String MANAGE_USER_EMAIL_ID = "MANAGE_USER_EMAIL_ID";
     public static final String MANAGE_USER_PASSWORD_ID = "MANAGE_USER_PASSWORD_ID";
@@ -42,7 +42,7 @@ public final class ClientId {
     public static final String MANAGE_USER_BUTTON_CANCEL_ID = "MANAGE_USER_BUTTON_CANCEL_ID";
     public static final String MANAGE_USER_GROUPS_ID = "MANAGE_USER_GROUPS_ID";
     
-    //Administration Panel.
+    // Administration Panel.
     public static final String ADMIN_PANEL_ID = "ADMIN_PANEL_ID";
     public static final String ADMIN_PANEL_LIST_VIEW_MANAGE_ID = "ADMIN_PANEL_LIST_VIEW_MANAGE_ID";
     public static final String ADMIN_PANEL_LIST_VIEW_UTILITY_ID = "ADMIN_PANEL_LIST_VIEW_UTILITY_ID";
@@ -50,6 +50,9 @@ public final class ClientId {
     public static final String GRAL_FORM_SAVE_ID = "GRAL_FORM_SAVE_ID";
     public static final String GRAL_FORM_CANCEL_ID = "GRAL_FORM_CANCEL_ID";
     public static final String GRAL_FORM_DELETE_ID = "GRAL_FORM_DELETE_ID";
+    
+    // Main page.
+    public static final String MAIN_WELCOME_MESSAGE_ID = "MAIN_WELCOME_MESSAGE_ID";
     
     private ClientId() {
     }
