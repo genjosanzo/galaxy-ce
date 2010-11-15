@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Panel;
  *
  * @param <M>
  */
-public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRefreshable {
+public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRefreshableComponent {
 
     /**
      *
@@ -64,6 +64,10 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         initWidget(this.panel);
     }
 
+    protected ContentPanel createContentPanel() {
+        return new FullContentPanel();
+    }
+
     protected abstract Grid<M> createGrid();
 
     protected StoreFilterField<M> createFilter() {
@@ -102,7 +106,7 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
             buttonBar.add(this.toolbarButtonBar);
         }
 
-        final ContentPanel contentPanel = new FullContentPanel();
+        final ContentPanel contentPanel = createContentPanel();
         final String title = getTitle();
         if (title != null) {
             contentPanel.setHeading(title);
