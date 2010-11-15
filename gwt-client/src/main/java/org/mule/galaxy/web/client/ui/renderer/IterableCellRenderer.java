@@ -3,31 +3,38 @@
  */
 package org.mule.galaxy.web.client.ui.renderer;
 
+import java.util.Arrays;
+
 import com.extjs.gxt.ui.client.data.BaseModel;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 
-import java.util.List;
-
-public final class ListCellRenderer implements GridCellRenderer<BaseModel> {
+public final class IterableCellRenderer implements GridCellRenderer<BaseModel> {
     private final boolean newLine;
 
-    public ListCellRenderer() {
+    public IterableCellRenderer() {
         this(false);
     }
 
-    public ListCellRenderer(boolean newLine) {
+    public IterableCellRenderer(final boolean newLine) {
         this.newLine = newLine;
     }
 
+    @SuppressWarnings("unchecked")
     public Object render(BaseModel model, String property, ColumnData config, int rowIndex,
                          int colIndex, ListStore<BaseModel> store, Grid<BaseModel> grid) {
         String html = "";
-        List<Object> list = (List<Object>)model.get(property);
-        if (list != null) {
-            for (Object o : list) {
+        final Object propertyValue = model.get(property);
+        final Iterable<Object> iterable;
+        if (propertyValue instanceof Object[]) {
+            iterable = Arrays.asList((Object[]) propertyValue);
+        } else {
+            iterable = (Iterable<Object>) propertyValue;
+        }
+        if (iterable != null) {
+            for (final Object o : iterable) {
                 if (newLine) {
                     html += "<div>" + o.toString() + "</div>";
                 } else {
