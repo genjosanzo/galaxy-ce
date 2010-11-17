@@ -27,16 +27,12 @@ public abstract class AbstractFlowComposite extends AbstractShowable {
     protected FlowPanel panel;
 
     public AbstractFlowComposite() {
-        super();
-        
         panel = new FlowPanel();
-        
         initWidget(panel);
     }
 
     @Override
     public void doShowPage() {
         panel.clear();
-        
     }
 }
