@@ -18,24 +18,13 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_CHECKBOX_PASSWORD_RESET_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_EMAIL_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_GROUPS_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NAME_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD2_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_BUTTON_CANCEL_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_BUTTON_OK_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_PASSWORD2_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_PASSWORD_ID;
-import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_USERNAME_ID;
-
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.AbstractErrorHandlingPopup;
 import org.mule.galaxy.web.client.ui.dialog.LightBox;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.panel.SelectionPanel;
 import org.mule.galaxy.web.client.ui.panel.SelectionPanel.ItemInfo;
+import org.mule.galaxy.web.client.ui.validator.EmailValidator;
 import org.mule.galaxy.web.client.ui.validator.RegexValidator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
@@ -59,6 +48,18 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collection;
+
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_CHECKBOX_PASSWORD_RESET_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_EMAIL_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_GROUPS_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NAME_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD2_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_BUTTON_CANCEL_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_BUTTON_OK_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_NEW_PASSWORD_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_PASSWORD2_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_PASSWORD_ID;
+import static org.mule.galaxy.web.client.ClientId.MANAGE_USER_USERNAME_ID;
 
 public class UserForm extends AbstractAdministrationForm {
 
@@ -151,6 +152,7 @@ public class UserForm extends AbstractAdministrationForm {
         emailTB.setId(MANAGE_USER_EMAIL_ID);
         emailTB.setAllowBlank(false);
         emailTB.setValue(user.getEmail());
+        emailTB.setValidator(new EmailValidator());
         table.setWidget(row, 1, emailTB);
 
         if (newItem) {
