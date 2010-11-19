@@ -56,11 +56,21 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         this(panel, AbstractCallback.DEFAULT_LONG_RUNNING_CALL_TIMEOUT);
     }
 
+    public AbstractCallback(final ErrorPanel panel, boolean enbableLongRunningCallback) {
+        this(panel, AbstractCallback.DEFAULT_LONG_RUNNING_CALL_TIMEOUT, enbableLongRunningCallback);
+    }
+
     public AbstractCallback(final ErrorPanel panel, final int longRunningCallTimeout) {
+        this(panel, longRunningCallTimeout, true);
+    }
+
+    public AbstractCallback(final ErrorPanel panel, final int longRunningCallTimeout, boolean enbableLongRunningCallback) {
         this.errorPanel = panel;
         this.longRunningCallTimeout = longRunningCallTimeout;
 
-        startLongRunningCallTimer();
+        if(enbableLongRunningCallback) {
+            startLongRunningCallTimer();
+        }
     }
 
     protected final void startLongRunningCallTimer() {

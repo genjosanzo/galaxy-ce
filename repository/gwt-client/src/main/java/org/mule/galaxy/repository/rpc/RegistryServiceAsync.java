@@ -53,7 +53,7 @@ public interface RegistryServiceAsync {
                           String versionTypeId, 
                           Map<String, Serializable> properties,
                           Map<String, Serializable> versionProperties,
-                          AsyncCallback callback); 
+                          AsyncCallback<String> callback);
     
     void suggestItems(String query, boolean recursive, String exclude, String[] type, AsyncCallback<Collection<ItemInfo>> callback);
     
