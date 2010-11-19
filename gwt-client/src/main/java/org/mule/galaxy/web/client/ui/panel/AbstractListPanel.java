@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Panel;
  *
  * Base class for panel presenting information using a {@link Grid}.
  * <br />
- * An optional toolbar composed of a {@link StoreFilterField} and a {@link ControlToolbarButtonBar} can be set. 
+ * An optional toolbar composed of a {@link StoreFilterField} and a {@link GridAwareToolbarButtonBar} can be set. 
  *
  * @param <M>
  */
@@ -29,11 +29,11 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
      * {@link ToolbarButtonBar} aware of underlying {@link Grid} selection.
      *
      */
-    public abstract static class ControlToolbarButtonBar extends ToolbarButtonBar {
+    public abstract static class GridAwareToolbarButtonBar extends ToolbarButtonBar {
 
         private final Grid<BeanModel> grid;
         
-        public ControlToolbarButtonBar(final Grid<BeanModel> grid) {
+        public GridAwareToolbarButtonBar(final Grid<BeanModel> grid) {
             this.grid = grid;
 
             grid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
@@ -58,7 +58,7 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
     }
 
     private final FlowPanel panel = new FlowPanel();
-    private ControlToolbarButtonBar toolbarButtonBar;
+    private GridAwareToolbarButtonBar toolbarButtonBar;
 
     public AbstractListPanel() {
         initWidget(this.panel);
@@ -74,7 +74,7 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         return null;
     }
 
-    protected ControlToolbarButtonBar createToolbarButtonBar(final Grid<M> grid) {
+    protected GridAwareToolbarButtonBar createToolbarButtonBar(final Grid<M> grid) {
         return null;
     }
 
@@ -128,7 +128,7 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         return null;
     }
 
-    public ControlToolbarButtonBar getToolbarButtonBar() {
+    public GridAwareToolbarButtonBar getToolbarButtonBar() {
         return this.toolbarButtonBar;
     }
 
