@@ -67,7 +67,23 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
 
     public CompositeSearchStoreFilterField(final Criteria<?> ... criterias) {
         this.criterias = criterias;
+
+        setToolTip(createToolTip(criterias));
     }
+
+   protected String createToolTip(final Criteria<?> ... criterias) {
+       final StringBuilder builder = new StringBuilder("Filter by ");
+       for (int i = 0; i < criterias.length; i++) {
+           final Criteria<?> criteria = criterias[i];
+           builder.append(criteria.getPrefix());
+           if (i == criterias.length-2) {
+               builder.append(" or ");
+           } else if (i != criterias.length-1) {
+               builder.append(", ");
+           }
+       }
+       return builder.toString();
+   }
 
     protected final Criteria<?> findCriteria(final String property) {
         for (final Criteria<?> criteria : this.criterias) {
