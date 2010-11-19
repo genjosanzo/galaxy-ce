@@ -44,7 +44,14 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
 
         protected final <T extends ModelData> String extractValue(final T record) {
             final V propertyValue = record.get(this.property);
-            return convertValue(propertyValue).toLowerCase();
+            if (propertyValue == null) {
+                return null;
+            }
+            final String convertedValue = convertValue(propertyValue);
+            if (convertedValue == null) {
+                return null;
+            }
+            return convertedValue.toLowerCase();
         }
 
         protected String convertValue(final V propertyValue) {
