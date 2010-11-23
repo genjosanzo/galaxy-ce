@@ -606,6 +606,12 @@ a:visited {
     text-decoration: underline;
 }
 
+.footer-license-link a,  footer-license-link a:visited {
+    color: red;
+    font-weight: bold;
+    text-decoration: none;
+}
+
 
 
 /**
