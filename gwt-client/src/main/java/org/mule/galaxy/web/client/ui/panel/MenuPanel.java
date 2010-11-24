@@ -22,6 +22,7 @@ import com.extjs.gxt.ui.client.Style.LayoutRegion;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Layout;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
@@ -68,7 +69,7 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         // wrapper/container for menu widgets in the left panel
         leftMenuContainer = new LayoutContainer();
         leftMenuContainer.setLayoutOnChange(true);
-        leftMenuContainer.setLayout(new FitLayout());
+        leftMenuContainer.setLayout(createMenuLayout());
         leftMenuContainer.setStyleName("left-menu-container");
         leftMenuContainer.layout(true);
         leftMenuContainer.setMonitorWindowResize(true);
@@ -81,6 +82,10 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         }
 
         add(leftMenu, westData);
+    }
+
+    protected Layout createMenuLayout() {
+        return new FitLayout();
     }
 
     public void showPage(List<String> params) {
