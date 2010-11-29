@@ -55,7 +55,7 @@ public class FauxLinkRenderer implements GridCellRenderer<BaseModel> {
     }
 
     protected String getText(BaseModel model, String property) {
-        return model.get(property).toString();
+        return model.<Object>get(property).toString();
     }
 
 }
