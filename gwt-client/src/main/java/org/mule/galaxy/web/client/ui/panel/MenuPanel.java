@@ -69,7 +69,10 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         // wrapper/container for menu widgets in the left panel
         leftMenuContainer = new LayoutContainer();
         leftMenuContainer.setLayoutOnChange(true);
-        leftMenuContainer.setLayout(createMenuLayout());
+        final Layout menuLayout = createMenuLayout();
+        if (menuLayout != null) {
+            leftMenuContainer.setLayout(menuLayout);
+        }
         leftMenuContainer.setStyleName("left-menu-container");
         leftMenuContainer.layout(true);
         leftMenuContainer.setMonitorWindowResize(true);
@@ -88,6 +91,10 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         return new FitLayout();
     }
 
+    protected Layout createCenterLayout() {
+        return null;
+    }
+
     public void showPage(List<String> params) {
         if (firstShow) {
             firstShow = false;
@@ -101,6 +108,10 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
 
     protected void onFirstShow() {
         centerPanel = new ContentPanel();
+        final Layout centerLayout = createCenterLayout();
+        if (centerLayout != null) {
+            centerPanel.setLayout(centerLayout);
+        }
         centerPanel.setBodyBorder(false);
         centerPanel.setHeaderVisible(false);
         centerPanel.setStyleName("main-application-panel");

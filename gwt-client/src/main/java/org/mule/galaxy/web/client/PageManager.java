@@ -16,6 +16,7 @@ import com.extjs.gxt.ui.client.widget.ReloadableTabPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
@@ -200,7 +201,11 @@ public class PageManager implements ValueChangeHandler<String>{
         p.layout();
 
         if (instance instanceof Showable) {
-            ((Showable) instance).showPage(params);
+            try {
+                ((Showable) instance).showPage(params);
+            } catch (Exception e) {
+                GWT.log("Exception while showing <"+instance+">", e);
+            }
         }
         suppressTabHistory = false;
         curInfo = page;
