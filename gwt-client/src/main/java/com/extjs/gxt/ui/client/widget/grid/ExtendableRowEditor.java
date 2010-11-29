@@ -1,7 +1,5 @@
 package com.extjs.gxt.ui.client.widget.grid;
 
-import java.util.Map;
-
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.core.El;
 import com.extjs.gxt.ui.client.core.FastMap;
@@ -40,6 +38,8 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Map;
 
 /**
  * Duplicates {@link RowEditor} by providing more extension facilities.
@@ -612,6 +612,7 @@ public class ExtendableRowEditor<M extends ModelData> extends ContentPanel imple
 
       @Override
       public void componentSelected(ButtonEvent ce) {
+        fireEvent(Events.BeforeStateSave);
         stopEditing(true);
       }
 
@@ -623,6 +624,7 @@ public class ExtendableRowEditor<M extends ModelData> extends ContentPanel imple
 
       @Override
       public void componentSelected(ButtonEvent ce) {
+        fireEvent(Events.BeforeCancelEdit);
         stopEditing(false);
       }
 
