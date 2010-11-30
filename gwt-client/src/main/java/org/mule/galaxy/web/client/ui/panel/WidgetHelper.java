@@ -181,9 +181,9 @@ public class WidgetHelper extends Composite {
     }
 
     /**
-     * Creates a simple toolbar button that links to a History item
+     * Creates a simple toolbar button that links to a History item.
      *
-     * @param style       - toolbar-btn_left, toolbar-btn_center, toolbar-btn_right
+     * @param style toolbar-btn_left, toolbar-btn_center, toolbar-btn_right.
      */
     public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token, String style, String toolTip) {
         ToolbarButton newBtn = new ToolbarButton(buttonLabel);
@@ -217,10 +217,9 @@ public class WidgetHelper extends Composite {
         return createFauxLink(value, true);
     }
 
-    /*
-     * Make Labels, strings, etc appear to be links
+    /**
+     * Makes Labels, strings, etc appear to be links.
      */
-
     public static String createFauxLink(String value, boolean hover) {
         String html = "";
         html += " <span style=\"text-decoration: none; cursor:pointer; color: #016c96;\" ";
@@ -344,11 +343,30 @@ public class WidgetHelper extends Composite {
         return w;
     }
 
+    /**
+     * @deprecated Use {@code deleteImage(String tooltip, String id)} instead.
+     */
+    @Deprecated
     public static WidgetComponent deleteImage(String tooltip) {
         if (tooltip == null) {
             tooltip = "Remove this item";
         }
         return newImage(Images.ICON_DELETE, tooltip);
+    }
+    
+    /**
+     * @param tooltip is nullable. If null value is provided, then a default message is used instead.
+     */
+    public static WidgetComponent deleteImage(String tooltip, String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id expected to construct deleteImage icon, none found.");
+        }
+        if (tooltip == null) {
+            tooltip = "Remove this item";
+        }
+        final WidgetComponent deleteImage = newImage(Images.ICON_DELETE, tooltip);
+        deleteImage.setId(id);
+        return deleteImage;
     }
 
     public static WidgetComponent restoreImage(String tooltip) {
