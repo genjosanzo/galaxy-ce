@@ -301,11 +301,20 @@ a:visited {
 
 .fieldset-divider {
     border-color: #E0E0E0;
-    border-width: 1px 0 0 0 !important;
+    border-width: 1px 1px 0 1px !important;
+    border-left-color: transparent;
+    border-right-color: transparent;
     border-style: solid;
-    padding: 10px 6px 6px 0;
+    padding: 8px 5px 8px 0;
     margin-bottom: 5px;
     display: block;
+}
+
+.fieldset-divider-collapsed {
+  padding-bottom: 0 !important;
+  border-width: 1px 1px 0 1px !important;
+  border-left-color: transparent;
+  border-right-color: transparent;
 }
 
 /**
