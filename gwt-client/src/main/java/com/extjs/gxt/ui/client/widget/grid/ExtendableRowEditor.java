@@ -612,7 +612,7 @@ public class ExtendableRowEditor<M extends ModelData> extends ContentPanel imple
 
       @Override
       public void componentSelected(ButtonEvent ce) {
-        fireEvent(Events.BeforeStateSave);
+        fireEvent(Events.BeforeSubmit);
         stopEditing(true);
       }
 

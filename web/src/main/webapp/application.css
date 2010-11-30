@@ -299,6 +299,15 @@ a:visited {
     padding: 2px 2px 2px 20px;
 }
 
+.fieldset-divider {
+    border-color: #E0E0E0;
+    border-width: 1px 0 0 0 !important;
+    border-style: solid;
+    padding: 10px 6px 6px 0;
+    margin-bottom: 5px;
+    display: block;
+}
+
 /**
  **
  ** The Left Menu
