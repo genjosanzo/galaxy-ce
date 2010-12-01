@@ -314,6 +314,11 @@ a:visited {
   border-right-color: transparent;
 }
 
+.fieldset-divider legend {
+  font: 13px tahoma, arial, helvetica, sans-serif;
+  color: #15428b;
+}
+
 /**
  **
  ** The Left Menu
