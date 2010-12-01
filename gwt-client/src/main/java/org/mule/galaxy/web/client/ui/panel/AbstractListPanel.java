@@ -59,6 +59,7 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
     private final FlowPanel panel = new FlowPanel();
     private GridAwareToolbarButtonBar toolbarButtonBar;
+    private InlineHelpPanel helpPanel;
 
     public AbstractListPanel() {
         initWidget(this.panel);
@@ -78,6 +79,10 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         return null;
     }
 
+    protected InlineHelpPanel createInlineHelpPanel()  {
+        return null;
+    }
+    
     @Override
     public void doShowPage() {
         super.doShowPage();
@@ -111,6 +116,12 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         if (title != null) {
             contentPanel.setHeading(title);
         }
+
+        helpPanel = createInlineHelpPanel();
+        if(helpPanel != null) {
+            contentPanel.setTopComponent(helpPanel);
+        }
+
         contentPanel.add(buttonBar);
         contentPanel.add(grid);
 

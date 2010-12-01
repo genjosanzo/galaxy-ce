@@ -1,8 +1,5 @@
 package org.mule.galaxy.web.client.ui.panel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
@@ -15,12 +12,15 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * Base class for all {@link MenuPanel} composed of multiple {@link Widget} accessible via tabs.
  *
  */
-public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeHandler<String> {
+public abstract class AbstractMenuPanel extends MenuPanel implements ValueChangeHandler<String> {
 
     private final Galaxy galaxy;
     private final int tabIndex;
@@ -29,7 +29,7 @@ public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeH
     private ListView<NavMenuItem> listView;
     private final List<NavMenuItem> alertNavItems = new ArrayList<NavMenuItem>();
 
-    public AbstractTabPanel(final Galaxy galaxy, final String id, final int tabIndex, final String tabToken, final String header) {
+    public AbstractMenuPanel(final Galaxy galaxy, final String id, final int tabIndex, final String tabToken, final String header) {
         this.galaxy = galaxy;
         this.tabIndex = tabIndex;
         this.tabToken = tabToken;
@@ -83,7 +83,7 @@ public abstract class AbstractTabPanel extends MenuPanel implements ValueChangeH
 
             public Widget getInstance() {
                 setMain(composite);
-                return AbstractTabPanel.this;
+                return AbstractMenuPanel.this;
             }
 
         };
