@@ -130,10 +130,22 @@ body {
     border: 1px dashed #C0C0C0;
 }
 
+.quickstart-panel-header-text {
+    display: none;
+}
+
+.quickstart-panel .gwt-Label {
+    padding: 4px;
+}
+
 .dashboard-toolbar-header {
     background: #FFF;
     padding: 2px 5px 0 5px;
     height: 20px;
+}
+
+.dashboard-portlet-table {
+    padding: 2px 5px 5px 5px;
 }
 
 .dashboard-portlet {
@@ -144,12 +156,8 @@ body {
     border: 1px solid #C0C0C0;
 }
 
-.dashboard-portlet-table {
-    padding: 2px 5px 5px 5px;
-}
-
 .dashboard-portlet-header {
-    padding: 5px 4px 0 4px;
+    padding: 4px 4px 0 4px;
     height: 22px;
     margin-left: auto;
     margin-right: auto;
@@ -162,17 +170,6 @@ body {
     font-size: 11px;
     height: 20px;
 }
-
-.quickstart-panel-header-text {
-    display: none;
-}
-
-.quickstart-panel .gwt-Label {
-    padding: 4px;
-}
-
-
-
 
 .panel-title {
     color:#336699; /*016c96*/
