@@ -405,7 +405,7 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-api</artifactId>
-            <version>1.6-07072009-MuleSource</version>
+            <version>1.6.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>xerces</groupId>
