@@ -5270,7 +5270,8 @@ body.ext-ie6.x-body-masked .x-window select {
 
 .my-list-item-sel .my-list-item-r {
   background: url(../images/gxt/shared/select-19-bg.gif) no-repeat right -19px;
-}.x-view {
+}
+.x-view {
   -moz-outline: none;
   -moz-user-focus: normal;
   outline: 0 none;

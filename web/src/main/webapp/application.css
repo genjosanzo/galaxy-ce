@@ -175,6 +175,18 @@ body {
     height: 20px;
 }
 
+.left-menu-view {
+  -moz-outline: none;
+  -moz-user-focus: normal;
+  outline: 0 none;
+  padding: 1px;
+  background-color: white;
+  cursor: default;
+  border: 0px !important;
+  overflow: hidden;
+}
+
+
 .panel-title {
     color:#336699; /*016c96*/
     padding:5px;
