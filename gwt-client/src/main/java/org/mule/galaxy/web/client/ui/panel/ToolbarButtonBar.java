@@ -12,13 +12,16 @@ import java.util.List;
 public class ToolbarButtonBar extends ToolBar {
 
     public ToolbarButtonBar() {
+        addStyleName("toolbar-button-bar");
     }
 
     public ToolbarButtonBar(ToolbarButton button) {
+        this();
         this.add(button);
     }
 
     public ToolbarButtonBar(List<ToolbarButton> buttons) {
+        this();
         this.add(buttons);
     }
 

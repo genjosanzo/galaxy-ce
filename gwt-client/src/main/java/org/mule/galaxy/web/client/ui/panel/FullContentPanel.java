@@ -19,4 +19,10 @@ public class FullContentPanel extends BasicContentPanel {
         this();
         setLayout(layout);
     }
+
+    public FullContentPanel(String heading) {
+        this();
+        setHeading(heading);
+    }
+
 }
