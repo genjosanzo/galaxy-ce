@@ -3924,9 +3924,9 @@ a.x-menu-item {
 }
 .x-combo-list-inner {
     overflow:auto;
-    position:relative;  
+    overflow-x:visible !important; /*adds scroll bars if content is too wide*/
+    position:relative;
     zoom:1;
-    overflow-x:hidden;
 }
 .x-combo-list-hd {
     border-bottom:1px solid;
@@ -3939,7 +3939,7 @@ a.x-menu-item {
     padding:2px;
     border:1px solid;
     white-space: nowrap;
-    overflow:hidden;
+    /*overflow:hidden;*/
     text-overflow: ellipsis;
 }
 .x-combo-list .x-combo-selected{
