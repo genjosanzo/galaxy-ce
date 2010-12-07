@@ -361,7 +361,7 @@ a:visited {
 }
 
 .left-menu-container {
-    padding: 0;
+    padding: 0 3px 0 0;
     border-color:white !important;
     border: 0 !important;
 }
