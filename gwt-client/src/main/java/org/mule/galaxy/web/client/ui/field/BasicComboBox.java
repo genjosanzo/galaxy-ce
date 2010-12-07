@@ -1,7 +1,7 @@
 package org.mule.galaxy.web.client.ui.field;
 
 import com.extjs.gxt.ui.client.Style;
-import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -9,7 +9,7 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 
-public class BasicComboBox<D> extends ComboBox {
+public class BasicComboBox<D extends ModelData> extends ComboBox<D> {
 
     public BasicComboBox() {
         super();
@@ -22,9 +22,9 @@ public class BasicComboBox<D> extends ComboBox {
         setWidth("170px");
         setTriggerAction(ComboBox.TriggerAction.ALL);
 
-        addSelectionChangedListener(new SelectionChangedListener<BeanModel>() {
+        addSelectionChangedListener(new SelectionChangedListener<D>() {
             @Override
-            public void selectionChanged(SelectionChangedEvent<BeanModel> se) {
+            public void selectionChanged(SelectionChangedEvent<D> se) {
                 onSelect(se.getSelectedItem());
             }
         });
@@ -40,7 +40,7 @@ public class BasicComboBox<D> extends ComboBox {
     }
 
 
-    protected void onSelect(BeanModel model) {
+    protected void onSelect(D model) {
     }
 
     protected void sort(String value, Style.SortDir dir) {
