@@ -4,6 +4,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.util.Util;
 import com.extjs.gxt.ui.client.widget.Dialog;
 
+import java.util.Date;
 import java.util.Map;
 
 public class UIUtil {
@@ -62,4 +63,9 @@ public class UIUtil {
         return string;
     }
 
+    public static int getUnixTimeStamp() {
+        Date date = new Date();
+        return (int) (date.getTime() * .001);
+    }
+    
 }
