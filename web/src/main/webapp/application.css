@@ -175,6 +175,10 @@ body {
     height: 20px;
 }
 
+.left-menu-view-container {
+  padding: 5px 0 2px 2px;
+}
+
 .left-menu-view {
   -moz-outline: none;
   -moz-user-focus: normal;
@@ -182,7 +186,7 @@ body {
   padding: 1px;
   background-color: white;
   cursor: default;
-  border: 0px !important;
+  border: 0 !important;
   overflow: hidden;
 }
 
@@ -582,6 +586,11 @@ a:visited {
 
 .bold-label {
     font-weight: bold;
+}
+
+.normal-label {
+    font-weight: normal;
+    /*color: #666666;*/
 }
 
 .cell-alt {
