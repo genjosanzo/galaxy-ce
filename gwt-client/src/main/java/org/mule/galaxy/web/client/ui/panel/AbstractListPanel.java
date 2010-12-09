@@ -143,4 +143,8 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         return this.toolbarButtonBar;
     }
 
+    public InlineHelpPanel getHelpPanel() {
+        return helpPanel;
+    }
+
 }
