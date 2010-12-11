@@ -11,8 +11,6 @@ import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Panel;
 
 /**
  *
@@ -57,12 +55,10 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
     }
 
-    private final FlowPanel panel = new FlowPanel();
     private GridAwareToolbarButtonBar toolbarButtonBar;
     private InlineHelpPanel helpPanel;
 
     public AbstractListPanel() {
-        initWidget(this.panel);
     }
 
     protected ContentPanel createContentPanel() {
@@ -125,14 +121,11 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         contentPanel.add(buttonBar);
         contentPanel.add(grid);
 
-        getPanel().clear();
-        getPanel().add(contentPanel);
-
+        removeAll();
+        add(contentPanel);
+        layout();
+        
         refresh();
-    }
-
-    protected Panel getPanel() {
-        return this.panel;
     }
 
     public String getTitle() {

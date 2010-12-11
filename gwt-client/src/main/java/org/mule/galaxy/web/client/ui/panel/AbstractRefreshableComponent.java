@@ -9,7 +9,7 @@ import com.google.gwt.user.client.Timer;
  * Base implementation for refreshable component.
  *
  */
-public abstract class AbstractRefreshableComponent extends AbstractShowable {
+public abstract class AbstractRefreshableComponent extends AbstractShowableContainer {
 
     private final Timer refreshTimer = new Timer() {
         @Override
