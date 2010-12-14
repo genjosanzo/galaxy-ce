@@ -40,7 +40,7 @@ public class RegistryInitializer {
     private Extension artifactExtension;
     private JcrWorkspaceManager localWorkspaceManager;
 
-    private int currentVersion = 101;
+    private int currentVersion = 102;
     
     public void intialize() throws Exception {
 

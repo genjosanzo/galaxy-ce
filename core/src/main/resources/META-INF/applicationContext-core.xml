@@ -159,11 +159,16 @@
     <property name="upgraders">
         <list>
             <ref bean="v101upgrader"/>
+            <ref bean="v102upgrader"/>
         </list>
     </property>
   </bean>  
   
-  <bean id="v101upgrader" class="org.mule.galaxy.impl.upgrade.V101Upgrader">
+  <bean id="v101upgrader" class="org.mule.galaxy.impl.upgrade.NullUpgrader">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+            
+  <bean id="v102upgrader" class="org.mule.galaxy.impl.upgrade.NullUpgrader">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
             

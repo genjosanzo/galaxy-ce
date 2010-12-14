@@ -557,9 +557,9 @@
         </dependency>
 
         <dependency>
-            <groupId>ehcache</groupId>
+            <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
-            <version>1.2.3</version>
+            <version>1.7.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

@@ -8,9 +8,9 @@ import javax.jcr.query.QueryManager;
 /**
  * Makes all nodes lockable.
  */
-public class V101Upgrader extends AbstractSessionUpgrader {
+public class NullUpgrader extends AbstractSessionUpgrader {
 
-    public V101Upgrader() {
+    public NullUpgrader() {
         super("101", 101);
     }
 
