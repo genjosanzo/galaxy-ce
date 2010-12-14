@@ -190,6 +190,10 @@ body {
   overflow: hidden;
 }
 
+.panel-no-border {
+    border: 0 !important;
+    border-width: 0 !important;
+}
 
 .panel-title {
     color:#336699; /*016c96*/
