@@ -5,6 +5,7 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
+import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
@@ -138,6 +139,18 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
     public InlineHelpPanel getHelpPanel() {
         return helpPanel;
+    }
+
+    @Override
+    public void enable() {
+        for (final Component component : getItems()) {
+            //Do not mess with toolbar buttons state
+            if (component instanceof ContentPanel) {
+                continue;
+            }
+
+            component.enable();
+        }
     }
 
 }

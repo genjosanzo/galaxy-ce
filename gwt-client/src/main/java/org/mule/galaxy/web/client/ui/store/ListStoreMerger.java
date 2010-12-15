@@ -19,6 +19,10 @@ public abstract class ListStoreMerger<M extends ModelData, T> {
     private final ListStore<M> store;
 
     public ListStoreMerger(final ListStore<M> store) {
+        if (store == null) {
+            throw new IllegalArgumentException("null store");
+        }
+
         this.store = store;
     }
 
@@ -36,8 +40,8 @@ public abstract class ListStoreMerger<M extends ModelData, T> {
         for (final M model : this.store.getModels()) {
             final T object = filteredObjects.remove(extractIdentifier(model));
             if (object != null && isValid(object)) {
-                if (hasBeenUpdated(object)) {
-                    this.store.update(model);
+                if (hasBeenUpdated(model, object)) {
+                    this.store.update(createModel(object));
                 }
             } else {
                 this.store.remove(model);
@@ -74,10 +78,11 @@ public abstract class ListStoreMerger<M extends ModelData, T> {
     }
 
     /**
+     * @param model
      * @param object
      * @return true if updated object has changed and must trigger a {@link ListStore#update(ModelData)} operation.
      */
-    protected boolean hasBeenUpdated(final T object) {
+    protected boolean hasBeenUpdated(final M model, final T object) {
         return false;
     }
 
