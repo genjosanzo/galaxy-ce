@@ -30,6 +30,10 @@ public abstract class AbstractRefreshableComponent extends AbstractShowableConta
 
     protected abstract void refresh();
 
+    public final Timer getTimer() {
+        return this.refreshTimer;
+    }
+
     @Override
     public void showPage(final List<String> params) {
         super.showPage(params);
