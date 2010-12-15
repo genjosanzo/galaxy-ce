@@ -62,6 +62,10 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
     public AbstractListPanel() {
     }
 
+    public AbstractListPanel(final int refreshPeriodMillis) {
+        super(refreshPeriodMillis);
+    }
+
     protected ContentPanel createContentPanel() {
         return new FullContentPanel();
     }

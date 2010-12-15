@@ -34,6 +34,10 @@ public abstract class AbstractRefreshableComponent extends AbstractShowableConta
         return this.refreshTimer;
     }
 
+    public final int getRefreshPeriodMillis() {
+        return this.refreshPeriodMillis;
+    }
+
     @Override
     public void showPage(final List<String> params) {
         super.showPage(params);
