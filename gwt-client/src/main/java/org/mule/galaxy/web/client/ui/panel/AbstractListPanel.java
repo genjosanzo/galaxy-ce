@@ -31,7 +31,7 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
     public abstract static class GridAwareToolbarButtonBar extends ToolbarButtonBar {
 
         private final Grid<BeanModel> grid;
-        
+
         public GridAwareToolbarButtonBar(final Grid<BeanModel> grid) {
             this.grid = grid;
 
