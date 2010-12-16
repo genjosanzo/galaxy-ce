@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.ListStore;
 
@@ -16,7 +17,7 @@ import com.extjs.gxt.ui.client.store.ListStore;
  * @param <M>
  * @param <T>
  */
-public abstract class ListStoreMerger<M extends ModelData, T> {
+public abstract class ListStoreMerger<M extends BeanModel, T> {
 
     private final ListStore<M> store;
 
@@ -39,23 +40,39 @@ public abstract class ListStoreMerger<M extends ModelData, T> {
                 }
             }
         }
+        final List<M> allAdded = new LinkedList<M>();
+        final List<M> allUpdated = new LinkedList<M>();
+        final List<M> allRemoved = new LinkedList<M>();
         for (final M model : this.store.getModels()) {
-            final T object = filteredObjects.remove(extractIdentifier(model));
-            if (object != null && isValid(object)) {
-                if (hasBeenUpdated(model, object)) {
-                    this.store.update(createModel(object));
+            final T newObject = filteredObjects.remove(extractIdentifier(model));
+            if (newObject != null && isValid(newObject)) {
+                final T oldObject = model.<T>getBean();
+                if (hasBeenUpdated(oldObject, newObject)) {
+                    final T updatedObject = update(oldObject, newObject);
+                    final M updatedModel;
+                    if (updatedObject == null) {
+                        updatedModel = createModel(newObject);
+                    } else {
+                        updatedModel = model;
+                    }
+                    allUpdated.add(updatedModel);
                 }
             } else {
-                this.store.remove(model);
+                allRemoved.add(model);
             }
         }
-        final List<M> added = new LinkedList<M>();
         for (final T object : filteredObjects.values()) {
             if (isValid(object)) {
-                added.add(createModel(object));
+                allAdded.add(createModel(object));
             }
         }
-        this.store.add(added);
+        this.store.add(allAdded);
+        for (final M updated : allUpdated) {
+            this.store.update(updated);
+        }
+        for (final M removed : allRemoved) {
+            this.store.remove(removed);
+        }
         this.store.commitChanges();
     }
 
@@ -69,8 +86,16 @@ public abstract class ListStoreMerger<M extends ModelData, T> {
         return false;
     }
 
+    /**
+     * @param object
+     * @return unique id for specified object. Must match unique model id.
+     */
     protected abstract String extractIdentifier(final T object);
 
+    /**
+     * @param model
+     * @return unique id for specified model. Must match unique object id.
+     */
     protected abstract String extractIdentifier(final M model);
 
     /**
@@ -82,12 +107,21 @@ public abstract class ListStoreMerger<M extends ModelData, T> {
     }
 
     /**
-     * @param model
-     * @param object
-     * @return true if updated object has changed and must trigger a {@link ListStore#update(ModelData)} operation.
+     * @param oldBean
+     * @param newBean
+     * @return true if object has changed and must trigger a {@link ListStore#update(ModelData)} operation.
      */
-    protected boolean hasBeenUpdated(final M model, final T object) {
+    protected boolean hasBeenUpdated(final T oldBean, final T newBean) {
         return false;
+    }
+
+    /**
+     * @param oldObject
+     * @param newObject
+     * @return null to create a complete new model from new object. Otherwise changes to oldObject will be applied.
+     */
+    protected T update(final T oldObject, final T newObject) {
+        return null;
     }
 
 }
