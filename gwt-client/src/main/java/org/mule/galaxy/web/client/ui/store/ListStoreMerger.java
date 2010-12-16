@@ -2,6 +2,8 @@ package org.mule.galaxy.web.client.ui.store;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import com.extjs.gxt.ui.client.data.ModelData;
@@ -47,11 +49,13 @@ public abstract class ListStoreMerger<M extends ModelData, T> {
                 this.store.remove(model);
             }
         }
+        final List<M> added = new LinkedList<M>();
         for (final T object : filteredObjects.values()) {
             if (isValid(object)) {
-                this.store.add(createModel(object));
+                added.add(createModel(object));
             }
         }
+        this.store.add(added);
         this.store.commitChanges();
     }
 
