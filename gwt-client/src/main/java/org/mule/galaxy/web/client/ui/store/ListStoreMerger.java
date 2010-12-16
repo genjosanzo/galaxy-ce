@@ -6,9 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.mule.galaxy.web.client.ui.grid.BatchAwareGridView;
+
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.store.Store;
+import com.extjs.gxt.ui.client.store.StoreEvent;
 
 /**
  *
@@ -20,13 +24,23 @@ import com.extjs.gxt.ui.client.store.ListStore;
 public abstract class ListStoreMerger<M extends BeanModel, T> {
 
     private final ListStore<M> store;
+    private final boolean reduceFiredEvents;
 
     public ListStoreMerger(final ListStore<M> store) {
+        this(store, false);
+    }
+
+    /**
+     * @param store
+     * @param reduceFireEvents fire batch of Update events. Only Works if used with {@link BatchAwareGridView}.
+     */
+    public ListStoreMerger(final ListStore<M> store, final boolean reduceFireEvents) {
         if (store == null) {
             throw new IllegalArgumentException("null store");
         }
 
         this.store = store;
+        this.reduceFiredEvents = reduceFireEvents;
     }
 
     public void merge(final Collection<T> objects) {
@@ -66,13 +80,30 @@ public abstract class ListStoreMerger<M extends BeanModel, T> {
                 allAdded.add(createModel(object));
             }
         }
+
         this.store.add(allAdded);
-        for (final M updated : allUpdated) {
-            this.store.update(updated);
-        }
         for (final M removed : allRemoved) {
             this.store.remove(removed);
         }
+        if (this.reduceFiredEvents) {
+            //Fire a single Update events for all updates
+            this.store.setFiresEvents(false);
+            for (final M updated : allUpdated) {
+                this.store.update(updated);
+            }
+            this.store.setFiresEvents(true);
+
+            final StoreEvent<M> evt = new StoreEvent<M>(this.store);
+            evt.setModels(this.store.getModels());
+            evt.setIndex(0);
+
+            this.store.fireEvent(Store.Update, evt);
+        } else {
+            for (final M updated : allUpdated) {
+                this.store.update(updated);
+            }
+        }
+
         this.store.commitChanges();
     }
 
