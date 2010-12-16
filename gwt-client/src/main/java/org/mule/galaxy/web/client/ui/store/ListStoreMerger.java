@@ -94,7 +94,7 @@ public abstract class ListStoreMerger<M extends BeanModel, T> {
             this.store.setFiresEvents(true);
 
             final StoreEvent<M> evt = new StoreEvent<M>(this.store);
-            evt.setModels(this.store.getModels());
+            evt.setModels(allUpdated);
             evt.setIndex(0);
 
             this.store.fireEvent(Store.Update, evt);
