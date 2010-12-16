@@ -3924,10 +3924,11 @@ a.x-menu-item {
 }
 .x-combo-list-inner {
     overflow:auto;
-    overflow-x:visible !important; /*adds scroll bars if content is too wide*/
+    /*overflow-x:visible !important; adds scroll bars if content is too wide*/
     position:relative;
     zoom:1;
 }
+
 .x-combo-list-hd {
     border-bottom:1px solid;
     padding:3px;
