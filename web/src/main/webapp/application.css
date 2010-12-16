@@ -175,6 +175,10 @@ body {
     height: 20px;
 }
 
+.chart-list-scroller {
+    overflow:hidden;
+}
+
 .left-menu-view-container {
   padding: 5px 0 2px 2px;
 }
