@@ -310,7 +310,9 @@ public class IndexManagerImpl extends AbstractReflectionDao<Index>
                                 }
 
                                 session.save();
-                            } catch (Throwable e) {
+                            } catch (NotFoundException e) {
+                                // ignore
+                            }  catch (Throwable e) {
                                 handleIndexingException(e);
                             } 
                         }
