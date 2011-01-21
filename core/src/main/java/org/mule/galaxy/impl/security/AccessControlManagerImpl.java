@@ -39,6 +39,7 @@ import org.springmodules.jcr.JcrCallback;
 public class AccessControlManagerImpl extends AbstractDao<Group> implements AccessControlManager {
     private static final String GRANTS = "grants";
     private static final String REVOCATIONS = "revocations";
+    private static final String DESCRIPTION = "description";
     private UserManager userManager;
     private Dao<Permission> permissionDao;
     
@@ -99,6 +100,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         Group group = new Group();
         group.setId(node.getUUID());
         group.setName(node.getName());
+        group.setDescription((String)JcrUtil.getProperty(DESCRIPTION, node));
         
         return group;
     }
@@ -113,6 +115,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         if(!group.getName().equals(node.getName())) {
             session.move(node.getPath(), node.getParent().getPath() + "/" + getObjectNodeName(group));
         }
+        JcrUtil.setProperty(DESCRIPTION, group.getDescription(), node);
     }
 
     public void deleteGroup(String id) {
