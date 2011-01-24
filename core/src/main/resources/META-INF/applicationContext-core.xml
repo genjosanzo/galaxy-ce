@@ -399,11 +399,8 @@
     </constructor-arg>
   </bean>
 
-  <bean id="rendererManager" class="org.mule.galaxy.impl.render.RendererManagerImpl"/>
-
   <bean id="abstractArtifactPlugin" abstract="true">
     <property name="artifactTypeDao" ref="artifactTypeDao"/>
-    <property name="rendererManager" ref="rendererManager"/>
     <property name="indexManager" ref="indexManager"/>
     <property name="typeManager" ref="typeManager"/>
     <property name="registry" ref="registry"/>
