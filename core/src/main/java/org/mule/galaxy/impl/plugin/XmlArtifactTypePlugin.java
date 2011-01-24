@@ -25,17 +25,12 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.GalaxyException;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.artifact.ArtifactType;
-import org.mule.galaxy.impl.render.CustomItemRenderer;
-import org.mule.galaxy.impl.render.MvelColumn;
 import org.mule.galaxy.index.Index;
-import org.mule.galaxy.plugins.config.jaxb.ColumnType;
 import org.mule.galaxy.plugins.config.jaxb.ConfigurationType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyArtifactType;
 import org.mule.galaxy.plugins.config.jaxb.IndexType;
 import org.mule.galaxy.plugins.config.jaxb.NamespaceType;
-import org.mule.galaxy.plugins.config.jaxb.ViewType;
 import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.render.Column;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.util.TemplateParser;
@@ -255,44 +250,6 @@ public class XmlArtifactTypePlugin extends AbstractPlugin
     protected void doInitialize() throws Exception
     {
         loadQNames();
-        
-        if (pluginXml.getViews() == null)
-        {
-            return;
-        }
-
-        List<ViewType> views = pluginXml.getViews().getView();
-
-        for (ViewType viewType : views)
-        {
-            CustomItemRenderer view = new CustomItemRenderer();
-
-            List<ColumnType> columns = viewType.getColumn();
-            for (final ColumnType column : columns)
-            {
-                // Create a custom view
-
-                Integer colNumber = column.getColumn();
-                Column c = new Column(column.getName(), column.isSummary(), column.isDetail(),
-                                      new MvelColumn(column.getExpression()));
-
-                if (colNumber == null)
-                {
-                    view.getColumns().add(c);
-                }
-                else
-                {
-                    view.getColumns().add(colNumber, c);
-                }
-            }
-
-            if (pluginQNames.size() == 0)
-            {
-                throw new IllegalArgumentException(
-                        "Unabled to select Namespace for view, there is either none or more than one namespace set on the plugin");
-            }
-            rendererManager.addRenderer(view, pluginQNames);
-        }
     }
 
     private void loadQNames() 

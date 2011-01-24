@@ -38,8 +38,8 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.DuplicateItemException;
@@ -75,13 +75,11 @@ import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.query.OpRestriction.Operator;
-import org.mule.galaxy.render.ItemRenderer;
-import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryService;
 import org.mule.galaxy.repository.rpc.WApprovalMessage;
@@ -128,7 +126,6 @@ public class RegistryServiceImpl implements RegistryService {
 
     private Registry registry;
     private ArtifactTypeDao artifactTypeDao;
-    private RendererManager rendererManager;
     private PolicyManager policyManager;
     private IndexManager indexManager;
     private ActivityManager activityManager;
@@ -534,21 +531,6 @@ public class RegistryServiceImpl implements RegistryService {
                                             long total) throws RegistryException {
 
         WSearchResults wsr = new WSearchResults();
-        ItemRenderer view;
-//        if (type != null) {
-//            view = rendererManager.getRenderer(type);
-//        } else {
-            view = rendererManager.getDefaultRenderer();
-//        }
-
-
-        int col = 0;
-        for (String colName : view.getColumnNames()) {
-            if (view.isSummary(col)) {
-                wsr.getColumns().add(colName);
-            }
-            col++;
-        }
         
         for (Item i : results) {
             wsr.getRows().add(toWeb(i, false));
@@ -2038,10 +2020,6 @@ public class RegistryServiceImpl implements RegistryService {
 
     public void setPolicyManager(PolicyManager policyManager) {
         this.policyManager = policyManager;
-    }
-
-    public void setRendererManager(RendererManager viewManager) {
-        this.rendererManager = viewManager;
     }
 
     public void setActivityManager(ActivityManager activityManager) {

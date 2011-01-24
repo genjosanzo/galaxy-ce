@@ -31,7 +31,6 @@ import org.mule.galaxy.plugins.config.jaxb.GalaxyPoliciesType;
 import org.mule.galaxy.plugins.config.jaxb.GalaxyType;
 import org.mule.galaxy.policy.Policy;
 import org.mule.galaxy.policy.PolicyManager;
-import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.SecurityUtils;
@@ -61,7 +60,6 @@ public class PluginManagerImpl
     
     protected Registry registry;
     protected Dao<ArtifactType> artifactTypeDao;
-    protected RendererManager rendererManager;
     protected IndexManager indexManager;
     protected PolicyManager policyManager;
     private ApplicationContext context;
@@ -196,7 +194,6 @@ public class PluginManagerImpl
                 plugin.setArtifactTypeDao(artifactTypeDao);
                 plugin.setIndexManager(indexManager);
                 plugin.setRegistry(registry);
-                plugin.setRendererManager(rendererManager);
                 plugin.setPolicyManager(policyManager);
                 plugin.setTypeManager(typeManager);
                 
@@ -279,11 +276,7 @@ public class PluginManagerImpl
     public void setArtifactTypeDao(Dao<ArtifactType> artifactTypeDao) {
         this.artifactTypeDao = artifactTypeDao;
     }
-
-    public void setRendererManager(RendererManager viewManager) {
-        this.rendererManager = viewManager;
-    }
-
+    
     public void setIndexManager(IndexManager indexManager) {
         this.indexManager = indexManager;
     }

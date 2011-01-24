@@ -27,7 +27,6 @@ import org.mule.galaxy.index.IndexManager;
 import org.mule.galaxy.plugin.DowngradeNotSupportedException;
 import org.mule.galaxy.plugin.Plugin;
 import org.mule.galaxy.plugin.UpgradeNotSupportedException;
-import org.mule.galaxy.render.RendererManager;
 import org.mule.galaxy.type.TypeManager;
 
 /**
@@ -37,7 +36,6 @@ public abstract class AbstractPlugin implements Plugin {
 
     protected Registry registry;
     protected Dao<ArtifactType> artifactTypeDao;
-    protected RendererManager rendererManager;
     protected IndexManager indexManager;
     protected TypeManager typeManager;
     
@@ -49,10 +47,6 @@ public abstract class AbstractPlugin implements Plugin {
 
     public void setArtifactTypeDao(Dao<ArtifactType> artifactTypeDao) {
         this.artifactTypeDao = artifactTypeDao;
-    }
-
-    public void setRendererManager(RendererManager viewManager) {
-        this.rendererManager = viewManager;
     }
 
     public void setIndexManager(IndexManager indexManager) {
