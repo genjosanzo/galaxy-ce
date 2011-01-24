@@ -120,7 +120,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                         public void onCallSuccess(final Object o) {
                             adminPanel.clearErrorMessage();
                             evaluateBtn.setEnabled(true);
-                            scriptResultsLabel.setText(o == null ? "No value returned" : o.toString());
+                            scriptResultsLabel.setText(o == null ? "The script did not return a value" : o.toString());
                         }
                     });
 
