@@ -1,8 +1,8 @@
 package org.mule.galaxy.security;
 
-import org.mule.galaxy.Identifiable;
-
 import java.io.Serializable;
+
+import org.mule.galaxy.Identifiable;
 
 public class Group implements Identifiable, Serializable
 {

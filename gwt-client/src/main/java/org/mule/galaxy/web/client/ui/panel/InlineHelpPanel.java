@@ -1,6 +1,5 @@
 package org.mule.galaxy.web.client.ui.panel;
 
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.ui.util.StringUtil;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;

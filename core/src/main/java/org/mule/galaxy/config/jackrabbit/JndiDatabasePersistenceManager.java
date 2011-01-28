@@ -1,15 +1,15 @@
 package org.mule.galaxy.config.jackrabbit;
 
-import org.apache.jackrabbit.core.persistence.db.JNDIDatabasePersistenceManager;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Hashtable;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.DriverManager;
-import java.util.Hashtable;
+
+import org.apache.jackrabbit.core.persistence.db.JNDIDatabasePersistenceManager;
 
 /**
  * A more customizable JNDI database persistence manager.

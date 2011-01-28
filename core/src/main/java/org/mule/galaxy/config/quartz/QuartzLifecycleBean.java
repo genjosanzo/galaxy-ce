@@ -1,14 +1,14 @@
 package org.mule.galaxy.config.quartz;
 
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.event.ContextStoppedEvent;
-import org.springframework.context.event.ContextStartedEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
 
 /**
  * An application lifecycle listener to start/shutdown quartz.

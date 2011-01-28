@@ -7,9 +7,9 @@
  */
 package org.mule.galaxy.web.client.ui.button;
 
+import com.extjs.gxt.ui.client.event.BoxComponentEvent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
-import com.extjs.gxt.ui.client.event.BoxComponentEvent;
 
 /**
  * Button event type.

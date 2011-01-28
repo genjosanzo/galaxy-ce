@@ -46,7 +46,6 @@ import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
-import org.mule.galaxy.view.ArtifactViewManager;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -73,7 +72,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected CommentManager commentManager;
     protected PluginManager pluginManager;
     protected AccessControlManager accessControlManager;
-    protected ArtifactViewManager artifactViewManager;
     protected TypeManager typeManager;
     protected EventManager eventManager;
     protected RegistryInitializer registryInitializer;

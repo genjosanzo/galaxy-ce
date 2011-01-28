@@ -30,9 +30,6 @@ public class IdentifiableExtension<T extends Identifiable> extends AbstractExten
             List<Identifiable> values = new ArrayList<Identifiable>();
             List<String> ids = (List<String>)storedValue;
 
-            if (ids == null) {
-                return new ArrayList<String>();
-            }
             for (String id : ids) {
                 // TODO - account for deleted items
                 try {

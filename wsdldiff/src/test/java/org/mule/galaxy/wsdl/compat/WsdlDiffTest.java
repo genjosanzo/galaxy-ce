@@ -4,12 +4,12 @@ package org.mule.galaxy.wsdl.compat;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 import org.mule.galaxy.wsdl.diff.DifferenceListener;
 import org.mule.galaxy.wsdl.diff.WsdlDiff;
 import org.mule.galaxy.wsdl.diff.rule.WsdlStructureRule;
-
-import junit.framework.TestCase;
 
 public class WsdlDiffTest extends TestCase {
     List<String> events = new ArrayList<String>();

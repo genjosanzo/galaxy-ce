@@ -1,16 +1,16 @@
 package org.mule.galaxy.repository.rpc;
 
-import org.mule.galaxy.repository.client.util.PropertyDescriptorComparator;
-
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.mule.galaxy.repository.client.util.PropertyDescriptorComparator;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WType implements IsSerializable, BeanModelTag {
     private String id;

@@ -1,7 +1,5 @@
 package org.mule.galaxy.impl;
 
-import java.util.List;
-
 import org.mule.galaxy.artifact.ArtifactType;
 import org.mule.galaxy.artifact.ArtifactTypeDao;
 import org.mule.galaxy.test.AbstractGalaxyTest;

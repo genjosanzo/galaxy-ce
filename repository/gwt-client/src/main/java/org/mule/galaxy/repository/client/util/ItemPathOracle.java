@@ -1,7 +1,5 @@
 package org.mule.galaxy.repository.client.util;
 
-import com.google.gwt.user.client.ui.SuggestOracle;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,6 +8,8 @@ import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+
+import com.google.gwt.user.client.ui.SuggestOracle;
 
 public class ItemPathOracle extends SuggestOracle {
 

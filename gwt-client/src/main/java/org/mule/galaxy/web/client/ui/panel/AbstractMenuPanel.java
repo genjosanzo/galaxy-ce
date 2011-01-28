@@ -1,5 +1,8 @@
 package org.mule.galaxy.web.client.ui.panel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
@@ -11,9 +14,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

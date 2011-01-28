@@ -10,8 +10,8 @@ import java.util.List;
 import org.mule.galaxy.TreeItem;
 import org.mule.galaxy.impl.extension.IdentifiableExtension;
 import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
 
 public class TreeItemQueryBuilder extends IdentifiableExtensionQueryBuilder {
 

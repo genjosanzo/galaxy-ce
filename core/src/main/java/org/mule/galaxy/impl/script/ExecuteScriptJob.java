@@ -51,7 +51,7 @@ public class ExecuteScriptJob implements Job, ApplicationContextAware {
                                 } catch (RegistryException e) {
                                     throw new RuntimeException(e);
                                 } catch (NotFoundException e) {
-                                    throw new RuntimeException(e);
+                                    return null;
                                 }
                             }
 

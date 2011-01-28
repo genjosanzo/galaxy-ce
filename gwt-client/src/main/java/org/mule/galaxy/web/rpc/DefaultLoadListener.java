@@ -18,11 +18,11 @@
 
 package org.mule.galaxy.web.rpc;
 
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+
 import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.event.LoadListener;
 import com.google.gwt.core.client.GWT;
-
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 public class DefaultLoadListener extends LoadListener {
     private ErrorPanel errorPanel;

@@ -13,10 +13,9 @@ import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 
-import org.w3c.dom.Document;
-
 import org.mule.galaxy.wsdl.diff.rule.Rule;
 import org.mule.galaxy.wsdl.diff.rule.WsdlStructureRule;
+import org.w3c.dom.Document;
 
 public class WsdlDiff {
     private Definition original;

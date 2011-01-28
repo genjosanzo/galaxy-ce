@@ -1,6 +1,7 @@
 package org.mule.galaxy.event;
 
-import static org.mule.galaxy.event.DefaultEvents.*;
+import static org.mule.galaxy.event.DefaultEvents.ITEM_DELETED;
+import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
 
 import java.util.Calendar;
 import java.util.Collection;

@@ -1,5 +1,12 @@
 package org.mule.galaxy.repository.client.item;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
@@ -39,13 +46,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class RepositoryMenuPanel extends MenuPanel {
 
@@ -290,8 +290,8 @@ public class RepositoryMenuPanel extends MenuPanel {
                 final TreeModel parent = (TreeModel) be.getItem();
 
                 String id = (String) parent.get("id");
-                repository.getRegistryService().getItems(id, false, new AbstractCallback<Collection<ItemInfo>>(RepositoryMenuPanel.this) {
-                    public void onCallSuccess(Collection<ItemInfo> items) {
+                repository.getRegistryService().getItems(id, false, new AbstractCallback<List<ItemInfo>>(RepositoryMenuPanel.this) {
+                    public void onCallSuccess(List<ItemInfo> items) {
                         mergeItems(items, parent);
                     }
                 });

@@ -1,7 +1,8 @@
 package org.mule.galaxy.web.client.ui.panel;
 
-import com.google.gwt.user.client.ui.FlowPanel;
 import org.mule.galaxy.web.rpc.PluginTabInfo;
+
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * Provides a single element with the id "plugin" which GWT modules

@@ -1,7 +1,3 @@
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import org.mule.galaxy.impl.index.annotations.AsmAnnotationsScanner
-import org.objectweb.asm.ClassReader
 
 def time = System.&currentTimeMillis // method ref
 def long start

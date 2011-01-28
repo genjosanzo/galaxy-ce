@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client.ui;
 
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -8,7 +10,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 public abstract class AbstractErrorHandlingPopup extends PopupPanel implements ErrorPanel {
 

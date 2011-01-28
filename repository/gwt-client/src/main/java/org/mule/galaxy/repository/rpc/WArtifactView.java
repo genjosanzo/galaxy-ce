@@ -1,11 +1,11 @@
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.util.HashSet;
 import java.util.Set;
 
 import org.mule.galaxy.web.rpc.SearchPredicate;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WArtifactView implements IsSerializable {
     private String id;

@@ -1,9 +1,5 @@
 package org.mule.galaxy.web;
 
-import com.google.gwt.user.client.rpc.SerializationException;
-import com.google.gwt.user.server.rpc.SerializationPolicy;
-import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +12,10 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.gwtwidgets.server.spring.GWTRPCServiceExporter;
+
+import com.google.gwt.user.client.rpc.SerializationException;
+import com.google.gwt.user.server.rpc.SerializationPolicy;
+import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
 
 /**
  * A service exporter which also looks on the classpath for serialization policy

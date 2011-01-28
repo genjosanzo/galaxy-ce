@@ -18,13 +18,6 @@
 
 package org.mule.galaxy.repository.client.util;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -34,6 +27,13 @@ import org.mule.galaxy.repository.rpc.WPhase;
 import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class LifecycleSelectionPanel extends AbstractShowable {
 

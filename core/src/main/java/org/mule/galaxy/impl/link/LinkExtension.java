@@ -107,6 +107,9 @@ public class LinkExtension extends IdentifiableExtension<Link> implements Extens
             } else if (value == null) {
                 ((LinkDao) dao).deleteLinks(item, pd.getId());
                 item.setInternalProperty(pd.getProperty(), null);
+            } else if (value instanceof Item) {
+                LinksImpl links = new LinksImpl(pd, item);
+                links.addLinks(new Link(item, (Item) value, null, false));
             } else {
                 throw new UnsupportedOperationException();
             }

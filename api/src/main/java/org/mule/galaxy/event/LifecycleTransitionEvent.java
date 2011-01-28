@@ -1,7 +1,7 @@
 package org.mule.galaxy.event;
 
-import org.mule.galaxy.security.User;
 import org.mule.galaxy.Item;
+import org.mule.galaxy.security.User;
 
 public class LifecycleTransitionEvent extends ItemEvent {
 

@@ -2,8 +2,8 @@ package org.mule.galaxy.impl.jcr.query;
 
 import java.util.Collection;
 
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
 
 public class SimpleQueryBuilder extends QueryBuilder {
     

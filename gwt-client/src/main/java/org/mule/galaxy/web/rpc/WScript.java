@@ -1,7 +1,7 @@
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.extjs.gxt.ui.client.data.BeanModelTag;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WScript implements IsSerializable, BeanModelTag {
     private String id; 

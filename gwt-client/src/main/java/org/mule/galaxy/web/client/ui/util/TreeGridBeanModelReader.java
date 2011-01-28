@@ -1,11 +1,11 @@
 package org.mule.galaxy.web.client.ui.util;
 
+import java.util.List;
+
 import com.extjs.gxt.ui.client.data.BeanModelReader;
 import com.extjs.gxt.ui.client.data.DataReader;
 import com.extjs.gxt.ui.client.data.ListLoadResult;
 import com.extjs.gxt.ui.client.data.ModelData;
-
-import java.util.List;
 
 public class TreeGridBeanModelReader implements DataReader<List<ModelData>> {
 

@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;

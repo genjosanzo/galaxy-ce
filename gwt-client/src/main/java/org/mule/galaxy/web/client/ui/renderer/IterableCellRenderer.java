@@ -11,7 +11,7 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 
-public final class IterableCellRenderer implements GridCellRenderer<BaseModel> {
+public class IterableCellRenderer implements GridCellRenderer<BaseModel> {
     private final boolean newLine;
 
     public IterableCellRenderer() {
@@ -36,15 +36,19 @@ public final class IterableCellRenderer implements GridCellRenderer<BaseModel> {
         if (iterable != null) {
             for (final Object o : iterable) {
                 if (newLine) {
-                    html += "<div>" + o.toString() + "</div>";
+                    html += "<div>" + renderObjectAsHTML(o) + "</div>";
                 } else {
                     if (html.length() != 0) {
                         html += ", ";
                     }
-                    html += o.toString();
+                    html += renderObjectAsHTML(o);
                 }
             }
         }
         return html;
+    }
+
+    protected String renderObjectAsHTML(final Object o) {
+        return o.toString();
     }
 }

@@ -84,7 +84,6 @@ import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryService;
 import org.mule.galaxy.repository.rpc.WApprovalMessage;
 import org.mule.galaxy.repository.rpc.WArtifactType;
-import org.mule.galaxy.repository.rpc.WArtifactView;
 import org.mule.galaxy.repository.rpc.WComment;
 import org.mule.galaxy.repository.rpc.WIndex;
 import org.mule.galaxy.repository.rpc.WLifecycle;
@@ -100,14 +99,11 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
-import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.SecurityUtils;
 import org.mule.galaxy.util.UserUtils;
-import org.mule.galaxy.view.ArtifactViewManager;
-import org.mule.galaxy.view.View;
 import org.mule.galaxy.web.ContextPathResolver;
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
@@ -120,8 +116,6 @@ public class RegistryServiceImpl implements RegistryService {
 
     protected static final String DEFAULT_DATETIME_FORMAT = "h:mm a, MMMM d, yyyy";
 
-    private static final String RECENT_VIEWS = "recent.artifactViews";
-
     private final Log log = LogFactory.getLog(getClass());
 
     private Registry registry;
@@ -130,7 +124,6 @@ public class RegistryServiceImpl implements RegistryService {
     private IndexManager indexManager;
     private ActivityManager activityManager;
     private AccessControlManager accessControlManager;
-    private ArtifactViewManager artifactViewManager;
     private TypeManager typeManager;
 
     private ContextPathResolver contextPathResolver;
@@ -140,10 +133,8 @@ public class RegistryServiceImpl implements RegistryService {
     private EventManager eventManager;
 
     private UploadService uploadService;
-
-    private UserManager userManager;
     
-    public Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException {
+    public List<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException {
         try {
             if (parentId == null) {
                 Collection<Item> items = registry.getItems();
@@ -152,11 +143,11 @@ public class RegistryServiceImpl implements RegistryService {
             } else {
                 Item w = (Item) registry.getItemById(parentId);
 
-                Collection<ItemInfo> workspaces = null;
+                List<ItemInfo> workspaces = null;
                 if (traverseUpParents) {
                     while (w != null) {
                         Item parent = w.getParent();
-                        Collection<ItemInfo> parentWorkspaces;
+                        List<ItemInfo> parentWorkspaces;
                         if (parent != null) {
                             parentWorkspaces = toWeb(parent.getItems(), false);
                         } else {
@@ -210,7 +201,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
 
     
-    private Collection<ItemInfo> toWeb(Collection<Item> workspaces, boolean populateChildren) throws RegistryException {
+    private List<ItemInfo> toWeb(Collection<Item> workspaces, boolean populateChildren) throws RegistryException {
         if (workspaces == null) {
             return null;
         }
@@ -444,12 +435,14 @@ public class RegistryServiceImpl implements RegistryService {
         }
     }
 
-    public WSearchResults getArtifacts(String workspaceId, 
-                                       String workspacePath, 
-                                       boolean includeChildWkspcs,
-                                       Set<SearchPredicate> searchPredicates, 
-                                       String freeformQuery,
-                                       int start, int maxResults) throws RPCException {
+    public WSearchResults searchRegistry(String workspaceId, 
+                                         String workspacePath, 
+                                         boolean includeChildWkspcs,
+                                         Set<SearchPredicate> searchPredicates, 
+                                         String freeformQuery,
+                                         List<String> properties, 
+                                         int start, 
+                                         int maxResults) throws RPCException {
         Query q = getQuery(searchPredicates, start, maxResults);
 
         final String context = contextPathResolver.getContextPath();
@@ -462,7 +455,7 @@ public class RegistryServiceImpl implements RegistryService {
                 for (int i = start; i < start+maxResults && i < items.size(); i++) {
                     trimmedItems.add(items.get(i));
                 }
-                WSearchResults results = getSearchResults(null, trimmedItems, items.size());
+                WSearchResults results = getSearchResults(trimmedItems, properties, items.size());
                 results.setQuery("select artifact, entry from '@" + workspaceId + "'");
                 results.setFeed(getLink(context + "/api/registry", workspace));
                 results.setTotal(items.size());
@@ -477,7 +470,7 @@ public class RegistryServiceImpl implements RegistryService {
             else
                 results = registry.search(q);
 
-            WSearchResults wr = getSearchResults(null, results.getResults(), results.getTotal());
+            WSearchResults wr = getSearchResults(results.getResults(), properties, results.getTotal());
             wr.setQuery(q.toString());
             wr.setFeed(context + "/api/registry?q=" + UrlEncoding.encode(wr.getQuery(), Profile.PATH.filter()));
             return wr;
@@ -526,149 +519,24 @@ public class RegistryServiceImpl implements RegistryService {
         return q;
     }
 
-    private WSearchResults getSearchResults(String type, 
-                                            Collection<? extends Item> results,
+    private WSearchResults getSearchResults(Collection<? extends Item> results,
+                                            List<String> properties,
                                             long total) throws RegistryException {
 
         WSearchResults wsr = new WSearchResults();
         
         for (Item i : results) {
-            wsr.getRows().add(toWeb(i, false));
+            ItemInfo info = toWeb(i, false);
+            
+            for (String p : properties) {
+                populateProperty(i.getPropertyInfo(p), i, info);
+            }
+                
+            wsr.getRows().add(info);
         }
 
         wsr.setTotal(total);
         return wsr;
-    }
-
-    public WSearchResults getArtifactsForView(String viewId,
-                                              int resultStart,
-                                              int maxResults)
-            throws RPCException {
-        try {
-            View view = artifactViewManager.getArtifactView(viewId);
-            SearchResults result = registry.search(view.getQuery(), resultStart, maxResults);
-            return getSearchResults(null, result.getResults(), result.getTotal());
-        } catch (QueryException e) {
-            throw new RPCException(e.getMessage());
-        } catch (RegistryException e) {
-            log.error("Could not query the registry.", e);
-            throw new RPCException(e.getMessage());
-        } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void deleteArtifactView(String id) throws RPCException {
-        artifactViewManager.delete(id);
-        // clean up recent views too
-        User user = getCurrentUser();
-        List<String> views = (List<String>) user.getProperties().get(RECENT_VIEWS);
-        boolean wasFound = views.remove(id);
-
-        assert wasFound : "View deleted, but no corresponding Recent Views entry found for " + id;
-    }
-
-    public WArtifactView getArtifactView(String id) throws RPCException, ItemExistsException, ItemNotFoundException {
-        User user = getCurrentUser();
-        try {
-            WArtifactView view = toWeb(artifactViewManager.getArtifactView(id));
-            updateRecentArtifactViews(user, id);
-
-            return view;
-        } catch (DuplicateItemException e) {
-            throw new ItemExistsException();
-        } catch (NotFoundException e) {
-            log.error(e.getMessage(), e);
-            throw new ItemNotFoundException();
-        }
-    }
-
-    private void updateRecentArtifactViews(User user, String id) throws DuplicateItemException, NotFoundException {
-        List<String> recent = getRecentArtifactViewIds(user);
-
-        // remove this id if it alread exists
-        recent.remove(id);
-
-        // add the view to the top of the list
-        recent.add(0, id);
-
-        while (recent.size() > 5) {
-            recent.remove(recent.size() - 1);
-        }
-
-        userManager.save(user);
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<String> getRecentArtifactViewIds(User user) {
-        if (user.getProperties() == null) {
-            user.setProperties(new HashMap<String, Object>());
-        }
-        List<String> recent = (List<String>) user.getProperties().get(RECENT_VIEWS);
-
-        if (recent == null) {
-            recent = new ArrayList<String>();
-            user.getProperties().put(RECENT_VIEWS, recent);
-        }
-        return recent;
-    }
-
-    public Collection<WArtifactView> getArtifactViews() throws RPCException {
-        List<WArtifactView> views = new ArrayList<WArtifactView>();
-        User currentUser = getCurrentUser();
-        for (View v : artifactViewManager.getArtifactViews(currentUser)) {
-            views.add(toWeb(v));
-        }
-
-        Collections.sort(views, new Comparator<WArtifactView>() {
-            public int compare(WArtifactView v1, WArtifactView v2) {
-                return v1.getName().compareTo(v2.getName());
-            }
-        });
-        return views;
-    }
-
-    public Collection<WArtifactView> getRecentArtifactViews() throws RPCException {
-        List<WArtifactView> views = new ArrayList<WArtifactView>();
-        User currentUser = getCurrentUser();
-        List<String> ids = getRecentArtifactViewIds(currentUser);
-        if (ids != null) {
-            for (String id : ids) {
-                try {
-                    views.add(toWeb(artifactViewManager.getArtifactView(id)));
-                } catch (NotFoundException e) {
-                }
-            }
-        }
-        return views;
-    }
-
-    private WArtifactView toWeb(View v) throws RPCException {
-        WArtifactView wv = new WArtifactView();
-        if (v == null) {
-            return wv;
-        }
-        wv.setName(v.getName());
-        wv.setId(v.getId());
-
-        try {
-            if (v.isFreeform()) {
-                wv.setQueryString(v.getQuery());
-            } else {
-                Query q = Query.fromString(v.getQuery());
-    
-                wv.setPredicates(getPredicates(q));
-                wv.setWorkspace(q.getFromPath());
-                wv.setWorkspaceSearchRecursive(q.isFromRecursive());
-            }
-            
-            wv.setShared(v.getUser() == null);
-        } catch (QueryException e) {
-            log.error("Could not parse query. " + e.getMessage(), e);
-            throw new RPCException(e.getMessage());
-        }
-        return wv;
     }
 
     /**
@@ -711,43 +579,6 @@ public class RegistryServiceImpl implements RegistryService {
             }
         }
         return predicates;
-    }
-
-    public String saveArtifactView(WArtifactView wv) throws RPCException {
-        View v = fromWeb(wv);
-
-        try {
-            artifactViewManager.save(v);
-            return v.getId();
-        } catch (DuplicateItemException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException("Couldn't save view.");
-        } catch (NotFoundException e) {
-            log.error(e.getMessage(), e);
-            throw new RPCException("The view being saved has been deleted.");
-        }
-    }
-
-    private View fromWeb(WArtifactView wv) throws RPCException {
-        View v = new View();
-        v.setId(wv.getId());
-        v.setName(wv.getName());
-        if (!wv.isShared()) {
-            v.setUser(getCurrentUser());
-        }
-        
-        if (wv.getQueryString() != null && !"".equals(wv.getQueryString())) {
-            v.setQuery(wv.getQueryString());
-            v.setFreeform(true);
-        } else {
-            Query query = getQuery(wv.getPredicates(), 0, 0);
-            query.fromPath(wv.getWorkspace(), wv.isWorkspaceSearchRecursive());
-    
-            v.setQuery(query.toString());
-            v.setFreeform(false);
-        }
-        
-        return v;
     }
 
     public Collection<WIndex> getIndexes() {
@@ -920,12 +751,11 @@ public class RegistryServiceImpl implements RegistryService {
             itemType = LinkInfo.TYPE_ENTRY;
             name = i.getPath();
             id = i.getId();
-        } else if (i == null) {
+        } else {
             itemType = LinkInfo.TYPE_NOT_FOUND;
             name = l.getLinkedToPath();
-        } else {
-            throw new UnsupportedOperationException();
         }
+        
         return new LinkInfo(l.getId(),
                             l.isAutoDetected(),
                             id,
@@ -1018,24 +848,8 @@ public class RegistryServiceImpl implements RegistryService {
             if (!showHidden && !p.isVisible()) {
                 continue;
             }
-
-            PropertyDescriptor pd = p.getPropertyDescriptor();
-            Extension ext = pd != null ? pd.getExtension() : null;
             
-            Object val = toWeb(item, p, ext);
-
-            String desc = p.getDescription();
-            if (desc == null) {
-                desc = p.getName();
-            }
-            
-            String extId = ext != null ? ext.getId() : null;
-            
-            vi.getProperties().add(new WProperty(p.getName(), 
-                                                 desc, 
-                                                 (Serializable) val, 
-                                                 extId, 
-                                                 p.isLocked()));
+            populateProperty(p, item, vi);
         }
 
         Collections.sort(vi.getProperties(), new Comparator() {
@@ -1045,6 +859,30 @@ public class RegistryServiceImpl implements RegistryService {
             }
 
         });
+    }
+
+    private void populateProperty(PropertyInfo p, Item item, ItemInfo vi) {
+        if (p == null) {
+            return;
+        }
+        
+        PropertyDescriptor pd = p.getPropertyDescriptor();
+        Extension ext = pd != null ? pd.getExtension() : null;
+        
+        Object val = toWeb(item, p, ext);
+
+        String desc = p.getDescription();
+        if (desc == null) {
+            desc = p.getName();
+        }
+        
+        String extId = ext != null ? ext.getId() : null;
+        
+        vi.getProperties().add(new WProperty(p.getName(), 
+                                             desc, 
+                                             (Serializable) val, 
+                                             extId, 
+                                             p.isLocked()));
     }
 
     private Object toWeb(Item item, PropertyInfo p, Extension ext) {
@@ -2030,10 +1868,6 @@ public class RegistryServiceImpl implements RegistryService {
         this.indexManager = indexManager;
     }
 
-    public void setArtifactViewManager(ArtifactViewManager artifactViewManager) {
-        this.artifactViewManager = artifactViewManager;
-    }
-
     public ContextPathResolver getContextPathResolver() {
         return contextPathResolver;
     }
@@ -2054,8 +1888,4 @@ public class RegistryServiceImpl implements RegistryService {
         this.uploadService = uploadService;
     }
 
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
-    }
-    
 }

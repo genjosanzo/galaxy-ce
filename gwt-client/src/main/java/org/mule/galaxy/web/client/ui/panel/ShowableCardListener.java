@@ -3,16 +3,13 @@
  */
 package org.mule.galaxy.web.client.ui.panel;
 
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.client.ui.panel.Showable;
+import java.util.List;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.CardPanel;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.google.gwt.core.client.GWT;
-
-import java.util.List;
 
 public class ShowableCardListener extends SelectionListener {
     private Component previous;

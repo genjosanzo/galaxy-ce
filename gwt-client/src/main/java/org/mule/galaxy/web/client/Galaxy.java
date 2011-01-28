@@ -17,8 +17,8 @@
  */
 package org.mule.galaxy.web.client;
 
-import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
 import static org.mule.galaxy.web.client.ClientId.MAIN_WELCOME_MESSAGE_ID;
+import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
 
 import java.util.Collection;
 import java.util.Collections;

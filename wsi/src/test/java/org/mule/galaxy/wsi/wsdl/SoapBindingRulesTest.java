@@ -11,7 +11,6 @@ import org.mule.galaxy.wsi.wsdl.soap.NoEncodingRule;
 import org.mule.galaxy.wsi.wsdl.soap.OperationSignatureRule;
 import org.mule.galaxy.wsi.wsdl.soap.SoapHttpBindingTransportRule;
 import org.mule.galaxy.wsi.wsdl.soap.StyleConsistencyRule;
-
 import org.w3c.dom.Document;
 
 public class SoapBindingRulesTest extends AbstractWSITest {

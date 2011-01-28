@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.mule.galaxy.wsi.AbstractWSITest;
 import org.mule.galaxy.wsi.Message;
-
 import org.w3c.dom.Document;
 
 public class WsdlSchemaValidationRuleTest extends AbstractWSITest {

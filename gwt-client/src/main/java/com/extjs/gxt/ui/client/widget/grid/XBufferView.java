@@ -7,6 +7,9 @@
  */
 package com.extjs.gxt.ui.client.widget.grid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.extjs.gxt.ui.client.GXT;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -17,9 +20,6 @@ import com.extjs.gxt.ui.client.util.DelayedTask;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Renders the rows as they scroll into view. This GridView is fast for

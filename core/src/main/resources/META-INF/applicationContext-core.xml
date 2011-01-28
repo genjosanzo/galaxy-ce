@@ -233,6 +233,11 @@
     <property name="registry" ref="registry"/>
   </bean>
       
+  <bean id="artifactQueryBuilder" class="org.mule.galaxy.impl.artifact.ArtifactQueryBuilder">
+    <constructor-arg ref="artifactExtension"/>
+    <property name="typeManager" ref="typeManager"/>
+  </bean>
+  
   <bean id="mapExtension" class="org.mule.galaxy.impl.extension.MapExtension">
     <property name="id" value="mapExtension"/>
     <property name="name" value="Map"/>
@@ -361,13 +366,6 @@
   <bean id="typeDao" class="org.mule.galaxy.impl.jcr.TypeDaoImpl"
         init-method="initialize" >
     <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-  
-  <bean id="artifactViewManager" 
-        class="org.mule.galaxy.impl.view.ArtifactViewManagerImpl"
-        init-method="initialize">
-    <property name="sessionFactory" ref="sessionFactory" />
-
   </bean>
   
   <bean id="persisterManager" class="org.mule.galaxy.impl.jcr.onm.PersisterManager">

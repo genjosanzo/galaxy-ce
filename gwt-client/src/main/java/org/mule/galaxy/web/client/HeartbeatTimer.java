@@ -18,7 +18,6 @@
 
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.dialog.LightBox;
 
 import com.google.gwt.core.client.GWT;

@@ -1,12 +1,10 @@
 package org.mule.galaxy.atom.client;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.mule.galaxy.Item;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryService;
-import org.mule.galaxy.repository.rpc.WSearchResults;
 
 public class AtomGwtTest extends AbstractAtomTest {
     protected RegistryService gwtRegistry;

@@ -18,10 +18,10 @@
 
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WComment implements IsSerializable {
     private String id;

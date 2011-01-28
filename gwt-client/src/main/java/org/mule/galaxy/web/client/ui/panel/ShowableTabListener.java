@@ -3,9 +3,6 @@
  */
 package org.mule.galaxy.web.client.ui.panel;
 
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.client.ui.panel.Showable;
-
 import java.util.List;
 
 import com.extjs.gxt.ui.client.event.Listener;

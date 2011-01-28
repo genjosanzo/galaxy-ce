@@ -1,7 +1,3 @@
-import org.mule.galaxy.impl.index.osgi.OsgiManifestUtil
-
-import java.util.jar.JarFile
-import java.util.jar.JarEntry
 
 println "=================== Executing a groovy index"
 

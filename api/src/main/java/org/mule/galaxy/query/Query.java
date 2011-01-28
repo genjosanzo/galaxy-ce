@@ -183,10 +183,6 @@ public class Query {
             throw new QueryException(new Message("EXPECTED_SELECT", BundleUtils.getBundle(Query.class)));
         }
 
-        if (tokens.isEmpty()) {
-            throw new QueryException(new Message("EXPECTED_SELECT_TYPE", BundleUtils.getBundle(Query.class)));
-        }
-
         org.mule.galaxy.query.Query q = new org.mule.galaxy.query.Query();
 
         if (tokens.isEmpty()) {

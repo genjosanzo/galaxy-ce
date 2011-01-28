@@ -10,8 +10,8 @@ import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
 import org.apache.abdera.i18n.iri.IRI;
-import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;

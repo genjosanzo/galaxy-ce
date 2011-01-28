@@ -1,5 +1,12 @@
 package org.mule.galaxy.impl.index;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+
+import javax.xml.namespace.QName;
+
 import net.sf.saxon.javax.xml.xquery.XQConnection;
 import net.sf.saxon.javax.xml.xquery.XQDataSource;
 import net.sf.saxon.javax.xml.xquery.XQException;
@@ -7,6 +14,7 @@ import net.sf.saxon.javax.xml.xquery.XQItem;
 import net.sf.saxon.javax.xml.xquery.XQPreparedExpression;
 import net.sf.saxon.javax.xml.xquery.XQResultSequence;
 import net.sf.saxon.xqj.SaxonXQDataSource;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.PropertyException;
@@ -23,12 +31,6 @@ import org.mule.galaxy.util.QNameUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-
-import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class XQueryIndexer extends AbstractIndexer {
     public static final String XQUERY_EXPRESSION = "expression";

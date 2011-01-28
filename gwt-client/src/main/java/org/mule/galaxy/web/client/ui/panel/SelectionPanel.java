@@ -18,7 +18,9 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
-import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -29,10 +31,6 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 public class SelectionPanel extends Composite {
 

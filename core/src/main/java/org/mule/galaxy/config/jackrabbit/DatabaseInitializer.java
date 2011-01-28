@@ -1,16 +1,17 @@
 package org.mule.galaxy.config.jackrabbit;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.Resource;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.util.IOUtils;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.SQLException;
-import java.io.InputStream;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
 
 public class DatabaseInitializer implements InitializingBean {
 

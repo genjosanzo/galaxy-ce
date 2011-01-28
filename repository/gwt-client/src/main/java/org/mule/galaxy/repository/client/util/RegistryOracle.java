@@ -1,5 +1,8 @@
 package org.mule.galaxy.repository.client.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.client.ui.field.Oracle;
@@ -12,9 +15,6 @@ import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class RegistryOracle extends Oracle {
 

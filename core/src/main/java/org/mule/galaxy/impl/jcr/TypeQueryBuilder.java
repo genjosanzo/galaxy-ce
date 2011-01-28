@@ -8,8 +8,8 @@ import java.util.List;
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.impl.jcr.query.SimpleQueryBuilder;
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 

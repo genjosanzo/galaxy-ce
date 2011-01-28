@@ -25,14 +25,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
+import org.mule.galaxy.web.rpc.WGroup;
 import org.mule.galaxy.web.rpc.WPermission;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
-import org.mule.galaxy.web.rpc.WGroup;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
@@ -143,9 +143,11 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             Collection grants = (Collection) e.getValue();
             for (Iterator gItr = grants.iterator(); gItr.hasNext();) {
                 WPermissionGrant pg = (WPermissionGrant) gItr.next();
-
-                Widget w = createGrantWidget(pg, isUberGroup);
-                table.setWidget(row, getPermissionColumn(pg.getPermission().getName()), w);
+                int permCol = getPermissionColumn(pg.getPermission().getName());
+                if (permCol != -1) {
+                    Widget w = createGrantWidget(pg, isUberGroup);
+                    table.setWidget(row, permCol, w);
+                }
             }
             row++;
         }

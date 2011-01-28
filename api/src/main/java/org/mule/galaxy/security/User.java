@@ -1,14 +1,14 @@
 package org.mule.galaxy.security;
 
-import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.mapping.OneToMany;
-
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.mule.galaxy.Identifiable;
+import org.mule.galaxy.mapping.OneToMany;
 
 public class User implements Identifiable, Serializable
 {

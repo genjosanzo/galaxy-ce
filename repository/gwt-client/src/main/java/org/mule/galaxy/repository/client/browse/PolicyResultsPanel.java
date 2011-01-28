@@ -18,15 +18,15 @@
 
 package org.mule.galaxy.repository.client.browse;
 
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.galaxy.web.client.ui.panel.AbstractErrorShowingComposite;
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.panel.AbstractErrorShowingComposite;
+
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
 public class PolicyResultsPanel extends AbstractErrorShowingComposite {
 

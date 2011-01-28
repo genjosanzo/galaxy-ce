@@ -1,5 +1,8 @@
 package org.mule.galaxy.web.client.plugin;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -9,9 +12,6 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class AbstractGwtPlugin implements EntryPoint, ValueChangeHandler<String> {
     protected String rootToken;

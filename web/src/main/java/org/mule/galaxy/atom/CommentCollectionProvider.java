@@ -18,12 +18,6 @@
 
 package org.mule.galaxy.atom;
 
-import org.mule.galaxy.NotFoundException;
-import org.mule.galaxy.Registry;
-import org.mule.galaxy.collab.Comment;
-import org.mule.galaxy.collab.CommentManager;
-import org.mule.galaxy.util.UserUtils;
-
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +28,11 @@ import org.apache.abdera.protocol.server.RequestContext;
 import org.apache.abdera.protocol.server.RequestContext.Scope;
 import org.apache.abdera.protocol.server.context.ResponseContextException;
 import org.apache.abdera.protocol.server.impl.AbstractEntityCollectionAdapter;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.Registry;
+import org.mule.galaxy.collab.Comment;
+import org.mule.galaxy.collab.CommentManager;
+import org.mule.galaxy.util.UserUtils;
 
 public class CommentCollectionProvider extends AbstractEntityCollectionAdapter<Comment> {
     

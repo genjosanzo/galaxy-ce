@@ -1,8 +1,8 @@
 package org.mule.galaxy.impl.event;
 
-import org.mule.galaxy.event.GalaxyEvent;
-
 import java.util.EventListener;
+
+import org.mule.galaxy.event.GalaxyEvent;
 
 /**
  * This is a utility interface used by the {@link DefaultEventManager} and is

@@ -1,8 +1,6 @@
 package org.mule.galaxy.wsi.wsdl;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class ImportUriRule extends AbstractXPathRule {
 

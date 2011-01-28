@@ -1,8 +1,8 @@
 package com.extjs.gxt.ui.client.widget;
 
-import org.mule.galaxy.web.client.ui.panel.ShowableTabListener;
-
 import java.util.List;
+
+import org.mule.galaxy.web.client.ui.panel.ShowableTabListener;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;

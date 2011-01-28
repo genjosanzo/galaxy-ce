@@ -1,10 +1,10 @@
 package org.mule.galaxy.web.client.ui.panel;
 
+import java.util.List;
+
 import org.mule.galaxy.web.client.ui.ProgressIndicatorPopup;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
-
-import java.util.List;
 
 /**
  * Base class if you want to make your component a standalone page

@@ -10,9 +10,9 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.query.Query;
 import org.mule.galaxy.query.Restriction;
-import org.mule.galaxy.query.OpRestriction.Operator;
 
 public class QueryTest extends TestCase {
     

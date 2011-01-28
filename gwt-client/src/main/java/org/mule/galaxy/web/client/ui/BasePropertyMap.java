@@ -1,8 +1,8 @@
 package org.mule.galaxy.web.client.ui;
 
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-
 import java.io.Serializable;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
 
 public class BasePropertyMap implements Serializable, BeanModelTag {
 

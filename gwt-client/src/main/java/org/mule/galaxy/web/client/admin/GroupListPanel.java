@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import java.util.Map;
+
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.SecurityService;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
@@ -25,8 +27,6 @@ import org.mule.galaxy.web.rpc.WPermissionGrant;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Map;
 
 public class GroupListPanel extends AbstractGroupPanel {
 

@@ -21,7 +21,6 @@ package org.mule.galaxy.web.client.ui.panel;
 import java.util.List;
 
 import org.mule.galaxy.web.client.ui.ProgressIndicatorPopup;
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
 /**
  * Base class if you want to make your component a standalone page

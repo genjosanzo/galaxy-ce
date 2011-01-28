@@ -18,7 +18,8 @@
 
 package org.mule.galaxy.web.client.admin;
 
-import org.mule.galaxy.web.client.ui.field.ValidatableListBox;
+import java.util.List;
+
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
@@ -37,8 +38,6 @@ import com.extjs.gxt.ui.client.widget.tips.ToolTipConfig;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-
-import java.util.List;
 
 
 public class ScheduleForm extends AbstractAdministrationForm {

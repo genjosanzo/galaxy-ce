@@ -1,8 +1,8 @@
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.util.List;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WExtensionInfo implements IsSerializable, Comparable {
     private String id;

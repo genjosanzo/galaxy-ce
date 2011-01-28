@@ -18,11 +18,11 @@
 
 package org.mule.galaxy.web.rpc;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-
 import java.util.List;
 
 import org.mule.galaxy.web.client.RPCException;
+
+import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface AdminService extends RemoteService {
 

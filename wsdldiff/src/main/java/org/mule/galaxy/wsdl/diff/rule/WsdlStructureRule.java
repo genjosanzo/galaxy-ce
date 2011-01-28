@@ -1,7 +1,5 @@
 package org.mule.galaxy.wsdl.diff.rule;
 
-import com.sun.xml.xsom.parser.SchemaDocument;
-
 import java.util.Iterator;
 import java.util.Set;
 
@@ -13,6 +11,8 @@ import javax.wsdl.PortType;
 
 import org.mule.galaxy.wsdl.diff.DifferenceEvent;
 import org.mule.galaxy.wsdl.diff.DifferenceListener;
+
+import com.sun.xml.xsom.parser.SchemaDocument;
 
 public class WsdlStructureRule implements Rule {
 

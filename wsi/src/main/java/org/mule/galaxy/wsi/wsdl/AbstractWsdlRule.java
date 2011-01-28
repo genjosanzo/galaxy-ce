@@ -1,8 +1,5 @@
 package org.mule.galaxy.wsi.wsdl;
 
-import javax.wsdl.Definition;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 

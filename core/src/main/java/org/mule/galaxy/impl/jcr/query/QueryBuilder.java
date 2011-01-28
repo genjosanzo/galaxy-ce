@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
 
 public abstract class QueryBuilder {
     protected Collection<String> properties = new ArrayList<String>();

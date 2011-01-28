@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.repository.client.item;
 
+import java.util.List;
+
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.client.admin.PolicyPanel;
 import org.mule.galaxy.repository.rpc.ItemInfo;
@@ -31,8 +33,6 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.google.gwt.user.client.ui.Label;
-
-import java.util.List;
 
 
 /**

@@ -5,8 +5,8 @@ import java.util.Date;
 
 import javax.xml.namespace.QName;
 
-import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
+import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;

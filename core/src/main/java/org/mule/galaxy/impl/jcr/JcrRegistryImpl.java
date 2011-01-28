@@ -47,10 +47,10 @@ import org.mule.galaxy.query.FunctionCall;
 import org.mule.galaxy.query.FunctionRegistry;
 import org.mule.galaxy.query.JcrRestriction;
 import org.mule.galaxy.query.OpRestriction;
+import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.Restriction;
 import org.mule.galaxy.query.SearchResults;
-import org.mule.galaxy.query.OpRestriction.Operator;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
@@ -646,6 +646,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
         q.setStart(startOfResults);
         q.setMaxResults(maxResults);
+        q.orderBy("name");
         
         return search(q);
     }

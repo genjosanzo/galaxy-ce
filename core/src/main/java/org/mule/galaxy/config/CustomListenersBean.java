@@ -1,10 +1,9 @@
 package org.mule.galaxy.config;
 
-import org.mule.galaxy.event.EventManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.galaxy.event.EventManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;

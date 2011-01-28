@@ -18,9 +18,9 @@
 
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.util.Collection;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WGovernanceInfo implements IsSerializable {
     /*

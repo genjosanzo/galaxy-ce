@@ -89,5 +89,4 @@ public class LinkInfo implements IsSerializable {
     public String getLinkId() {
         return linkId;
     }
-    
 }

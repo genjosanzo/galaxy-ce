@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.Item;
 import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.security.User;
 

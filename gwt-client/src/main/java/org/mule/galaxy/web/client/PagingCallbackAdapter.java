@@ -1,10 +1,10 @@
 package org.mule.galaxy.web.client;
 
+import java.util.List;
+
 import com.extjs.gxt.ui.client.data.BasePagingLoadResult;
 import com.extjs.gxt.ui.client.data.PagingLoadResult;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import java.util.List;
 
 public class PagingCallbackAdapter<T> implements AsyncCallback<List<T>> {
     private final AsyncCallback<PagingLoadResult<T>> callback;

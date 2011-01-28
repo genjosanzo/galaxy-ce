@@ -18,10 +18,10 @@
 
 package org.mule.galaxy.repository.rpc;
 
+import java.util.Collection;
+
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 import com.google.gwt.user.client.rpc.IsSerializable;
-
-import java.util.Collection;
 
 public class WArtifactType implements IsSerializable, BeanModelTag {
     private String id;

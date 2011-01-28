@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client.ui.panel;
 
+import java.util.List;
+
 import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
 import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
@@ -26,8 +28,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.List;
 
 public class WidgetHelper extends Composite {
 
@@ -402,10 +402,14 @@ public class WidgetHelper extends Composite {
         c.addStyleName("no-border");
         c.setBorders(false);
         c.setBodyBorder(false);
-        c.setHeading(heading);
         c.setAutoHeight(true);
         c.setAutoHeight(true);
 
+        return createPanelWithListView(heading, items, c);
+    }
+
+    public static ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items, ContentPanel c) {
+        c.setHeading(heading);
         // Store for all menu items in container.
         ListStore<NavMenuItem> ls = new ListStore<NavMenuItem>();
         ls.add(items);

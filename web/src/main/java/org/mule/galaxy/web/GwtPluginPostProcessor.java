@@ -1,7 +1,5 @@
 package org.mule.galaxy.web;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -14,6 +12,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.ServletContextAware;
+
+import com.google.gwt.user.client.rpc.RemoteService;
 
 public class GwtPluginPostProcessor 
     implements BeanPostProcessor, ApplicationContextAware, ServletContextAware {

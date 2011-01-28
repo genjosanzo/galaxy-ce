@@ -4,8 +4,8 @@ import org.mule.galaxy.impl.extension.ExtensionQueryBuilder;
 import org.mule.galaxy.lifecycle.Lifecycle;
 import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.lifecycle.Phase;
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.Message;
 

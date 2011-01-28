@@ -10,8 +10,8 @@ import org.mule.galaxy.Item;
 import org.mule.galaxy.Link;
 import org.mule.galaxy.impl.extension.IdentifiableExtension;
 import org.mule.galaxy.impl.extension.IdentifiableExtensionQueryBuilder;
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.type.PropertyDescriptor;
 
 public class LinkExtensionQueryBuilder extends IdentifiableExtensionQueryBuilder {

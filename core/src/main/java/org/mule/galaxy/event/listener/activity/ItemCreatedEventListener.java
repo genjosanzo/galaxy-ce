@@ -1,13 +1,14 @@
 package org.mule.galaxy.event.listener.activity;
 
-import org.mule.galaxy.activity.ActivityManager;
 import static org.mule.galaxy.event.DefaultEvents.ITEM_CREATED;
+
+import java.text.MessageFormat;
+
+import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.event.ItemCreatedEvent;
 import org.mule.galaxy.event.annotation.Async;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.OnEvent;
-
-import java.text.MessageFormat;
 
 @BindToEvent(ITEM_CREATED)
 public class ItemCreatedEventListener extends AbstractActivityLoggingListener {

@@ -18,9 +18,9 @@
 
 package org.mule.galaxy.web.client.ui.field;
 
-import com.google.gwt.user.client.Window;
-
 import java.util.Collection;
+
+import com.google.gwt.user.client.Window;
 
 public class StringListBox extends AbstractUserModifiableListBox {
 

@@ -1,17 +1,5 @@
 package org.mule.galaxy.wsi.impl;
 
-import org.mule.galaxy.wsi.WSIRule;
-import org.mule.galaxy.wsi.WSIRuleManager;
-import org.mule.galaxy.wsi.wsdl.ImportUriRule;
-import org.mule.galaxy.wsi.wsdl.NonEmptyWsdlLocationImportRule;
-import org.mule.galaxy.wsi.wsdl.WsdlSchemaValidationRule;
-import org.mule.galaxy.wsi.wsdl.WsdlSoapSchemaValidationRule;
-import org.mule.galaxy.wsi.wsdl.soap.EmptySoapBindingTransportAttributeRule;
-import org.mule.galaxy.wsi.wsdl.soap.NoEncodingRule;
-import org.mule.galaxy.wsi.wsdl.soap.OperationSignatureRule;
-import org.mule.galaxy.wsi.wsdl.soap.SoapHttpBindingTransportRule;
-import org.mule.galaxy.wsi.wsdl.soap.StyleConsistencyRule;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +11,18 @@ import java.util.Properties;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.SchemaFactory;
+
+import org.mule.galaxy.wsi.WSIRule;
+import org.mule.galaxy.wsi.WSIRuleManager;
+import org.mule.galaxy.wsi.wsdl.ImportUriRule;
+import org.mule.galaxy.wsi.wsdl.NonEmptyWsdlLocationImportRule;
+import org.mule.galaxy.wsi.wsdl.WsdlSchemaValidationRule;
+import org.mule.galaxy.wsi.wsdl.WsdlSoapSchemaValidationRule;
+import org.mule.galaxy.wsi.wsdl.soap.EmptySoapBindingTransportAttributeRule;
+import org.mule.galaxy.wsi.wsdl.soap.NoEncodingRule;
+import org.mule.galaxy.wsi.wsdl.soap.OperationSignatureRule;
+import org.mule.galaxy.wsi.wsdl.soap.SoapHttpBindingTransportRule;
+import org.mule.galaxy.wsi.wsdl.soap.StyleConsistencyRule;
 
 public class WSIRuleManagerImpl implements WSIRuleManager {
 

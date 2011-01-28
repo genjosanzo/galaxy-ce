@@ -18,6 +18,15 @@
 
 package org.mule.galaxy.repository.client.util;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
+import org.mule.galaxy.repository.rpc.WPolicy;
+import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
+import org.mule.galaxy.web.rpc.AbstractCallback;
+
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -29,15 +38,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
-import org.mule.galaxy.repository.rpc.WPolicy;
-import org.mule.galaxy.web.client.ui.panel.AbstractShowable;
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.rpc.AbstractCallback;
 
 public class PolicySelectionPanel extends AbstractShowable {
 

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mule.galaxy.repository.client.property.AbstractPropertyRenderer;
-import org.mule.galaxy.repository.client.property.ArtifactRenderer;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WType;
@@ -39,9 +37,6 @@ public class AddItemHelper extends FormPanel {
     private String itemName;
     private String itemParent;
     private String version;
-    private Map properties;
-    private Map<String, AbstractPropertyRenderer> renderers = new HashMap<String, AbstractPropertyRenderer>();
-    private Map<String, AbstractPropertyRenderer> versionRenderers = new HashMap<String, AbstractPropertyRenderer>();
     private String fileId;
     private AbstractCallback callback;
     protected Map<String, WType> types;
@@ -72,7 +67,7 @@ public class AddItemHelper extends FormPanel {
 
     public void addItem(AbstractCallback callback, String name, String parent, String version) {
 
-        Map<String, Serializable> properties = getProperties(this.getRenderers());
+        Map<String, Serializable> properties = getProperties();
 
         if (this.isAddVersion()) {
             registryService.addVersionedItem(parent,
@@ -82,7 +77,7 @@ public class AddItemHelper extends FormPanel {
                     this.getTypeId(),
                     getVersionTypeId(),
                     properties,
-                    getProperties(this.getVersionRenderers()),
+                    new HashMap<String,Serializable>(),
                     callback);
         } else {
             registryService.addItem(parent,
@@ -95,16 +90,9 @@ public class AddItemHelper extends FormPanel {
     }
 
 
-    public Map<String, Serializable> getProperties(Map<String, AbstractPropertyRenderer> typeRenderers) {
+    public Map<String, Serializable> getProperties() {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        for (String p : typeRenderers.keySet()) {
-            AbstractPropertyRenderer r = typeRenderers.get(p);
-            if (r instanceof ArtifactRenderer) {
-                properties.put(p, this.getFileId());
-            } else {
-                properties.put(p, (Serializable) r.getValueToSave());
-            }
-        }
+        properties.put("artifact", this.getFileId());
         return properties;
     }
 
@@ -191,36 +179,12 @@ public class AddItemHelper extends FormPanel {
         this.version = version;
     }
 
-    public Map getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map properties) {
-        this.properties = properties;
-    }
-
-    public Map<String, AbstractPropertyRenderer> getRenderers() {
-        return renderers;
-    }
-
-    public void setRenderers(Map<String, AbstractPropertyRenderer> renderers) {
-        this.renderers = renderers;
-    }
-
     public String getFileId() {
         return fileId;
     }
 
     public void setFileId(String fileId) {
         this.fileId = fileId;
-    }
-
-    public Map<String, AbstractPropertyRenderer> getVersionRenderers() {
-        return versionRenderers;
-    }
-
-    public void setVersionRenderers(Map<String, AbstractPropertyRenderer> versionRenderers) {
-        this.versionRenderers = versionRenderers;
     }
 
     public String getVersionTypeId() {

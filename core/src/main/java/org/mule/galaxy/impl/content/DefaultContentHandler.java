@@ -1,12 +1,12 @@
 package org.mule.galaxy.impl.content;
 
-import org.mule.galaxy.Item;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.activation.MimeType;
+
+import org.mule.galaxy.Item;
 
 public class DefaultContentHandler extends AbstractContentHandler {
 

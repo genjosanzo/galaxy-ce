@@ -24,9 +24,9 @@ import java.util.Iterator;
 
 import org.mule.galaxy.repository.client.util.ItemPathOracle;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
-import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;

@@ -22,6 +22,8 @@ import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_CANCEL_ID;
 import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_DELETE_ID;
 import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_SAVE_ID;
 
+import java.util.List;
+
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
@@ -35,8 +37,6 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-
-import java.util.List;
 
 public abstract class AbstractForm extends AbstractShowable {
 

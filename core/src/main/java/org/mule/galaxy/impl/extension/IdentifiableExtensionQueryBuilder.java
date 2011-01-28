@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.mule.galaxy.Dao;
 import org.mule.galaxy.Identifiable;
-import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.query.OpRestriction.Operator;
+import org.mule.galaxy.query.QueryException;
 
 /**
  * A query builder for extensions. By extending this class its easy to support queries which query based on

@@ -2,9 +2,9 @@ package org.mule.galaxy.wsi;
 
 import java.util.List;
 
-import org.mule.galaxy.wsi.impl.WSIRuleManagerImpl;
-
 import junit.framework.TestCase;
+
+import org.mule.galaxy.wsi.impl.WSIRuleManagerImpl;
 
 public class WSIRuleManagerTest extends TestCase {
 

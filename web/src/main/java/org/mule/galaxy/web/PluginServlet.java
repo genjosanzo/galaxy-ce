@@ -1,7 +1,5 @@
 package org.mule.galaxy.web;
 
-import org.mule.galaxy.util.IOUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,6 +11,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.mule.galaxy.util.IOUtils;
 
 /**
  * Serves out files from plugins which are located in galaxy/web on the classpath.

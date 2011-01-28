@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.extjs.gxt.ui.client.data.BeanModelTag;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ItemInfo implements IsSerializable, BeanModelTag {
     private String id;
@@ -73,6 +73,12 @@ public class ItemInfo implements IsSerializable, BeanModelTag {
 
     public String getName() {
         return name;
+    }
+
+    public String getArtifactVersionName() {
+        String[] paths = getParentPath().split("/");
+        
+        return paths[paths.length-1] + " " + getName(); // Foo 1.0
     }
     
     public void setName(String name) {
@@ -203,5 +209,27 @@ public class ItemInfo implements IsSerializable, BeanModelTag {
         return null;
     }
     
+    public boolean isArtifact() {
+        return getType().equals("Artifact");
+    }
+
+    public boolean isArtifactVesrion() {
+        return getType().equals("Artifact Version");
+    }
+
+    public boolean isWorkspace() {
+        return getType().equals("Workspace");
+    }
+
+    public boolean hasProperty(String propertyName) {
+        if (properties != null) {
+            for (WProperty p : properties) {
+                if (propertyName.equals(p.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
 

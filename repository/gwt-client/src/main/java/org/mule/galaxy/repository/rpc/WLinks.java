@@ -1,11 +1,11 @@
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.io.Serializable;
 import java.util.List;
 
 import org.mule.galaxy.web.rpc.LinkInfo;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WLinks implements IsSerializable, Serializable {
     private List<LinkInfo> links;

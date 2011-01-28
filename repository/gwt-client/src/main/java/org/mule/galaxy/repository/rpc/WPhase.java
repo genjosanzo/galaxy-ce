@@ -18,10 +18,10 @@
 
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-
 import java.util.Collection;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WPhase implements IsSerializable, BeanModelTag {
     private String id;

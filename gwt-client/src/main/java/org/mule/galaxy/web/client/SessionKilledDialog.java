@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client;
 
-import org.mule.galaxy.web.client.Galaxy;
-import org.mule.galaxy.web.client.HeartbeatTimer;
 import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 
 import com.google.gwt.core.client.GWT;

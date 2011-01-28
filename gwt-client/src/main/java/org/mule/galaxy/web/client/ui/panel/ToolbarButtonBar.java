@@ -1,12 +1,12 @@
 package org.mule.galaxy.web.client.ui.panel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
 
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /* assigns correct style based on position in toolbar */
 public class ToolbarButtonBar extends ToolBar {

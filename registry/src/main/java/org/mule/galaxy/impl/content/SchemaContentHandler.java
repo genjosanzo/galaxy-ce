@@ -1,8 +1,5 @@
 package org.mule.galaxy.impl.content;
 
-import org.mule.galaxy.artifact.XmlContentHandler;
-import org.mule.galaxy.util.Constants;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -12,6 +9,8 @@ import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.mule.galaxy.artifact.XmlContentHandler;
+import org.mule.galaxy.util.Constants;
 import org.w3c.dom.Document;
 
 public class SchemaContentHandler extends XmlDocumentContentHandler implements XmlContentHandler {

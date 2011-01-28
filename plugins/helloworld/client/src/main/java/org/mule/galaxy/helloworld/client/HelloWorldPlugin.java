@@ -1,11 +1,12 @@
 package org.mule.galaxy.helloworld.client;
 
+import org.mule.galaxy.web.client.plugin.AbstractGwtPlugin;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import org.mule.galaxy.web.client.plugin.AbstractGwtPlugin;
 
 public class HelloWorldPlugin extends AbstractGwtPlugin {
 

@@ -19,7 +19,6 @@ import javax.xml.namespace.QName;
 import org.mule.galaxy.wsi.wsdl.AbstractWsdlRule;
 import org.mule.galaxy.wsi.wsdl.AssertionResult;
 import org.mule.galaxy.wsi.wsdl.ValidationResult;
-
 import org.w3c.dom.Document;
 
 /**

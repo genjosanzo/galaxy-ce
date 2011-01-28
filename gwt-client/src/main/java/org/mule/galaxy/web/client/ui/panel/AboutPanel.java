@@ -18,8 +18,6 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
-import org.mule.galaxy.web.client.ui.panel.AbstractInfoPanel;
-
 import com.extjs.gxt.ui.client.widget.Html;
 
 /**

@@ -1,7 +1,6 @@
 package org.mule.galaxy.query;
 
 import java.util.List;
-import java.util.Set;
 
 import org.mule.galaxy.Item;
 

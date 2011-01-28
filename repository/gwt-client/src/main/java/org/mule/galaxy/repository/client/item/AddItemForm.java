@@ -18,11 +18,15 @@
 
 package org.mule.galaxy.repository.client.item;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.client.browse.PolicyResultsPanel;
-import org.mule.galaxy.repository.client.property.AbstractPropertyRenderer;
-import org.mule.galaxy.repository.client.property.ArtifactRenderer;
-import org.mule.galaxy.repository.client.property.PropertyInterfaceManager;
 import org.mule.galaxy.repository.client.util.AddItemHelper;
 import org.mule.galaxy.repository.client.util.ItemPathOracle;
 import org.mule.galaxy.repository.client.util.WTypeComparator;
@@ -64,13 +68,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SuggestBox;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This form is definitely complex and ugly, so here's a run down of how it works.
  * If you select a normal Type (i.e. not an Artifact), it will create editable
@@ -96,10 +93,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
     private Button cancelButton;
     private ListBox typeChoice;
     protected Map<String, WType> types;
-    private PropertyInterfaceManager factory = new PropertyInterfaceManager();
     private ItemInfo item;
-    private Map<String, AbstractPropertyRenderer> renderers = new HashMap<String, AbstractPropertyRenderer>();
-    private Map<String, AbstractPropertyRenderer> versionRenderers = new HashMap<String, AbstractPropertyRenderer>();
     private Image spacerimg;
     private TextField<String> versionNameBox;
     private boolean addVersionedItem;
@@ -305,7 +299,6 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
 
             }
         });
-        addRenderers(selectedVersion.getAllProperties(types), versionRenderers, true);
     }
 
     protected void showOrHideVersion(int versionRowStart, Boolean showVersion) {
@@ -346,11 +339,6 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
             table.removeRow(i);
 
         fileUpload = false;
-        renderers.clear();
-        versionRenderers.clear();
-
-        // setup the custom fields for the Type
-        addRenderers(props, renderers, false);
 
         if (isVersioned(type)) {
             addVersionedItem = true;
@@ -360,28 +348,6 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
         }
 
         setupTableBottom(true);
-    }
-
-    private void addRenderers(List<WPropertyDescriptor> props,
-                              Map<String, AbstractPropertyRenderer> typeRenderers,
-                              boolean version) {
-        int row = table.getRowCount();
-        for (WPropertyDescriptor pd : props) {
-            table.setText(row, 0, pd.getDescription());
-            AbstractPropertyRenderer renderer = factory.createRenderer(pd.getExtension(), pd.isMultiValued());
-            renderer.initialize(repositoryModule, errorPanel, null, false);
-            typeRenderers.put(pd.getName(), renderer);
-            table.setWidget(row, 2, renderer.createEditForm());
-
-            if (renderer instanceof ArtifactRenderer) {
-                if (version) {
-                    fileUploadForVersion = true;
-                } else {
-                    fileUpload = true;
-                }
-            }
-            row++;
-        }
     }
 
     /**
@@ -509,7 +475,8 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
 
         String name = nameBox.getValue();
         String parent = parentSB.getText();
-        Map<String, Serializable> properties = getProperties(renderers);
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("artifact", fileId);
 
         if (isUserSubmittingVersion()) {
             repositoryModule.getRegistryService().addVersionedItem(parent,
@@ -519,7 +486,7 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
                     getType().getId(),
                     getVersionType().getId(),
                     properties,
-                    getProperties(versionRenderers),
+                    new HashMap<String,Serializable>(),
                     callback);
         } else {
             repositoryModule.getRegistryService().addItem(parent,
@@ -532,18 +499,6 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
 
     }
 
-    private Map<String, Serializable> getProperties(Map<String, AbstractPropertyRenderer> typeRenderers) {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        for (String p : typeRenderers.keySet()) {
-            AbstractPropertyRenderer r = typeRenderers.get(p);
-            if (r instanceof ArtifactRenderer) {
-                properties.put(p, fileId);
-            } else {
-                properties.put(p, (Serializable) r.getValueToSave());
-            }
-        }
-        return properties;
-    }
 
     private AbstractCallback geAddItemCallback() {
         AbstractCallback callback = new AbstractCallback(errorPanel) {
@@ -628,15 +583,6 @@ public class AddItemForm extends AbstractFlowComposite implements SubmitComplete
 
         v &= nameBox.validate();
 
-        for (AbstractPropertyRenderer r : renderers.values()) {
-            v &= r.validate();
-        }
-
-        if (isUserSubmittingVersion()) {
-            for (AbstractPropertyRenderer r : versionRenderers.values()) {
-                v &= r.validate();
-            }
-        }
         return v;
     }
 

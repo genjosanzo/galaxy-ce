@@ -1,5 +1,9 @@
 package org.mule.galaxy.repository.client.item;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.WPolicyException;
@@ -46,10 +50,6 @@ import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Image;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ChildItemsPanel extends AbstractFlowComposite {
     protected Collection items;

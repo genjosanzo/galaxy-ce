@@ -18,6 +18,8 @@
 
 package org.mule.galaxy.repository.client.item;
 
+import java.util.List;
+
 import org.mule.galaxy.repository.client.admin.PolicyPanel;
 import org.mule.galaxy.repository.client.util.ItemPathOracle;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
@@ -38,8 +40,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.List;
 
 /**
  * A panel for editing the name of a registry entry.

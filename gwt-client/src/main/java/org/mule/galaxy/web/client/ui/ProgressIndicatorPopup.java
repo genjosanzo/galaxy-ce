@@ -1,9 +1,9 @@
 package org.mule.galaxy.web.client.ui;
 
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
+
 import com.extjs.gxt.ui.client.widget.Popup;
 import com.google.gwt.user.client.ui.Image;
-
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
 /**
  * A 'loading'-style popup with an animated image.

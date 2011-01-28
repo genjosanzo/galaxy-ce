@@ -31,6 +31,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.TestCase;
+
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AuthenticationProvider;
@@ -65,8 +67,6 @@ import org.mule.galaxy.type.TypeManager;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springmodules.jcr.SessionFactory;
-
-import junit.framework.TestCase;
 
 public abstract class AbstractAtomTest extends TestCase {
     

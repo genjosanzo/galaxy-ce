@@ -18,11 +18,11 @@
 
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WProperty implements IsSerializable {
     private boolean locked;

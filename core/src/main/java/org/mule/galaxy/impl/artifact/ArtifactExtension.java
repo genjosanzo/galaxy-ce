@@ -4,10 +4,12 @@ import static org.mule.galaxy.event.DefaultEvents.ITEM_DELETED;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -16,6 +18,8 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -259,6 +263,62 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
         return node.getUUID();
     }
 
+    public List<String> getArtifactsForContentType(final String propertyId,
+                                                   final boolean like,
+                                                   final Object value) {
+        return (List<String>) template.execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                return getArtifacts(session, propertyId, like, "contentType", value);
+            }
+            
+        });
+    }
+
+    public List<String> getArtifactsForDocumentType(final String propertyId,
+                                                    final boolean like,
+                                                    final Object value) {
+        return (List<String>) template.execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                return getArtifacts(session, propertyId, like, "documentType", value);
+            }
+            
+        });
+    }
+    
+    public List<String> getArtifacts(Session session, 
+                                     final String propertyId,
+                                     final boolean like,
+                                     final String searchField,
+                                     final Object value) throws RepositoryException {
+        List<String> ids = new ArrayList<String>();
+
+        if (value instanceof Collection) {
+            for (Object o : ((Collection) value)) {
+                getArtifacts(session, like, searchField, o.toString(), ids);
+            }
+        } else {
+            getArtifacts(session, like, searchField, value.toString(), ids);
+        }
+        return ids;
+    }
+
+    protected void getArtifacts(Session session, final boolean like, final String searchField, final String value,
+                                List<String> ids) throws RepositoryException, InvalidQueryException,
+            UnsupportedRepositoryOperationException {
+        String comparison =  like ? "like" : "=";
+        
+        QueryManager qm = session.getWorkspace().getQueryManager();
+        String queryString = MessageFormat.format("//*[jcr:uuid=\"{0}\"]/*[@{1} {2} \"{3}\"]", artifactsNodeId, searchField, comparison, value);
+        
+        Query query = qm.createQuery(queryString, Query.XPATH);
+        
+        for (NodeIterator nodes = query.execute().getNodes(); nodes.hasNext();) {
+            ids.add(nodes.nextNode().getUUID());
+        }
+    }
+    
     protected Node createContentNode(Node versionNode,
                                      final InputStream is,
                                      final String contentType)

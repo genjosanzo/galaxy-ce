@@ -18,10 +18,10 @@
 
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 import java.util.Collection;
 import java.util.Map;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WPolicyException extends Exception implements IsSerializable {
     

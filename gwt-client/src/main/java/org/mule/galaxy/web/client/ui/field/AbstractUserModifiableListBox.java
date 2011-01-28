@@ -18,6 +18,10 @@
 
 package org.mule.galaxy.web.client.ui.field;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.ui.validator.ListBoxNotEmptyValidator;
@@ -28,10 +32,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 public abstract class AbstractUserModifiableListBox extends WidgetHelper {
 

@@ -1,16 +1,16 @@
 package org.mule.galaxy.event.listener.activity;
 
-import org.mule.galaxy.activity.ActivityManager;
 import static org.mule.galaxy.event.DefaultEvents.COMMENT_CREATED;
-import org.mule.galaxy.event.CommentCreatedEvent;
-import org.mule.galaxy.event.annotation.Async;
-import org.mule.galaxy.event.annotation.BindToEvent;
-import org.mule.galaxy.event.annotation.OnEvent;
 
 import java.text.MessageFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.event.CommentCreatedEvent;
+import org.mule.galaxy.event.annotation.Async;
+import org.mule.galaxy.event.annotation.BindToEvent;
+import org.mule.galaxy.event.annotation.OnEvent;
 
 @BindToEvent(COMMENT_CREATED)
 public class CommentCreatedEventListener  extends AbstractActivityLoggingListener {

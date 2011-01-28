@@ -18,11 +18,11 @@
 
 package org.mule.galaxy.repository.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.extjs.gxt.ui.client.data.BeanModelTag;
-
 import java.util.Collection;
 import java.util.Iterator;
+
+import com.extjs.gxt.ui.client.data.BeanModelTag;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class WLifecycle implements IsSerializable, BeanModelTag {
     

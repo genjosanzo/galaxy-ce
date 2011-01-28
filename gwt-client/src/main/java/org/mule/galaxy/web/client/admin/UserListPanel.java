@@ -23,6 +23,9 @@ import static org.mule.galaxy.web.client.ClientId.GROUP_LIST_PANEL_USERS_GRID_ID
 import static org.mule.galaxy.web.client.ClientId.GROUP_LIST_PANEL_USERS_ID;
 import static org.mule.galaxy.web.client.ClientId.GROUP_LIST_PANEL_USERS_SEARCH_ID;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
 import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
@@ -48,9 +51,6 @@ import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.user.client.History;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserListPanel extends AbstractAdministrationComposite {
 

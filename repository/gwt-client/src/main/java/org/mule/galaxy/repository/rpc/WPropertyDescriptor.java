@@ -18,10 +18,10 @@
 
 package org.mule.galaxy.repository.rpc;
 
+import java.util.Map;
+
 import com.extjs.gxt.ui.client.data.BeanModelTag;
 import com.google.gwt.user.client.rpc.IsSerializable;
-
-import java.util.Map;
 
 public class WPropertyDescriptor implements IsSerializable, BeanModelTag {
     private String id;

@@ -30,6 +30,7 @@ import org.mule.galaxy.repository.rpc.WLinks;
 import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.repository.rpc.WProperty;
 import org.mule.galaxy.repository.rpc.WPropertyDescriptor;
+import org.mule.galaxy.repository.rpc.WSearchResults;
 import org.mule.galaxy.repository.rpc.WType;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.type.PropertyDescriptor;
@@ -71,6 +72,21 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
         assertEquals("bar", info.getProperty("foo").getValue());
     }
 
+
+    public void testSearch() throws Exception
+    {
+        Item item = registry.newItem("test", getSimpleType()).getItem();
+        item.setProperty("foo", "bar");
+        
+        WSearchResults results = gwtRegistry.searchRegistry(null, null, true, null, "select where name = 'test'", Arrays.asList("foo"), 0, 100);
+        
+        assertEquals(1, results.getTotal());
+        
+        ItemInfo info = results.getRows().get(0);
+        assertNotNull(info.getProperty("foo"));
+    }
+
+    
     public void testInternalItems() throws Exception
     {
         Item item = registry.newItem("test", getSimpleType()).getItem();

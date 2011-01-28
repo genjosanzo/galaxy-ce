@@ -23,11 +23,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.mule.galaxy.web.rpc.SearchPredicate;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface RegistryServiceAsync {
-    void getItems(String parentId, boolean traverseUpParents, AsyncCallback callback);
+    void getItems(String parentId, boolean traverseUpParents, AsyncCallback<List<ItemInfo>> callback);
 
     /**
      * Returns items with all their children (and sub children) populated.
@@ -71,6 +74,16 @@ public interface RegistryServiceAsync {
 
     void getItemInfo(String itemId, boolean showHidden, AsyncCallback<ItemInfo> callback);
     
+    void searchRegistry(String workspaceId, 
+                        String workspacePath, 
+                        boolean includeChildWkspcs,
+                        Set<SearchPredicate> searchPredicates, 
+                        String freeformQuery,
+                        List<String> properties, 
+                        int start, 
+                        int maxResults,
+                        AsyncCallback<WSearchResults> callback);
+                                  
     // item operations
     
     void setProperty(String itemId, 

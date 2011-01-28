@@ -1,5 +1,7 @@
 package org.mule.galaxy.event.listener.activity;
 
+import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +11,6 @@ import org.mule.galaxy.event.PropertyChangedEvent;
 import org.mule.galaxy.event.annotation.Async;
 import org.mule.galaxy.event.annotation.BindToEvent;
 import org.mule.galaxy.event.annotation.OnEvent;
-
-import static org.mule.galaxy.event.DefaultEvents.PROPERTY_CHANGED;
 
 @BindToEvent(PROPERTY_CHANGED)
 public class PropertyChangedEventListener extends AbstractActivityLoggingListener {

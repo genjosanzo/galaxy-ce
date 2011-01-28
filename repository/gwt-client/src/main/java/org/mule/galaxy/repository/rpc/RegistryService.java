@@ -23,10 +23,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
+import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -36,7 +38,7 @@ public interface RegistryService extends RemoteService {
     Collection<WActivity> getActivities(Date from, Date to, String user, String itemId, String text, 
                                         String eventType, int start, int results, boolean ascending) throws RPCException;
     
-    Collection<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
+    List<ItemInfo> getItems(String parentId, boolean traverseUpParents) throws RPCException;
     
     Collection<ItemInfo> getItemsWithAllChildren(String parentPath) throws RPCException;
 
@@ -76,6 +78,13 @@ public interface RegistryService extends RemoteService {
 
     Collection<ItemInfo> suggestItems(String query, boolean recursive, String exclude, String[] types) throws RPCException;
     
+    WSearchResults searchRegistry(String workspaceId, 
+                                  String workspacePath, 
+                                  boolean includeChildWkspcs,
+                                  Set<SearchPredicate> searchPredicates, 
+                                  String freeformQuery,
+                                  List<String> properties, int start, int maxResults) throws RPCException;
+                                  
     void setPropertyForQuery(String query,
                              String propertyName,
                              Serializable propertyValue) throws RPCException, WPolicyException, ItemNotFoundException;

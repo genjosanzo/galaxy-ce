@@ -18,16 +18,16 @@
 
 package org.mule.galaxy.repository.client.item;
 
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
-
 import java.util.Map;
 
-import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.admin.AbstractGroupPanel;
+import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WPermissionGrant;
+
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ItemRolePermissionPanel extends AbstractGroupPanel {
 

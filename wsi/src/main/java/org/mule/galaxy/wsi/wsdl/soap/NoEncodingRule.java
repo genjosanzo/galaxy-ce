@@ -1,16 +1,10 @@
 package org.mule.galaxy.wsi.wsdl.soap;
 
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.mule.galaxy.wsi.wsdl.AbstractXPathRule;
 import org.mule.galaxy.wsi.wsdl.AssertionResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * R2706: A wsdl:binding in a DESCRIPTION MUST use the value of "literal" for the 

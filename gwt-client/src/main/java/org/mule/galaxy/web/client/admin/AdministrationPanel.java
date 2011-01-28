@@ -22,20 +22,22 @@ import static org.mule.galaxy.web.client.ClientId.ADMIN_PANEL_ID;
 import static org.mule.galaxy.web.client.ClientId.ADMIN_PANEL_LIST_VIEW_MANAGE_ID;
 import static org.mule.galaxy.web.client.ClientId.ADMIN_PANEL_LIST_VIEW_UTILITY_ID;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.ui.NavMenuItem;
+import org.mule.galaxy.web.client.ui.panel.BasicContentPanel;
 import org.mule.galaxy.web.client.ui.panel.MenuPanel;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.rpc.SecurityServiceAsync;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Widget;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AdministrationPanel extends MenuPanel {
 
@@ -59,8 +61,15 @@ public class AdministrationPanel extends MenuPanel {
     protected void init() {
         setId("administrationTabBody");
 
-        accordionPanel = WidgetHelper.createAccodionWrapperPanel();
 
+        accordionPanel = new BasicContentPanel();
+        accordionPanel.setCollapsible(false);
+        accordionPanel.setHeaderVisible(false);
+        accordionPanel.setLayout(new FitLayout());
+        accordionPanel.setBorders(false);
+        accordionPanel.setBodyBorder(false);
+        accordionPanel.setStyleAttribute("padding", "4px"); 
+        
         manageItems = new ArrayList<NavMenuItem>();
         utilityItems = new ArrayList<NavMenuItem>();
 
@@ -106,10 +115,18 @@ public class AdministrationPanel extends MenuPanel {
 
         // list of all items for this panel
         if (manageItems.size() > 0) {
-            accordionPanel.add(WidgetHelper.createPanelWithListView("Manage", manageItems, ADMIN_PANEL_LIST_VIEW_MANAGE_ID));
+            ContentPanel managePanel = new BasicContentPanel();
+            managePanel.setId(ADMIN_PANEL_LIST_VIEW_MANAGE_ID);
+            WidgetHelper.createPanelWithListView("Manage", manageItems, managePanel);
+            managePanel.setStyleAttribute("margin-bottom", "4px"); 
+            accordionPanel.add(managePanel);
+            
         }
         if (utilityItems.size() > 0) {
-            accordionPanel.add(WidgetHelper.createPanelWithListView("Utility", utilityItems, ADMIN_PANEL_LIST_VIEW_UTILITY_ID));
+            ContentPanel utilityPanel = new BasicContentPanel();
+            WidgetHelper.createPanelWithListView("Utility", utilityItems, utilityPanel);
+            utilityPanel.setId(ADMIN_PANEL_LIST_VIEW_UTILITY_ID);
+            accordionPanel.add(utilityPanel);
         }
         addMenuItem(accordionPanel);
 
@@ -163,7 +180,6 @@ public class AdministrationPanel extends MenuPanel {
         this.manageItems = manageItems;
     }
 
-
     public List<NavMenuItem> getUtilityItems() {
         return utilityItems;
     }
@@ -196,11 +212,4 @@ public class AdministrationPanel extends MenuPanel {
         registerPage(item);
     }
 
-    public ContentPanel getAccordionPanel() {
-        return accordionPanel;
-    }
-
-    public void setAccordionPanel(ContentPanel accordionPanel) {
-        this.accordionPanel = accordionPanel;
-    }
 }

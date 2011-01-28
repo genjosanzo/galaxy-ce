@@ -1,9 +1,9 @@
 package org.mule.galaxy.policy;
 
+import java.util.Collection;
+
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
-
-import java.util.Collection;
 
 /**
  * A Policy allows you to control if items in the registry should be allowed

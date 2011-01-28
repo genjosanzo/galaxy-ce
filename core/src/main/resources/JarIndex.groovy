@@ -1,6 +1,3 @@
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import org.mule.galaxy.impl.index.osgi.OsgiManifestUtil
 
 def time = System.&currentTimeMillis // method ref
 def long start

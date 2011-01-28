@@ -2,11 +2,8 @@ package org.mule.galaxy.wsi.wsdl.soap;
 
 import org.mule.galaxy.wsi.wsdl.AbstractXPathRule;
 import org.mule.galaxy.wsi.wsdl.AssertionResult;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class SoapHttpBindingTransportRule extends AbstractXPathRule {
 

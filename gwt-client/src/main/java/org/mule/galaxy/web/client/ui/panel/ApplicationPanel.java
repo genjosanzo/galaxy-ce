@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.galaxy.web.client.PageManager;
-import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
-import org.mule.galaxy.web.client.ui.panel.Toolbox;
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
