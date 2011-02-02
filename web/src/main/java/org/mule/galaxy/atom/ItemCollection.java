@@ -359,8 +359,12 @@ public class ItemCollection
     
     @Override
     public boolean isMediaEntry(Item entry) {
-        return entry.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION)
-            || entry.getType().inheritsFrom(TypeManager.ARTIFACT);
+        try {
+            return entry.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION)
+                || (entry.getType().inheritsFrom(TypeManager.ARTIFACT) && entry.getItems().size() > 0);
+        } catch (RegistryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
