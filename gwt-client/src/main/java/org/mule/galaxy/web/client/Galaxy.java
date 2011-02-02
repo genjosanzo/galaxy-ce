@@ -322,7 +322,7 @@ public class Galaxy {
     }
 
     protected void loadAdminTab() {
-        if (showAdminTab(user)) {
+        if (showAdminTab()) {
             adminTabIndex = pageManager.createTab("Administration", "admin", administrationConstants.admin_TabTip());
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
@@ -347,7 +347,7 @@ public class Galaxy {
         return new AdministrationPanel(this);
     }
 
-    protected boolean showAdminTab(WUser user) {
+    public boolean showAdminTab() {
         for (Iterator<String> itr = user.getPermissions().iterator(); itr.hasNext();) {
             String s = itr.next();
 
