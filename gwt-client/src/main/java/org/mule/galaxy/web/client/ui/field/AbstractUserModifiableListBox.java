@@ -20,90 +20,138 @@ package org.mule.galaxy.web.client.ui.field;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
-import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
-import org.mule.galaxy.web.client.ui.validator.ListBoxNotEmptyValidator;
+import org.mule.galaxy.web.client.ui.grid.BasicGrid;
 
+import com.extjs.gxt.ui.client.Style.Scroll;
+import com.extjs.gxt.ui.client.data.BaseModel;
+import com.extjs.gxt.ui.client.data.Model;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.util.IconHelper;
+import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnData;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
+import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
+import com.extjs.gxt.ui.client.widget.layout.TableLayout;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Image;
 
-public abstract class AbstractUserModifiableListBox extends WidgetHelper {
+public abstract class AbstractUserModifiableListBox extends ContentPanel {
 
-    private ListBox listBox;
     private Button rmButton;
     private Button addButton;
-    private ValidatableTextBox textBox;
+    private TextField<String> textBox;
+    private ListStore<ModelData> store;
+    private BasicGrid<ModelData> grid;
 
-    public AbstractUserModifiableListBox(Collection list,
-                                         Validator validator) {
+    public AbstractUserModifiableListBox(Collection list, Validator validator) {
         super();
+        setHeaderVisible(false);
+        setBorders(false);
+        setBodyBorder(false);
+        
+        store = new ListStore<ModelData>();
+        store.setMonitorChanges(true);
 
-        listBox = new ListBox();
-
-        if (validator == null) {
-            validator = new ListBoxNotEmptyValidator(listBox);
-        }
-
-        listBox.setVisibleItemCount(5);
         if (list != null) {
-            for (Iterator itr = list.iterator(); itr.hasNext();) {
-                String q = (String) itr.next();
-
-                listBox.addItem(q);
+            for (Object o : list) {
+                Model model = new BaseModel();
+                model.set("value", o.toString());
+                
+                store.add(model);
             }
         }
-        FlowPanel table = new FlowPanel();
 
-        rmButton = new Button("Remove");
-        rmButton.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                int idx = listBox.getSelectedIndex();
-                if (idx != -1) {
-                    listBox.removeItem(idx);
-                }
+        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
+
+        ColumnConfig nameConfig = new ColumnConfig("value", "Name", 200);
+        columns.add(nameConfig);
+
+        ColumnConfig edit = new ColumnConfig("remove", " ", 60);
+        edit.setRenderer(new GridCellRenderer<ModelData>() {
+
+            public Object render(ModelData model, String property, ColumnData config, int rowIndex, int colIndex,
+                                 ListStore<ModelData> store, Grid<ModelData> grid) {
+                final Image deleteImg = IconHelper.create("images/delete_config.gif").createImage();
+                deleteImg.addClickHandler(new ClickHandler() {
+
+                    public void onClick(ClickEvent arg0) {
+
+                        deleteCurrentRow();
+                    }
+                });
+
+                LayoutContainer container = new LayoutContainer();
+                container.add(deleteImg);
+                return container;
             }
+
         });
-        table.add(asHorizontal(listBox, rmButton));
+        columns.add(edit);
 
-        InlineFlowPanel addPanel = new InlineFlowPanel();
-        textBox = new ValidatableTextBox(validator);
-        textBox.getTextBox().setVisibleLength(60);
-        addPanel.add(textBox);
-        addButton = new Button("Add");
-        addButton.addClickHandler(createValidator(textBox.getTextBox()));
-        addPanel.add(addButton);
+        grid = new BasicGrid<ModelData>(store, new ColumnModel(columns));
+        grid.setColumnLines(false);
+        grid.setHideHeaders(true);
+        grid.setAutoExpandColumn("value");
+        grid.getStore().setSortField("value");
 
-        InlineFlowPanel addRow = asHorizontal(textBox, addButton);
-        addRow.setStyleName("qnameListBox-add-row");
-        table.add(addRow);
+        TableLayout layout = new TableLayout(2);
+        layout.setCellSpacing(10);
+        LayoutContainer addContainer = new LayoutContainer(layout);
 
-        initWidget(table);
-    }
+        textBox = new RequiredTextField<String>();
+        textBox.setWidth(260);
+        addButton = new Button("Add", new SelectionListener<ButtonEvent>() {
 
-    private ClickHandler createValidator(final TextBox addDocTypeTB) {
-        return new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                String text = addDocTypeTB.getText();
-                if (isValid(text)) {
-                    listBox.addItem(text);
-                    addDocTypeTB.setText("");
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                if (textBox.validate()) {
+                    BaseModel model = new BaseModel();
+                    model.set("value", textBox.getValue());
+                    
+                    store.add(model);
+                    textBox.clear();
                 }
             }
-        };
+
+        });
+        addContainer.add(textBox);
+        addContainer.add(addButton);
+
+        add(addContainer);
+        
+        ContentPanel gridPanel = new ContentPanel();
+        gridPanel.setHeight(180);
+        gridPanel.setScrollMode(Scroll.AUTO);
+        gridPanel.setHeaderVisible(false);
+        gridPanel.setBorders(false);
+        gridPanel.setBodyBorder(false);
+        gridPanel.add(grid);
+        add(gridPanel);
     }
 
+
+    private void deleteCurrentRow() {
+        ModelData model = grid.getSelectionModel().getSelectedItem();
+        store.remove(model);
+    }
+    
     protected abstract boolean isValid(String text);
 
-    public Collection<String> getItems() {
+    public Collection<String> getItemValues() {
         ArrayList<String> items = new ArrayList<String>();
-        for (int i = 0; i < listBox.getItemCount(); i++) {
-            items.add(listBox.getValue(i));
+        for (ModelData d : store.getModels()) {
+            items.add((String)d.get("value"));
         }
         return items;
     }
@@ -116,6 +164,5 @@ public abstract class AbstractUserModifiableListBox extends WidgetHelper {
         addButton.setEnabled(e);
         rmButton.setEnabled(e);
     }
-
 
 }
