@@ -128,7 +128,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         System.out.println(res.getStatusText());
         assertEquals(200, res.getStatus());
         res.release();
-        
+        prettyPrint(res.getDocument());
         // Testing of entry creation
         System.out.println("Creating Entry from a WSDL " + colUri.toString());
         
@@ -154,7 +154,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         org.apache.abdera.model.Document<Feed> feedDoc = res.getDocument();
         Feed feed = feedDoc.getRoot();
         List<Entry> entries = feed.getEntries();
-        assertEquals(6, entries.size());
+        assertEquals(1, entries.size());
         
         Entry e = null;
         for (Entry e2 : entries) {
@@ -173,7 +173,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         feed = feedDoc.getRoot();
         
         entries = feed.getEntries();
-        assertEquals(6, entries.size());
+        assertEquals(1, entries.size());
         
         // Grab the feed for the workspace
         res = client.get(UrlEncoding.encode(defaultWkspcCol, Profile.PATH.filter()), defaultOpts);
@@ -182,7 +182,7 @@ public class ItemCollectionTest extends AbstractAtomTest {
         feed = feedDoc.getRoot();
         
         entries = feed.getEntries();
-        assertEquals(6, entries.size());
+        assertEquals(1, entries.size());
         
         // get the individual entry
         System.out.println("Getting entry " + e.getEditLinkResolvedHref().toString());

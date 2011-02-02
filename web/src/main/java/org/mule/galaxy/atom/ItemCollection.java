@@ -162,7 +162,11 @@ public class ItemCollection
         String mediaLink = feedIriStr + "?version=" + name;
         
         Content content = factory.newContent();
-        content.setSrc(mediaLink);
+        if (entryObj.getType().inheritsFrom(TypeManager.ARTIFACT)) {
+            content.setSrc(feedIriStr);
+        } else {
+            content.setSrc(mediaLink);
+        }
         content.setMimeType(getContentType(entryObj));
         entry.setContentElement(content);
         
@@ -247,7 +251,20 @@ public class ItemCollection
     
     @Override
     public String getContentType(Item item) {
-        Artifact artifact = item.getProperty("artifact");
+        
+        Artifact artifact;
+        if (item.getType().inheritsFrom(TypeManager.ARTIFACT)) {
+            try {
+                artifact = item.getLatestItem().getProperty("artifact");
+            } catch (RegistryException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (item.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION)) {
+            artifact = item.getProperty("artifact");
+        } else {
+            throw new UnsupportedOperationException("Item is not an artifact or artifact version.");
+        }
+
         if (artifact != null) {
             return artifact.getContentType().toString();
         }
@@ -342,7 +359,8 @@ public class ItemCollection
     
     @Override
     public boolean isMediaEntry(Item entry) {
-        return entry.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION);
+        return entry.getType().inheritsFrom(TypeManager.ARTIFACT_VERSION)
+            || entry.getType().inheritsFrom(TypeManager.ARTIFACT);
     }
 
     @Override

@@ -130,7 +130,6 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     
     public void testItemOperations() throws Exception
     {
-        //importHelloTestWSDL();
         Collection<ItemInfo> workspaces = gwtRegistry.getItems(null, false);
         assertEquals(1, workspaces.size());
 
