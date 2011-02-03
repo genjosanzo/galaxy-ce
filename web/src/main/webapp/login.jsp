@@ -80,7 +80,7 @@
             </div>
 
             <div class="loginBottom">
-                Copyright &copy; 2008-2010 MuleSoft, Inc., All Rights
+                Copyright &copy; 2008-2011 MuleSoft, Inc., All Rights
                 Reserved.
             </div>
         </div>
