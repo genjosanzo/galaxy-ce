@@ -98,7 +98,13 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                             }
                         }
                     };
-                    MessageBox.confirm("Confirm", "Are you sure you want to delete this script?", l);
+                    
+                    TreeItem ti = scriptTree.getSelectedItem();
+                    if (null == ti) {
+                    	MessageBox.alert("Nothing Selected", "Please select a script to delete", null);
+                    } else {
+                    	MessageBox.confirm("Confirm", "Are you sure you want to delete the script \"" + ti.getText() + "\"?", l);
+                    }
                 }
 
 
