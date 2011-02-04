@@ -143,7 +143,7 @@ public interface RegistryServiceAsync {
 
     void getLifecycle(String id, AsyncCallback c);
     
-    void getLifecycles(AsyncCallback c);
+    void getLifecycles(AsyncCallback<List<WLifecycle>> c);
 
     void saveLifecycle(WLifecycle l, AsyncCallback c);
     

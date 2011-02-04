@@ -1453,7 +1453,7 @@ public class RegistryServiceImpl implements RegistryService {
         
     }
 
-    public Collection<WLifecycle> getLifecycles() throws RPCException {
+    public List<WLifecycle> getLifecycles() throws RPCException {
         Collection<Lifecycle> lifecycles = localLifecycleManager.getLifecycles();
         Lifecycle defaultLifecycle = localLifecycleManager.getDefaultLifecycle();
 

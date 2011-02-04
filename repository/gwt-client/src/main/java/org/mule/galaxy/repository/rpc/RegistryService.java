@@ -132,7 +132,7 @@ public interface RegistryService extends RemoteService {
     
     WLifecycle getLifecycle(String id) throws RPCException;
 
-    Collection<WLifecycle> getLifecycles() throws RPCException;
+    List<WLifecycle> getLifecycles() throws RPCException;
 
     void saveLifecycle(WLifecycle l) throws RPCException, ItemExistsException;
     
