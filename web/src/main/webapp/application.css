@@ -116,6 +116,7 @@ body {
 
 .toolbar-button-bar {
    border-bottom-color:#FFF;
+   border: none !important;
 }
 
 .quickstart-title {
