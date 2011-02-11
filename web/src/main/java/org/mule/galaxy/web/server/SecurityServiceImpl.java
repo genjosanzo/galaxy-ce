@@ -415,12 +415,20 @@ public class SecurityServiceImpl implements SecurityService {
     }
  
     public void deleteGroup(String id) throws RPCException {
-        accessControlManager.deleteGroup(id);
+    	try {
+    		accessControlManager.deleteGroup(id);
+    	} catch (Exception e) {
+    		throw new RPCException(e.getMessage());
+    	}
     }
 
     public void deleteGroups(List<String> ids) throws RPCException {
         for (String id : ids) {
-            accessControlManager.deleteGroup(id);
+        	try {
+        		accessControlManager.deleteGroup(id);
+        	} catch (Exception e) {
+        		throw new RPCException(e.getMessage());
+        	}
         }
     }
 

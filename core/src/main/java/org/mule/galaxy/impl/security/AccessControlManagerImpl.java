@@ -118,7 +118,33 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         JcrUtil.setProperty(DESCRIPTION, group.getDescription(), node);
     }
 
+    /**
+     * Throw an exception if group with specified id does not exist or should not be 
+     * deleted.
+     * 
+     * @param id repository id of group
+     * @throws RuntimeException if group with id does not exist or group is an 
+     *         uber-group (e.g., "Administrators").
+     */
+    private void checkGroup(String id) {
+		try {
+	    	Group grp = getGroup(id);
+			String nm = grp.getName();
+			
+			//TODO we need metadata/API to decide which groups are uber-groups
+			boolean isUberGroup = "administrators".equalsIgnoreCase(nm); 
+			
+			if (isUberGroup) {
+				throw new RuntimeException("The \"" + nm + "\" group cannot be deleted.");
+			}
+			
+		} catch (NotFoundException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+    }
+    
     public void deleteGroup(String id) {
+    	checkGroup(id);
         delete(id);
     }
 
