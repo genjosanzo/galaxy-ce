@@ -1,14 +1,17 @@
 package org.mule.galaxy.atom.client;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.apache.abdera.model.Element;
 import org.apache.abdera.model.Entry;
+import org.apache.abdera.model.ExtensibleElement;
 import org.apache.abdera.model.Person;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
@@ -23,6 +26,7 @@ import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.type.Type;
+import org.mule.galaxy.type.TypeManager;
 
 public class AtomItem extends AbstractItem {
 
@@ -31,11 +35,13 @@ public class AtomItem extends AbstractItem {
     private String path;
     
     private Map<String, PropertyInfo> properties;
+    private final AtomWorkspaceManager workspaceManager;
     
     public AtomItem(Item parent, Entry e, AtomWorkspaceManager workspaceManager) {
         super(workspaceManager);
         this.parent = parent;
         this.entry = e;
+        this.workspaceManager = workspaceManager;
         
         path = entry.getLink("edit").getHref().getPath().toString();
         id = EntryUtils.getId(workspaceManager, path);
@@ -49,6 +55,10 @@ public class AtomItem extends AbstractItem {
             return user;
         }
         return null;
+    }
+
+    public TypeManager getTypeManager() {
+        return workspaceManager.getTypeManager();
     }
 
     public boolean isInternal() {
@@ -65,16 +75,29 @@ public class AtomItem extends AbstractItem {
         
         Element metadata = entry.getExtension(new QName(AtomWorkspaceManager.NAMESPACE, "metadata"));
         if (metadata != null) {
-            for (Element e : metadata.getElements()) {
-                String elName = e.getQName().getLocalPart();
+            List<ExtensibleElement> propertyElements = metadata.getElements();
+            for (ExtensibleElement propertyEl : propertyElements) {
+                String elName = propertyEl.getQName().getLocalPart();
                 String name;
                 Object value;
                 if ("property".equals(elName)) {
-                    value = e.getAttributeValue("value");
-                    name = e.getAttributeValue("name");
+                    value = propertyEl.getAttributeValue("value");
+                    name = propertyEl.getAttributeValue("name");
+                    if (value == null) {
+                        ArrayList<String> values = new ArrayList<String>();
+                        List<Element> elements = propertyEl.getElements();
+                        
+                        if (elements != null) {
+                            for (Element e : elements) {
+                                values.add(e.getText());
+                            }
+                        }
+                        value = values;
+                    }
+                        
                 } else if ("artifact".equals(elName)) {
-                    value = new AtomArtifact(this, e, (AtomWorkspaceManager) manager);
-                    name = e.getAttributeValue("property");
+                    value = new AtomArtifact(this, propertyEl, (AtomWorkspaceManager) manager);
+                    name = propertyEl.getAttributeValue("property");
                 } else {
                     continue;
                 }

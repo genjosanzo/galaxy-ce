@@ -392,7 +392,7 @@ public class ItemCollection
         } else {
             path = UrlEncoding.encode(w.getPath(), Profile.PATH.filter());
         }
-        return request.getTargetBasePath() + "/registry" + path;
+        return request.getTargetBasePath() + path;
     }
 
     @Override

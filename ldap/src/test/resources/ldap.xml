@@ -12,13 +12,13 @@
     <bean id="initialDirContextFactory"
             class="org.acegisecurity.ldap.DefaultInitialDirContextFactory"
             depends-on="directoryService ldapService">
-      <constructor-arg value="ldap://localhost:62009/"/>
-      <property name="managerDn"><value>uid=admin,ou=system</value></property>
-      <property name="managerPassword"><value>secret</value></property>
+      <constructor-arg value="ldap://63.246.2.98:389"/>
+      <property name="managerDn"><value>cn=Manager,dc=muleforge,dc=org</value></property>
+      <property name="managerPassword"><value>{SSHA}rfrN/5fOq/ZhOA+RzCwiwBhqKBu1Drru</value></property>
     </bean>
     
     <bean id="userSearch" class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
-      <constructor-arg value="ou=system"/>
+      <constructor-arg value="uid={0},ou=People,dc=muleforge,dc=org"/>
       <constructor-arg value="(uid={0})"/>
       <constructor-arg ref="initialDirContextFactory" />
       <property name="searchSubtree" value="true"/>
@@ -37,7 +37,7 @@
       <property name="userSearchBase" value="ou=system"/>
       <property name="userSearchAttributes">
           <map>
-              <entry key="objectclass" value="person"/>
+              <entry key="objectclass" value="inetOrgPerson"/>
           </map>
       </property>
     </bean>
@@ -45,12 +45,13 @@
 
   <bean id="ldapAuthoritiesPopulator" class="org.mule.galaxy.security.ldap.LdapAuthoritiesPopulator">
       <constructor-arg ref="initialDirContextFactory" />
-      <constructor-arg value="ou=groups,ou=system" />
+      <constructor-arg value="ou=Groups,dc=muleforge,dc=org" />
       <property name="groupSearchFilter" value="uniqueMember={0}"/>
       <property name="searchSubtree" value="true"/>
       <property name="rolePrefix" value=""/>
       <property name="convertToUpperCase" value="false"/>
       <property name="accessControlManager" ref="accessControlManager"/>
   </bean>
+  
   
 </beans>

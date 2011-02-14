@@ -18,6 +18,7 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         Item w = attatchTestWorkspace();
         
         Item version = importFile(w, getClass().getResourceAsStream("/wsdl/hello.wsdl"), "hello.wsdl", "1.0", "application/xml");
+        assertEquals("Artifact Version", version.getType().getName());
         Item artifactItem = version.getParent();
         assertNotNull(artifactItem);
         assertEquals("1.0", version.getName());

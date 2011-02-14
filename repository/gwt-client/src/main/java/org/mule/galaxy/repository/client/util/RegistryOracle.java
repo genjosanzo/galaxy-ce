@@ -18,8 +18,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class RegistryOracle extends Oracle {
 
+    private final String type;
+
     public RegistryOracle(RegistryServiceAsync svc) {
-        this(svc, "Artifact");
+        this(svc, null);
     }
 
     /**
@@ -30,10 +32,11 @@ public class RegistryOracle extends Oracle {
      * @param type
      */
     public RegistryOracle(RegistryServiceAsync svc, String type) {
+        this.type = type;
         ComboBox<ModelData> combo = new ComboBox<ModelData>();
 
         boolean workspace = "Workspace".equals(type);
-        String template = workspace ? getWorkspaceTemplate() : getTemplate();
+        String template = workspace || type == null ? getWorkspaceTemplate() : getTemplate();
 
         initialize(getProxy(svc, combo, type), template, combo, "Start typing...");
 
@@ -48,6 +51,7 @@ public class RegistryOracle extends Oracle {
 
     public RegistryOracle(RegistryServiceAsync svc, String type, String suggestText, String excludePath) {
 
+        this.type = type;
         ComboBox<ModelData> combo = new ComboBox<ModelData>();
 
         boolean workspace = "Workspace".equals(type);
@@ -60,17 +64,17 @@ public class RegistryOracle extends Oracle {
         }
     }
 
-    private static DataProxy getProxy(final RegistryServiceAsync svc,
-                                      final ComboBox<ModelData> combo,
-                                      final String searchType) {
+    private DataProxy getProxy(final RegistryServiceAsync svc,
+                               final ComboBox<ModelData> combo,
+                               final String searchType) {
 
         return getProxy(svc, combo, searchType, "xxx");
     }
 
-    private static DataProxy getProxy(final RegistryServiceAsync svc,
-                                      final ComboBox<ModelData> combo,
-                                      final String searchType,
-                                      final String excludePath) {
+    private DataProxy getProxy(final RegistryServiceAsync svc,
+                               final ComboBox<ModelData> combo,
+                               final String searchType,
+                               final String excludePath) {
         RpcProxy<PagingLoadResult<ModelData>> proxy = new RpcProxy<PagingLoadResult<ModelData>>() {
             @Override
             protected void load(Object loadConfig, final AsyncCallback<PagingLoadResult<ModelData>> callback) {
@@ -90,6 +94,15 @@ public class RegistryOracle extends Oracle {
                             data.set("fullPath", i.getParentPath() != null ?
                                     i.getParentPath() + "/" + i.getName() : "/" + i.getName());
                             data.set("item", i);
+                            models.add(data);
+                        }
+                        
+                        if (type == null || "Workspace".equals(type))
+                        {
+                            BaseModelData data = new BaseModelData();
+                            data.set("name", "");
+                            data.set("path", "");
+                            data.set("fullPath", "/");
                             models.add(data);
                         }
                         PagingLoadResult<ModelData> result = new BasePagingLoadResult<ModelData>(models);

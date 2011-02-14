@@ -196,6 +196,22 @@ declare variable $document external;
                 </configuration>
             </index>
             <index>
+                <description>WSDL Operations</description>
+                <indexer>xquery</indexer>
+                <search-input-type>java.lang.String</search-input-type>
+                <configuration>
+                  <property>wsdl.operations</property>
+                  <expression><![CDATA[
+declare namespace wsdl="${namespace.uri}";
+declare variable $document external;
+<values> {
+    for $pt in $document//wsdl:portType/wsdl:operation
+    let $ns := $document/wsdl:definition/@targetNamespace
+    return <value>{data($pt/@name)}</value>
+} </values>]]></expression>
+                </configuration>
+            </index>
+            <index>
                 <description>WSDL Target Namespace</description>
                 <indexer>xpath</indexer>
                 <search-input-type>java.lang.String</search-input-type>

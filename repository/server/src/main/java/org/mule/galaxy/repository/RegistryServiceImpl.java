@@ -494,6 +494,7 @@ public class RegistryServiceImpl implements RegistryService {
             for (Item i : results.getResults()) {
                 entries.add(toWeb(i, false));
             }
+            
             return entries;
         } catch (QueryException e) {
             throw new RPCException(e.getMessage());
@@ -771,7 +772,7 @@ public class RegistryServiceImpl implements RegistryService {
         info.setModifiable(hasPermission(permissions, Permission.MODIFY_ITEM));
         info.setDeletable(hasPermission(permissions, Permission.DELETE_ITEM));
 
-        if (e.isLocal()) {
+        if (e.isLocal() && e.getDefaultLifecycle() != null) {
             info.setDefaultLifecycleId(e.getDefaultLifecycle().getId());
         }
 

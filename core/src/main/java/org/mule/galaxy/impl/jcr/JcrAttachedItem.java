@@ -15,10 +15,10 @@ import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.lifecycle.Lifecycle;
-import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.Type;
+import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.workspace.WorkspaceManager;
 
 public class JcrAttachedItem extends JcrItem implements AttachedItem {
@@ -37,6 +37,15 @@ public class JcrAttachedItem extends JcrItem implements AttachedItem {
         throw new UnsupportedOperationException();
     }    
     
+    @Override
+    public Type getType() {
+        try {
+            return manager.getTypeManager().getTypeByName(TypeManager.WORKSPACE);
+        } catch (NotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getPath() {
         StringBuilder sb = new StringBuilder();
         
@@ -74,12 +83,13 @@ public class JcrAttachedItem extends JcrItem implements AttachedItem {
         return items;
     }
 
-    public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {
-        return getWorkspaceManager().getItem(this, name);
+    @Override
+    public boolean isLocal() {
+        return false;
     }
 
-    public LifecycleManager getLifecycleManager() {
-        return null;
+    public Item getItem(String name) throws RegistryException, NotFoundException, AccessException {
+        return getWorkspaceManager().getItem(this, name);
     }
 
     public void setDefaultLifecycle(Lifecycle l) {

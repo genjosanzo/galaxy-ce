@@ -43,6 +43,7 @@ import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
+import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.util.BundleUtils;
 import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.Message;
@@ -212,12 +213,16 @@ public class JcrItem extends AbstractItem {
             }
 
             try {
-                type = manager.getTypeManager().getType(id);
+                type = getTypeManager().getType(id);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
         return type;
+    }
+
+    public TypeManager getTypeManager() {
+        return manager.getTypeManager();
     }
     
     public void setType(Type t) throws PropertyException {
@@ -447,7 +452,7 @@ public class JcrItem extends AbstractItem {
 
     @SuppressWarnings("unchecked")
     public <T> T getProperty(String name) {
-        PropertyDescriptor pd = manager.getTypeManager().getPropertyDescriptorByName(name);
+        PropertyDescriptor pd = getTypeManager().getPropertyDescriptorByName(name);
 
         if (pd != null && pd.getExtension() != null) {
             return (T) pd.getExtension().get(this, pd, true);
@@ -470,12 +475,12 @@ public class JcrItem extends AbstractItem {
                 final Value[] values = p.getValues();
                 for (Value v : values) {
                     String name = v.getString();
-                    properties.put(name, new PropertyInfoImpl(this, name, node, manager.getTypeManager()));
+                    properties.put(name, new PropertyInfoImpl(this, name, node, getTypeManager()));
                 }
             } catch (PathNotFoundException e) {
             }
             
-            Collection<PropertyDescriptor> pds = manager.getTypeManager().getGlobalPropertyDescriptors(false);
+            Collection<PropertyDescriptor> pds = getTypeManager().getGlobalPropertyDescriptors(false);
             
             for (PropertyDescriptor pd : pds) {
                 Extension ext = pd.getExtension();
@@ -512,7 +517,7 @@ public class JcrItem extends AbstractItem {
             throw new RuntimeException(e);
         }
         
-        return new PropertyInfoImpl(this, name, node, manager.getTypeManager());
+        return new PropertyInfoImpl(this, name, node, getTypeManager());
     }
 
     public void setLocked(String name, boolean locked) {

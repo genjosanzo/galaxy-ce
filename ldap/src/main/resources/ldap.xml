@@ -11,7 +11,7 @@
 
     <bean id="propertiesLDAP" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" /> <!-- Existing system properties override local ones -->
-        <property name="location" value="file:ldap.properties" />
+        <property name="location" value="classpath:ldap.properties" />
         <property name="ignoreResourceNotFound" value="true" />
         <property name="ignoreUnresolvablePlaceholders" value="true" />
         <property name="properties">

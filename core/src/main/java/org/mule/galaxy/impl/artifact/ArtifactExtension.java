@@ -166,18 +166,33 @@ public class ArtifactExtension extends AbstractExtension implements AtomExtensio
             final InputStream is = (InputStream) values[0];
             final String ct = (String) values[1];
             
-            String id = (String) template.execute(new JcrCallback() {
-
-                public Object doInJcr(Session session) throws IOException,
-                        RepositoryException {
-                    return persistArtifact(item, pd, is, ct, session);
-                }
-            });
+            store(item, pd, is, ct);
+        } else if (value instanceof Artifact) {
             
-            item.setInternalProperty(pd.getProperty(), id);
+            try {
+                final InputStream is = ((Artifact) value).getInputStream();
+                final String ct = ((Artifact) value).getContentType().toString();
+                
+                store(item, pd, is, ct);
+            } catch (IOException e) {
+                throw new PropertyException(e);
+            }
         } else {
             throw new UnsupportedOperationException("Values of type " + value.getClass() + " can not be stored as files.");
         }
+    }
+
+    public void store(final Item item, final PropertyDescriptor pd, final InputStream is, final String ct)
+            throws PropertyException, PolicyException {
+        String id = (String) template.execute(new JcrCallback() {
+
+            public Object doInJcr(Session session) throws IOException,
+                    RepositoryException {
+                return persistArtifact(item, pd, is, ct, session);
+            }
+        });
+        
+        item.setInternalProperty(pd.getProperty(), id);
     }
 
     private Artifact getArtifact(final Item item, final String storedValue) {
