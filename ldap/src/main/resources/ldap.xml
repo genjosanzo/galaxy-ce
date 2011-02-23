@@ -32,7 +32,7 @@
 
     <bean id="initialDirContextFactory"
             class="org.acegisecurity.ldap.DefaultInitialDirContextFactory"
-            depends-on="directoryService ldapService">
+            depends-on="ldapService">
       <constructor-arg value="${providerURL}"/>
       <property name="managerDn"><value>${managerDn}</value></property>
       <property name="managerPassword"><value>${managerPassword}</value></property>
