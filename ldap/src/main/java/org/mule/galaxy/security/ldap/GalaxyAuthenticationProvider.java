@@ -5,8 +5,11 @@ import java.util.Set;
 
 import javax.naming.NamingException;
 
+import org.acegisecurity.AuthenticationCredentialsNotFoundException;
+import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.ldap.LdapEntryMapper;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.ldap.LdapAuthenticationProvider;
 import org.acegisecurity.providers.ldap.LdapAuthenticator;
 import org.acegisecurity.userdetails.UserDetails;
@@ -31,7 +34,8 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
     private final Log log = LogFactory.getLog(getClass());
     private AccessControlManager accessControlManager;
     private LdapEntryMapper userMapper;
-
+    private String requiredAuthority;
+    
     public GalaxyAuthenticationProvider(LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
         super(authenticator, authoritiesPopulator);
     }
@@ -42,6 +46,27 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
 
     public void setUserMapper(LdapEntryMapper userMapper) {
         this.userMapper = userMapper;
+    }
+
+    @Override
+    protected void additionalAuthenticationChecks(UserDetails userDetails,
+                                                  UsernamePasswordAuthenticationToken authentication)
+            throws AuthenticationException {
+        super.additionalAuthenticationChecks(userDetails, authentication);
+        
+        GrantedAuthority[] authorities = userDetails.getAuthorities();
+        boolean found = false;
+        if (authorities != null && requiredAuthority != null) {
+            for (GrantedAuthority auth : authorities) {
+                if (auth.getAuthority().equals(requiredAuthority)) {
+                    found = true;  
+                    break;
+                }
+            }
+        }
+        if (!found) {
+            throw new AuthenticationCredentialsNotFoundException("Invalid username/password.");
+        }
     }
 
     public UserDetails createUserDetails(LdapUserDetails ldapUser, String username, String password) {
@@ -74,4 +99,9 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
 
         return wrapper;
     }
+
+    public void setRequiredAuthority(String requiredAuthority) {
+        this.requiredAuthority = requiredAuthority;
+    }
+    
 }
