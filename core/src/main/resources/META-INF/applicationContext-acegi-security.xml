@@ -52,6 +52,9 @@
 -->
    <!-- Automatically receives AuthenticationEvent messages -->
    <bean id="loggerListener" class="org.acegisecurity.event.authentication.LoggerListener"/>
+   <bean id="acegiAuthEventListener" class="org.mule.galaxy.impl.security.AcegiAuthEventListener">
+       <property name="activityManager" ref="activityManager"/>
+   </bean>
 
    <bean id="basicProcessingFilter" class="org.acegisecurity.ui.basicauth.BasicProcessingFilter">
       <property name="authenticationManager"><ref local="authenticationManager"/></property>
