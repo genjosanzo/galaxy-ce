@@ -5,11 +5,13 @@
   xmlns:a="http://abdera.apache.org"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:g="http://www.mulesource.org/schema/galaxy-config"
   xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    http://www.mulesource.org/schema/galaxy-config http://www.mulesource.org/schema/galaxy-config/galaxy.xsd
     http://abdera.apache.org http://abdera.apache.org/schemas/abdera-spring.xsd">
 
     <import resource="datasource.xml"/>
@@ -129,27 +131,6 @@
               </property>
           </bean>
       </constructor-arg>
-  </bean>
-  
-  <bean id="eventListenerRegister" class="org.mule.galaxy.impl.event.EventListenerRegisterer" init-method="initialize">
-      <property name="listeners">
-          <list>
-               <!-- entry -->
-              <bean class="org.mule.galaxy.event.listener.activity.ItemCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ItemDeletedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.CommentCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.AccessChangeEventListener" parent="abstractActivityLogger"/>
-              <!-- properties -->
-              <ref bean="propertyChangedEventListener"/>
-              <!-- misc -->
-              <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
-
-              <ref bean="linkDao"/>
-              <ref bean="artifactExtension"/>
-          </list>
-      </property>
-      <property name="eventManager" ref="eventManager"/>
   </bean>
   
   <bean id="propertyChangedEventListener"
@@ -455,4 +436,36 @@
     <aop:pointcut id="fooServiceOperation" expression="execution(* org.mule..*ManagerImpl.*(..)))"/>
     <aop:advisor advice-ref="txAdvice" pointcut-ref="fooServiceOperation"/>
   </aop:config>
+  
+  
+    <!-- Register MMC listeners -->
+    <g:custom-listeners>
+        <g:listener>
+              <bean class="org.mule.galaxy.event.listener.activity.CommentCreatedEventListener" parent="abstractActivityLogger"/>
+        </g:listener>
+        <g:listener>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemDeletedEventListener" parent="abstractActivityLogger"/>
+        </g:listener>
+        <g:listener>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
+        </g:listener>
+        <g:listener>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemCreatedEventListener" parent="abstractActivityLogger"/>
+        </g:listener>
+        <g:listener>
+              <bean class="org.mule.galaxy.event.listener.activity.AccessChangeEventListener" parent="abstractActivityLogger"/>
+        </g:listener>
+        <g:listener>
+              <ref bean="propertyChangedEventListener"/>
+        </g:listener>
+        <g:listener>
+              <ref bean="linkDao"/>
+        </g:listener>
+        <g:listener>
+              <ref bean="artifactExtension"/>
+        </g:listener>
+        <g:listener>
+              <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
+        </g:listener>
+    </g:custom-listeners>
 </beans>
