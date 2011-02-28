@@ -24,8 +24,11 @@ import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Identifiable;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.impl.jcr.onm.AbstractDao;
+import org.mule.galaxy.security.AccessChangeEvent;
+import org.mule.galaxy.security.AccessChangeEvent.Type;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Group;
@@ -34,14 +37,20 @@ import org.mule.galaxy.security.PermissionGrant;
 import org.mule.galaxy.security.User;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.SecurityUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springmodules.jcr.JcrCallback;
 
-public class AccessControlManagerImpl extends AbstractDao<Group> implements AccessControlManager {
+public class AccessControlManagerImpl extends AbstractDao<Group> 
+    implements AccessControlManager, ApplicationContextAware {
     private static final String GRANTS = "grants";
     private static final String REVOCATIONS = "revocations";
     private static final String DESCRIPTION = "description";
     private UserManager userManager;
     private Dao<Permission> permissionDao;
+    private EventManager eventManager;
+    private ApplicationContext applicationContext;
     
     public AccessControlManagerImpl() throws Exception {
         super(Group.class, "groups", false);
@@ -144,8 +153,14 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
     }
     
     public void deleteGroup(String id) {
-    	checkGroup(id);
-        delete(id);
+        try {
+            Group group = getGroup(id);
+        	checkGroup(id);
+            delete(id);
+            getEventManager().fireEvent(new AccessChangeEvent(Type.DELETED, group));
+        } catch (NotFoundException e) {
+            // move on with life, it's already been deleted
+        }
     }
 
     @Override
@@ -206,6 +221,16 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
 
     public Permission getPermission(String permission) throws NotFoundException {
         return permissionDao.get(permission);
+    }
+
+    @Override
+    public void save(Group group) throws DuplicateItemException, NotFoundException {
+        boolean newGroup = group.getId() == null;
+        super.save(group);
+        
+        if (newGroup) {
+            getEventManager().fireEvent(new AccessChangeEvent(Type.CREATED, group));
+        }
     }
 
     public void save(Permission permission) throws DuplicateItemException, NotFoundException {
@@ -520,8 +545,22 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                 return null;
             }
         });
+        getEventManager().fireEvent(new AccessChangeEvent(Type.GRANT, group, toDataObjects(perms)));
     }
 
+    private Collection<Permission> toDataObjects(Collection<String> perms) {
+        HashSet<Permission> dos = new HashSet<Permission>();
+        for (Permission p : getPermissions()) {
+            if (perms.contains(p.getId())) {
+                dos.add(p);
+            }
+        }
+        return dos;
+    }
+
+    public void initialize() throws Exception {
+        super.initialize();
+    }
     protected void modifyPermissions(final Group group, 
                                      final Collection<String> perms,
                                      Session session, 
@@ -601,6 +640,9 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
         assertAccess(Permission.MANAGE_GROUPS);
         assertAccess(Permission.MODIFY_ITEM, item);
         
+        Set<Permission> perms = getGrantedPermissions(group);
+        getEventManager().fireEvent(new AccessChangeEvent(AccessChangeEvent.Type.REVOKE, group, perms));
+        
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {                
                 Node groupNode = findNode(group.getId(), session);
@@ -627,6 +669,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                 return null;
             }
         });
+        getEventManager().fireEvent(new AccessChangeEvent(Type.GRANT, group, toDataObjects(perms), item));
     }
 
     public void revoke(final Group group, final Collection<String> perms, final Object item) throws AccessException {
@@ -638,6 +681,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                 return null;
             }
         });
+        getEventManager().fireEvent(new AccessChangeEvent(Type.REVOKE, group, toDataObjects(perms), item));
     }
     
     public void revoke(final Group group, final String p) throws AccessException {
@@ -653,6 +697,7 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
                 return null;
             }
         });
+        getEventManager().fireEvent(new AccessChangeEvent(Type.REVOKE, group, toDataObjects(perms)));
     }
 
     public void assertAccess(String p) throws AccessException {
@@ -709,6 +754,18 @@ public class AccessControlManagerImpl extends AbstractDao<Group> implements Acce
 
     public void setPermissionDao(Dao<Permission> permissionDao) {
         this.permissionDao = permissionDao;
+    }
+
+    public EventManager getEventManager() {
+        if (eventManager == null) {
+            eventManager = (EventManager) applicationContext.getBean("eventManager");
+        }
+
+        return eventManager;
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
 }

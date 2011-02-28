@@ -69,7 +69,6 @@
         class="org.mule.galaxy.impl.lifecycle.LifecycleManagerImpl" 
         init-method="initialize">
     <property name="sessionFactory" ref="sessionFactory" />
-
     <property name="eventManager" ref="eventManager" />
   </bean>
         
@@ -112,18 +111,7 @@
   <bean id="eventManager" class="org.mule.galaxy.impl.event.DefaultEventManager" destroy-method="destroy">
       <constructor-arg>
           <list>
-              <!-- entry -->
-              <bean class="org.mule.galaxy.event.listener.activity.ItemCreatedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ItemDeletedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
-              <bean class="org.mule.galaxy.event.listener.activity.CommentCreatedEventListener" parent="abstractActivityLogger"/>
-              <!-- properties -->
-              <ref bean="propertyChangedEventListener"/>
-              <!-- misc -->
-              <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
-
-              <ref bean="linkDao"/>
-              <ref bean="artifactExtension"/>
+             
           </list>
       </constructor-arg>
       <constructor-arg ref="sessionFactory"/>
@@ -141,6 +129,27 @@
               </property>
           </bean>
       </constructor-arg>
+  </bean>
+  
+  <bean id="eventListenerRegister" class="org.mule.galaxy.impl.event.EventListenerRegisterer" init-method="initialize">
+      <property name="listeners">
+          <list>
+               <!-- entry -->
+              <bean class="org.mule.galaxy.event.listener.activity.ItemCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemDeletedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.ItemMovedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.CommentCreatedEventListener" parent="abstractActivityLogger"/>
+              <bean class="org.mule.galaxy.event.listener.activity.AccessChangeEventListener" parent="abstractActivityLogger"/>
+              <!-- properties -->
+              <ref bean="propertyChangedEventListener"/>
+              <!-- misc -->
+              <bean class="org.mule.galaxy.event.listener.activity.LifecycleTransitionEventListener" parent="abstractActivityLogger"/>
+
+              <ref bean="linkDao"/>
+              <ref bean="artifactExtension"/>
+          </list>
+      </property>
+      <property name="eventManager" ref="eventManager"/>
   </bean>
   
   <bean id="propertyChangedEventListener"
