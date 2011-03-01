@@ -27,6 +27,8 @@ import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.activity.ActivityManager;
+import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.impl.jcr.onm.AbstractReflectionDao;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.User;
@@ -50,6 +52,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     private static final String ENABLED = "enabled";
 
     private AccessControlManager accessControlManager;
+    private ActivityManager activityManager;
     private ApplicationContext applicationContext;
     private String activeUsersNodeId;
     
@@ -122,6 +125,11 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     }
 
     public boolean setPassword(final String username, final String oldPassword, final String newPassword) {
+        if (activityManager == null) {
+            activityManager = (ActivityManager) applicationContext.getBean("activityManager");
+        }
+        activityManager.logActivity("User " + SecurityUtils.getCurrentUser().getUsername() + " set the password for user "
+            + username + ".", EventType.INFO);
         return (Boolean) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = findUser(username, session);
@@ -144,6 +152,11 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     }
 
     public void setPassword(final User user, final String password) {
+        if (activityManager == null) {
+            activityManager = (ActivityManager) applicationContext.getBean("activityManager");
+        }
+        activityManager.logActivity("User " + SecurityUtils.getCurrentUser().getUsername() + " set the password for user "
+            + user.getUsername() + ".", EventType.INFO);
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 Node node = findUser(user.getUsername(), session);
@@ -237,6 +250,13 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (result instanceof UserExistsException) {
             throw (UserExistsException) result;
         }
+        
+        if (activityManager == null) {
+            activityManager = (ActivityManager) applicationContext.getBean("activityManager");
+        }
+        String currentUsername = SecurityUtils.getCurrentUser().getUsername();
+        activityManager.logActivity("User " + currentUsername + " created user "
+            + (user != null ? user.getUsername() + "(ID " + user.getId() + ")" : "[null]") + ".", EventType.INFO);
     }
 
     @Override
@@ -253,6 +273,14 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         activeUser.remove();
         
         session.save();
+
+        if (activityManager == null) {
+            activityManager = (ActivityManager) applicationContext.getBean("activityManager");
+        }
+        String currentUsername = SecurityUtils.getCurrentUser().getUsername();
+        activityManager.logActivity("User " + currentUsername + " deleted user with ID "
+            + id + " (Username: " + (userNode != null ? JcrUtil.getStringOrNull(userNode, USERNAME) : "[null]")
+            + ")", EventType.INFO);
     }
 
     @Override
@@ -308,6 +336,14 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
     
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         this.applicationContext = ctx;
+    }
+
+    public ActivityManager getActivityManager() {
+        return activityManager;
+    }
+
+    public void setActivityManager(ActivityManager activityManager) {
+        this.activityManager = activityManager;
     }
 
 }
