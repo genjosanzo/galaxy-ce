@@ -76,9 +76,15 @@ public class ItemInfo implements IsSerializable, BeanModelTag {
     }
 
     public String getArtifactVersionName() {
-        String[] paths = getParentPath().split("/");
+        String parentName = getParentName();
         
-        return paths[paths.length-1] + " " + getName(); // Foo 1.0
+        return parentName + " " + getName(); // Foo 1.0
+    }
+
+    public String getParentName() {
+        String[] paths = getParentPath().split("/");
+        String parentName = paths[paths.length-1];
+        return parentName;
     }
     
     public void setName(String name) {

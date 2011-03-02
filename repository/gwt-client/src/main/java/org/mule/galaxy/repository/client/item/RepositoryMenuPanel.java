@@ -10,15 +10,12 @@ import java.util.Map;
 import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
-import org.mule.galaxy.repository.rpc.WPolicyException;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.ui.panel.MenuPanel;
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.ui.util.Images;
 import org.mule.galaxy.web.rpc.AbstractCallback;
-import org.mule.galaxy.web.rpc.ItemNotFoundException;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BaseTreeModel;
@@ -42,7 +39,6 @@ import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Widget;
@@ -233,13 +229,9 @@ public class RepositoryMenuPanel extends MenuPanel {
         tree.setIconProvider(new ModelIconProvider<ModelData>() {
             public AbstractImagePrototype getIcon(ModelData model) {
                 // you are a leaf if you are not a workspace
-                String name = (String) model.get("type");
-                if (name != null && !name.equalsIgnoreCase("Workspace")) {
-                    return IconHelper.createPath(Images.ICON_TEXT);
-                }
-
-                // else you are a node
-                return null;
+                String type = (String) model.get("type");
+                
+                return getIconForType(type);
             }
         });
 
@@ -298,116 +290,29 @@ public class RepositoryMenuPanel extends MenuPanel {
             }
         });
 
-
-        /*ToolbarButtonBar actionBar = new ToolbarButtonBar();
-
-        // Button actions
-        SelectionListener<ToolbarButtonEvent> btnListener = new SelectionListener<ToolbarButtonEvent>() {
-            public void componentSelected(ToolbarButtonEvent event) {
-
-                ToolbarButton btn = event.getToolbarButton();
-                final ModelData selectedItem = tree.getSelectionModel().getSelectedItem();
-                final boolean itemSelected = selectedItem != null;
-                final String gid;
-                final String name;
-
-                if (itemSelected) {
-                    gid = (String) selectedItem.get("id");
-                    name = (String) selectedItem.get("name");
-                } else {
-                    gid = null;
-                    name = null;
-                }
-
-                if (btn == addBtn) {
-                    final MessageBox box = MessageBox.prompt("New Workspace", "");
-                    box.addCallback(new Listener<MessageBoxEvent>() {
-                        public void handleEvent(MessageBoxEvent be) {
-
-                            if (!UIUtil.validatePromptInput(be, "Workspace name is required")) {
-                                return;
-                            }
-                            // all checks passed, save
-                            newWorkspace(null, be.getValue());
-                        }
-                    });
-                } else if (btn == renameBtn) {
-                    // only if they have something selected in the tree
-                    if (itemSelected) {
-                        final MessageBox box = MessageBox.prompt("Rename Workspace", "");
-                        box.getTextBox().setValue(name);
-
-                        box.addCallback(new Listener<MessageBoxEvent>() {
-                            public void handleEvent(MessageBoxEvent be) {
-                                if (!UIUtil.validatePromptInput(be, "Workspace name is required")) {
-                                    return;
-                                }
-                                renameWorkspace(selectedItem, be.getValue());
-                            }
-                        });
-                    }
-                } else if (btn == deleteBtn) {
-                    // only if they have something selected in the tree
-                    if (itemSelected) {
-                        warnDelete(gid);
-                    }
-                }
-
-            }
-        };
-
-        actionBar.add(new FillToolItem());
-        addBtn = new ToolbarButton("New Workspace", btnListener);
-        addBtn.setToolTip(repository.getRepositoryConstants().repo_NewWorkspace());
-        actionBar.add(addBtn);
-        renameBtn = new ToolbarButton("Rename", btnListener);
-        actionBar.add(renameBtn);
-        deleteBtn = new ToolbarButton("Delete", btnListener);
-        deleteBtn.setToolTip(repository.getRepositoryConstants().repo_Delete());
-        actionBar.add(deleteBtn);
-
-        panel.setTopComponent(actionBar);
-
-        */
-
         panel.add(tree);
         addMenuItem(panel);
 
         tree.getSelectionModel().select(root, false);
     }
 
-
-    private void newWorkspace(String parentPath, String name) {
-
-    }
-
-    private void renameWorkspace(final ModelData selectedItem, String newName) {
-
-        String itemId = selectedItem.get("id");
-        String parentPath = selectedItem.get("parentPath");
-
-        GWT.log(parentPath + ":" + itemId);
-
-        // save only if name or workspace changed
-        registryService.move(itemId, parentPath, newName, new AbstractCallback(this) {
-
-            @Override
-            public void onCallFailure(Throwable caught) {
-                if (caught instanceof ItemNotFoundException) {
-                    //setMessage("No parent workspace exists with that name!");
-                } else if (caught instanceof WPolicyException) {
-                    //PolicyPanel.handlePolicyFailure(errorPanel.getGalaxy(), (WPolicyException) caught);
-                } else {
-                    super.onFailure(caught);
-                }
+    public static AbstractImagePrototype getIconForType(String type) {
+        if (type != null) {
+            if (type.equalsIgnoreCase("Workspace")) {
+                return IconHelper.createPath(Images.ICON_FOLDER);
+            } else if (type.equalsIgnoreCase("Artifact")) {
+                return IconHelper.createPath("galaxy-plugins/images/registry/page_white_stack_16.png");
+            } else if (type.equalsIgnoreCase("Artifact Version")) {
+                return IconHelper.createPath("galaxy-plugins/images/registry/page_white_16.png");
+            } else if (type.equalsIgnoreCase("Service")) {
+                return IconHelper.createPath("galaxy-plugins/images/registry/cog_16.png");
             }
+        } else {
+            return IconHelper.createPath(Images.ICON_FOLDER);
+        }
 
-            public void onCallSuccess(Object arg0) {
-                // reload tree?
-                updateItem(selectedItem);
-            }
-
-        });
+        // else you are a node
+        return IconHelper.createPath(Images.ICON_TEXT);
     }
 
     protected BaseTreeModel toModel(ItemInfo i) {
@@ -420,7 +325,7 @@ public class RepositoryMenuPanel extends MenuPanel {
         return model;
     }
 
-    public void createPageInfo(String token, final WidgetHelper composite) {
+    public void createPageInfo(String token, final Widget composite) {
         PageInfo page = new PageInfo(token, repository.getRepositoryTab()) {
 
             public Widget createInstance() {

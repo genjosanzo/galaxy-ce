@@ -1,9 +1,10 @@
 package org.mule.galaxy.repository.client;
 
 import org.mule.galaxy.repository.client.activity.ActivityPanel;
-import org.mule.galaxy.repository.client.item.ChildItemsPanel;
+import org.mule.galaxy.repository.client.item.ArtifactPanel;
 import org.mule.galaxy.repository.client.item.ItemPanel;
 import org.mule.galaxy.repository.client.item.RepositoryMenuPanel;
+import org.mule.galaxy.repository.client.item.WorkspacePanel;
 import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryService;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
@@ -11,7 +12,6 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.GalaxyModule;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.ui.NavMenuItem;
-import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -47,7 +47,7 @@ public class RepositoryModule implements GalaxyModule {
     
     protected RepositoryMenuPanel createRepositoryPanels() {
         repositoryMenuPanel = new RepositoryMenuPanel(this);
-        repositoryMenuPanel.createPageInfo("browse", createChildItemsPanel(null, null));
+        repositoryMenuPanel.createPageInfo("browse", createWorkspacePanel(null, null));
         return repositoryMenuPanel;
     }
 
@@ -85,9 +85,14 @@ public class RepositoryModule implements GalaxyModule {
         this.repositoryTabIndex = repositoryTabIndex;
     }
 
-    public WidgetHelper createChildItemsPanel(ItemInfo info,
-                                              ItemPanel itemPanel) {
-        return new ChildItemsPanel(galaxy, repositoryMenuPanel, info, itemPanel);
+    public WorkspacePanel createWorkspacePanel(ItemInfo info,
+                                               ItemPanel itemPanel) {
+        return new WorkspacePanel(galaxy, repositoryMenuPanel, info, itemPanel);
+    }
+
+    public ArtifactPanel createArtifactPanel(ItemInfo info,
+                                             ItemPanel itemPanel) {
+        return new ArtifactPanel(galaxy, repositoryMenuPanel, info, itemPanel);
     }
     
 

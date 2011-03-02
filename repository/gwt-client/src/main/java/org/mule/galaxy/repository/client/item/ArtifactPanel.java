@@ -14,14 +14,11 @@ import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
 import org.mule.galaxy.web.client.ui.dialog.LightBox;
 import org.mule.galaxy.web.client.ui.field.SearchStoreFilterField;
 import org.mule.galaxy.web.client.ui.grid.BasicGrid;
-import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
-import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.panel.PaddedContentPanel;
 import org.mule.galaxy.web.client.ui.panel.ToolbarButtonBar;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 import org.mule.galaxy.web.client.ui.renderer.FauxLinkRenderer;
-import org.mule.galaxy.web.client.ui.util.Images;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -49,9 +46,8 @@ import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Image;
 
-public class ChildItemsPanel extends AbstractFlowComposite {
+public class ArtifactPanel extends AbstractCollectionPanel {
     protected Collection items;
     protected final RepositoryMenuPanel menuPanel;
     private final Galaxy galaxy;
@@ -60,7 +56,7 @@ public class ChildItemsPanel extends AbstractFlowComposite {
     private RepositoryModule repository;
     private ItemPanel itemPanel;
 
-    public ChildItemsPanel(Galaxy galaxy, RepositoryMenuPanel menuPanel,
+    public ArtifactPanel(Galaxy galaxy, RepositoryMenuPanel menuPanel,
                            ItemInfo item, ItemPanel itemPanel) {
         super();
         this.galaxy = galaxy;
@@ -95,10 +91,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
      * @return
      */
     private void createItemGrid() {
-        panel.clear();
+        removeAll();
 
-        ContentPanel contentPanel = new FullContentPanel();
-        contentPanel.setHeading("All Items");
+        ContentPanel contentPanel = new PaddedContentPanel();
         if (info != null) {
             contentPanel = new PaddedContentPanel();
             contentPanel.setHeading(info.getName());
@@ -153,11 +148,9 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         ColumnConfig icon = new ColumnConfig("type", " ", 23);
         icon.setRenderer(new GridCellRenderer() {
             public Object render(ModelData modelData, String s, ColumnData columnData, int i, int i1, ListStore listStore, Grid grid) {
-                Object obj = modelData.get(s);
-                if(obj.equals("Workspace")) {
-                           return  new Image(Images.ICON_FOLDER);
-                }
-                return new Image(Images.ICON_TEXT);
+                String type = modelData.get(s);
+                
+                return RepositoryMenuPanel.getIconForType(type).createImage();
             }
         });
         columns.add(icon);
@@ -189,7 +182,10 @@ public class ChildItemsPanel extends AbstractFlowComposite {
             }
         });
 
-        contentPanel.add(toolbar);
+        if (info == null || info.isLocal()) {
+            contentPanel.add(toolbar);
+        }
+        
         contentPanel.add(grid);
 
         if (info == null || info.isModifiable()) {
@@ -259,7 +255,8 @@ public class ChildItemsPanel extends AbstractFlowComposite {
         });
 
 
-        panel.add(contentPanel);
+        add(contentPanel);
+        layout(true);
     }
 
 

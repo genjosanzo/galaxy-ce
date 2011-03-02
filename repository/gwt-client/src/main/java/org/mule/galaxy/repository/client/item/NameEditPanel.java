@@ -18,130 +18,144 @@
 
 package org.mule.galaxy.repository.client.item;
 
-import java.util.List;
-
 import org.mule.galaxy.repository.client.admin.PolicyPanel;
-import org.mule.galaxy.repository.client.util.ItemPathOracle;
+import org.mule.galaxy.repository.client.util.RegistryOracle;
+import org.mule.galaxy.repository.rpc.ItemInfo;
 import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.repository.rpc.WPolicyException;
-import org.mule.galaxy.web.client.ui.field.ValidatableTextBox;
-import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
-import org.mule.galaxy.web.client.ui.validator.StringNotEmptyValidator;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemNotFoundException;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.extjs.gxt.ui.client.data.BaseModelData;
+import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.HorizontalPanel;
+import com.extjs.gxt.ui.client.widget.Label;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.Window;
+import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.layout.TableData;
+import com.extjs.gxt.ui.client.widget.layout.TableLayout;
+import com.google.gwt.user.client.History;
 
 /**
  * A panel for editing the name of a registry entry.
  */
-public class NameEditPanel extends Composite {
+public class NameEditPanel extends LayoutContainer {
 
-    private InlineFlowPanel panel;
-    private final String itemId;
-    private String name;
-    private final String workspacePath;
     private final RepositoryMenuPanel menuPanel;
-    private final List<String> callbackParams;
     private RegistryServiceAsync registryService;
+    private final Window window;
+    private final ItemInfo item;
+    private Button saveButton;
+    private Button cancelButton;
+    private ComboBox fwspace;
+    private final boolean allowRelocating;
 
     public NameEditPanel(RepositoryMenuPanel menuPanel,
-                         String itemId,
-                         String name,
-                         String workspacePath,  
-                         final List<String> callbackParams) {
+                         ItemInfo item,
+                         final Window window) {
+        this(menuPanel, item, true, window);
+    }
+    
+
+    public NameEditPanel(RepositoryMenuPanel menuPanel,
+                         ItemInfo item,
+                         boolean allowRelocating,
+                         final Window window) {
         super();
         this.menuPanel = menuPanel;
-        this.itemId = itemId;
-        this.name = name;
-        this.workspacePath = workspacePath;
+        this.item = item;
+        this.allowRelocating = allowRelocating;
+        this.window = window;
         this.registryService = menuPanel.getRepositoryModule().getRegistryService();
 
-        panel = new InlineFlowPanel();
-        this.callbackParams = callbackParams;
-
-        initName();
+        TableLayout layout = new TableLayout(2);
+        layout.setCellSpacing(10);
+        setLayout(layout);
         
-        initWidget(panel);
-    }
-
-    private void initName() {
-        panel.add(new Label(name + " "));
-
-        Image editImg = new Image("images/page_edit.gif");
-        editImg.setStyleName("icon-baseline");
-        editImg.setTitle("Edit");
-        editImg.addClickListener(new ClickListener() {
-
-            public void onClick(Widget arg0) {
-                showEditPanel();
+        if (allowRelocating) {
+            add(new Label("Parent:"));
+            String parentPath = item.getParentPath();
+            if ("".equals(parentPath) || null == parentPath) {
+                parentPath = "/";
             }
             
-        });
-        panel.add(editImg);
-    }
-
-    protected void showEditPanel() {
-        panel.clear();
-
-        final HorizontalPanel row = new HorizontalPanel();
-
-        final SuggestBox workspaceSB = new SuggestBox(new ItemPathOracle(registryService, menuPanel));
-        workspaceSB.setText(workspacePath);
-        row.add(workspaceSB);
+            String parentType = "Workspace";
+            
+            RegistryOracle wkspcOracle = new RegistryOracle(registryService, parentType);
+            fwspace = wkspcOracle.getComboBox();
+            fwspace.setFieldLabel("Parent");
+            fwspace.setAllowBlank(false);
+            fwspace.setName("workspacePath");
+            fwspace.setValueField("fullPath");
+            fwspace.setWidth(217);
+            
+            ModelData defaultModel = new BaseModelData();
+            defaultModel.set("fullPath", parentPath);
+            fwspace.setValue(defaultModel);
+            
+            add(fwspace);
+        }
         
-        row.add(new HTML("&nbsp;"));
-        final ValidatableTextBox nameTB = new ValidatableTextBox(new StringNotEmptyValidator());
-        nameTB.getTextBox().setText(name);
+        add(new Label("Name:"));
+        final TextField<String> nameTB = new TextField<String>();
+        nameTB.setValue(item.getName());
+        nameTB.setWidth(200);
 
-        row.add(nameTB);
+        add(nameTB);
         
-        Button saveButton = new Button("Save");
-        saveButton.addClickListener(new ClickListener() {
+        HorizontalPanel buttons = new HorizontalPanel();
+        saveButton = new Button("Save", new SelectionListener<ButtonEvent>() {
 
-            public void onClick(Widget arg0) {
+            @Override
+            public void componentSelected(ButtonEvent ce) {
                 if (!validateName(nameTB)) {
                     return;
                 }
-                save(workspaceSB.getText(), 
-                     nameTB.getText());
+                save(getParentPath(), nameTB.getValue());
             }
             
         });
 
-        Button cancelButton = new Button("Cancel");
-        cancelButton.addClickListener(new ClickListener() {
+        cancelButton = new Button("Cancel", new SelectionListener<ButtonEvent>() {
 
-            public void onClick(Widget arg0) {
-                panel.clear();
-                initName();
+            @Override
+            public void componentSelected(ButtonEvent ce) {
+                window.hide();
             }
             
         });
 
-        row.add(saveButton);
-        row.add(cancelButton);
-        row.setVerticalAlignment(HasAlignment.ALIGN_TOP);
-        panel.add(row);
+        buttons.add(saveButton);
+        buttons.add(new Label(" "));
+        buttons.add(cancelButton);
+        TableData buttonData = new TableData();
+        buttonData.setColspan(2);
+        add(buttons, buttonData);   
+    }
+
+    public String getParentPath() {
+        if (allowRelocating) {
+            return (String)fwspace.getValue().get("fullPath");
+        } else {
+            return item.getParentPath(); 
+        }
     }
 
     protected void save(final String newParent, final String newName) {
-        if (!newParent.equals(this.workspacePath) 
-            || !newName.equals(this.name)) {
+        if (!newParent.equals(item.getParentPath()) 
+            || !newName.equals(item.getName())) {
             // save only if name or workspace changed
-            registryService.move(itemId, newParent, newName, new AbstractCallback(menuPanel) {
+            setEnabled(false);
+            registryService.move(item.getId(), newParent, newName, new AbstractCallback(menuPanel) {
 
                 @Override
                 public void onCallFailure(Throwable caught) {
+                    setEnabled(true);
                     if (caught instanceof ItemNotFoundException) {
                         menuPanel.setMessage("No parent workspace exists with that name!");
                     } else if (caught instanceof WPolicyException) {
@@ -153,18 +167,25 @@ public class NameEditPanel extends Composite {
 
                 public void onCallSuccess(Object arg0) {
                     // need to refresh the whole panel to fetch new workspace location and entry name
-                    menuPanel.showPage(callbackParams);
+                    item.setName(newName);
+                    window.hide();     
+                    History.fireCurrentHistoryState();
+                    menuPanel.refresh();
                 }
 
             });
         } else {
             // restore the original view
-            panel.clear();
-            initName();
+            window.hide();
         }
     }
 
-    protected boolean validateName(final ValidatableTextBox nameTB) {
+    public void setEnabled(boolean b) {
+        saveButton.setEnabled(b);
+        cancelButton.setEnabled(b);
+    }
+        
+    protected boolean validateName(final TextField nameTB) {
         boolean isOk = true;
         isOk &= nameTB.validate();
 

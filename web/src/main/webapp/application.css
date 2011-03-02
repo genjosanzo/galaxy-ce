@@ -424,13 +424,12 @@ a:visited {
 }
 
 
-.artifactTitle {
+.artifactVersionHeader {
+    font-size: 2em;
     font-weight: bold;
-    padding: 6px;
-    margin-top: 4px;
-    font-size: 13px;
+    margin: 8px 0px 8px 0px;
 }
-
+ 
 .right-title-panel {
     margin-top: 8px;
 }

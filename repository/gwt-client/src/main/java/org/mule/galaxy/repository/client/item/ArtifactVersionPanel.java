@@ -18,70 +18,45 @@
 
 package org.mule.galaxy.repository.client.item;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.mule.galaxy.repository.client.RepositoryModule;
 import org.mule.galaxy.repository.rpc.ItemInfo;
-import org.mule.galaxy.web.client.ui.panel.AbstractShowableContainer;
+import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
+import org.mule.galaxy.web.client.ui.ExternalHyperlink;
+import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.Label;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.Window;
+import com.extjs.gxt.ui.client.widget.layout.TableLayout;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
 
-
-/**
- * Contains:
- * - BasicArtifactInfo
- * - Service dependencies
- * - Depends on...
- * - Comments
- * - Governance tab
- * (with history)
- * - View Artiact
- */
-public class ItemPanel extends AbstractShowableContainer {
-
-    private ItemInfo info;
-    private String itemId;
-    private List<String> params;
-    private RepositoryMenuPanel menuPanel;
-    private RepositoryModule repository;
+public class ArtifactVersionPanel extends LayoutContainer {
+    
+    private final ItemInfo info;
+    private RegistryServiceAsync registryService;
+    private final RepositoryMenuPanel menuPanel;
     private ContentPanel contentPanel;
 
-    public ItemPanel(RepositoryMenuPanel menuPanel) {
-        this.repository = menuPanel.getRepositoryModule();
+    public ArtifactVersionPanel(final RepositoryMenuPanel menuPanel,
+                         final ItemInfo info, 
+                         final ItemPanel artifactPanel, 
+                         final List<String> callbackParams) {
+        setBorders(false);
+        
         this.menuPanel = menuPanel;
-    }
-
-    @Override
-    public void showPage(List<String> params) {
-        this.params = params;
-        removeAll();
-    }
-
-    public void initializeItem(ItemInfo info) {
+        this.registryService = menuPanel.getRepositoryModule().getRegistryService();
+        
         this.info = info;
         
-        if (info.isArtifact() || info.isWorkspace()) {
-            initCollection();
-        } else {
-            initArtifactVersion();
-        }
-        
-        layout(true);
-    }
+        setId("artifactVersionPanel");
 
-    private void initArtifactVersion() {
-        ArtifactVersionPanel versionPanel = new ArtifactVersionPanel(menuPanel, info, this, params);
-        add(versionPanel);
-    }
-    
-    private void initCollection() {
         contentPanel = new ContentPanel();
         contentPanel.setAutoHeight(true);
         contentPanel.setAutoWidth(true);
@@ -103,45 +78,43 @@ public class ItemPanel extends AbstractShowableContainer {
                             selected.set("name", info.getName());
                         }
 
+                        // refresh everything
                         super.hide();
                     }
                     
                 };
-                window.add(new NameEditPanel(menuPanel, info, window));
+                window.add(new NameEditPanel(menuPanel, info, false, window));
                 window.show();
             }
         });
         contentPanel.getHeader().addTool(new WidgetComponent(editImg));
         
-        AbstractShowableContainer panel;
-        if (info.isArtifact()) {
-            panel = createArtifactPanel();
-        } else if (info.isWorkspace()) {
-            panel = createWorkspacePanel();
-        } else {
-            throw new IllegalStateException();
-        }
-        contentPanel.add(panel);
+
+        Image downloadImg = new Image("images/icon_download.gif");
+        downloadImg.setStyleName("icon-baseline");
+        downloadImg.setTitle("Download");
+        downloadImg.addClickHandler(new ClickHandler() {
+            
+            public void onClick(ClickEvent arg0) {
+                com.google.gwt.user.client.Window.open(GWT.getModuleBaseURL() +"../api/registry" + info.getParentPath() + "?version=" + info.getName(), 
+                            "123", ""); 
+            }
+        });
+        contentPanel.getHeader().addTool(new WidgetComponent(downloadImg));
+        
+        contentPanel.setHeading(info.getName());
+        
+        TableLayout layout = new TableLayout(2);
+        layout.setCellSpacing(6);
+        LayoutContainer avInfo = new LayoutContainer(layout);
+        avInfo.add(WidgetHelper.columnLabel("Artifact:"));
+        avInfo.add(new Label(info.getParentName()));
+        avInfo.add(WidgetHelper.columnLabel("Creator:"));
+        avInfo.add(new Label(info.getAuthorName()));
+        contentPanel.add(avInfo);
+        
         add(contentPanel);
-        panel.showPage(new ArrayList<String>());
-        contentPanel.layout();
+        
     }
-
-    protected ArtifactPanel createArtifactPanel() {
-        return repository.createArtifactPanel(info, this);
-    }
-
-    protected WorkspacePanel createWorkspacePanel() {
-        return repository.createWorkspacePanel(info, this);
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
-
-    protected void setHeading(String s) {
-        this.contentPanel.setHeading(s);
-    }
-
 
 }

@@ -40,13 +40,13 @@ public class AddArtifactForm extends AbstractErrorHandlingPopup {
     private final ItemInfo parent;
     private final boolean parentIsWorkspace;
     private FileUploadField file;
-    private final ChildItemsPanel itemsPanel;
+    private final AbstractCollectionPanel itemsPanel;
     private final RegistryServiceAsync registryService;
 
     public AddArtifactForm(final RegistryServiceAsync registryService,
                            ItemInfo parent,
                            boolean parentIsWorkspace, 
-                           ChildItemsPanel itemsPanel) {
+                           AbstractCollectionPanel itemsPanel) {
         super();
         this.registryService = registryService;
         this.parent = parent;
