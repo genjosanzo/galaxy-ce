@@ -9,6 +9,7 @@ import org.acegisecurity.event.authorization.AuthorizedEvent;
 import org.acegisecurity.ui.WebAuthenticationDetails;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.ClassUtils;
@@ -29,12 +30,12 @@ public class AcegiAuthEventListener implements ApplicationListener {
                 // Interactive web console or REST API authentication failure.
                 message = "Authentication failure for user: " + username + "; "
                     + ((AbstractAuthenticationFailureEvent) event).getException().getMessage() + "; details: " + details;
-                activityManager.logActivity(message, EventType.WARNING);
+                activityManager.logActivity(message, EventType.WARNING, SecurityUtils.getCurrentUser(), null);
             } else if (event instanceof InteractiveAuthenticationSuccessEvent) {
                 // Interactive web console authentication was successful.
                 message = "Authenticated user " + username + "; details: " + details + "; "
                     + ClassUtils.getShortName(authEvent.getClass());
-                activityManager.logActivity(message, EventType.INFO);
+                activityManager.logActivity(message, EventType.INFO, SecurityUtils.getCurrentUser(), null);
             }
         } else if (event instanceof AbstractAuthorizationEvent) {
             if (event instanceof AuthorizedEvent) {
@@ -45,7 +46,7 @@ public class AcegiAuthEventListener implements ApplicationListener {
                     String username = authEvent.getAuthentication().getName();
                     message = "Authenticated user " + username + "; details: " + details + "; source: " + source + "; "
                         + ClassUtils.getShortName(authEvent.getClass());
-                    activityManager.logActivity(message, EventType.INFO);
+                    activityManager.logActivity(message, EventType.INFO, SecurityUtils.getCurrentUser(), null);
                 }
             }
         }
