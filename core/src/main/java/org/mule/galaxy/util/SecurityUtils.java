@@ -33,7 +33,11 @@ public final class SecurityUtils {
             return null;
         }
         
-        UserDetailsWrapper wrapper = (UserDetailsWrapper) auth.getPrincipal();
+        Object principal = auth.getPrincipal();
+        if (principal instanceof String) {
+            return SYSTEM_USER;
+        }
+        UserDetailsWrapper wrapper = (UserDetailsWrapper) principal;
         if (wrapper == null) {
             return null;
         }
