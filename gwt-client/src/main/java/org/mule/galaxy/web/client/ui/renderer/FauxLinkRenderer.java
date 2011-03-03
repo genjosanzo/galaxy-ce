@@ -3,7 +3,7 @@
  */
 package org.mule.galaxy.web.client.ui.renderer;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
@@ -53,8 +53,8 @@ public class FauxLinkRenderer implements GridCellRenderer<BaseModel> {
         if (toolTip != null) {
             String tooltip = null;
             Object o = model.<String>get(toolTip);
-            if (o instanceof ArrayList) {
-                tooltip = ((ArrayList) o).toString();
+            if (o instanceof List) {
+                tooltip = ((List) o).toString();
             }
             htmlWrapper.setToolTip(tooltip);
         }
