@@ -3,6 +3,8 @@
  */
 package org.mule.galaxy.web.client.ui.renderer;
 
+import java.util.ArrayList;
+
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
 
 import com.extjs.gxt.ui.client.data.BaseModel;
@@ -38,6 +40,7 @@ public class FauxLinkRenderer implements GridCellRenderer<BaseModel> {
         this.hover = hover;
     }
 
+    @SuppressWarnings("unchecked")
     public Object render(BaseModel model, String property, ColumnData config, int rowIndex,
                          int colIndex, ListStore<BaseModel> store, Grid<BaseModel> grid) {
 
@@ -47,8 +50,13 @@ public class FauxLinkRenderer implements GridCellRenderer<BaseModel> {
         }
 
         HtmlContainer htmlWrapper = new HtmlContainer(WidgetHelper.createFauxLink(value, hover));
-        if(toolTip != null) {
-            htmlWrapper.setToolTip(model.<String>get(toolTip));
+        if (toolTip != null) {
+            String tooltip = null;
+            Object o = model.<String>get(toolTip);
+            if (o instanceof ArrayList) {
+                tooltip = ((ArrayList) o).toString();
+            }
+            htmlWrapper.setToolTip(tooltip);
         }
 
         return htmlWrapper;
