@@ -28,6 +28,7 @@ public class GalaxyServiceImpl implements GalaxyService {
     protected WebManager webManager;
     protected UserManager userManager;
     protected AccessControlManager accessControlManager;
+    protected int consoleInactivityTimeout;
     
     public ApplicationInfo getApplicationInfo() throws RPCException {
         ApplicationInfo info = new ApplicationInfo();
@@ -40,6 +41,7 @@ public class GalaxyServiceImpl implements GalaxyService {
         info.setUser(getUserInfo());
         info.setUserManagementSupported(userManager.isManagementSupported());
         info.setExtensions(getExtensions());
+        info.setConsoleInactivityTimeout(getConsoleInactivityTimeout());
     }
 
     protected Collection<PluginTabInfo> getPluginTabs() {
@@ -103,6 +105,21 @@ public class GalaxyServiceImpl implements GalaxyService {
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
     }
-    
 
+    public int getConsoleInactivityTimeout() {
+        // System property value, if any, takes precedence.
+        String timeout = System.getProperty("console.inactivityTimeout");
+        if (timeout != null && timeout.length() > 0) {
+            try {
+                return Integer.parseInt(timeout);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return consoleInactivityTimeout;
+    }
+
+    public void setConsoleInactivityTimeout(int consoleInactivityTimeout) {
+        this.consoleInactivityTimeout = consoleInactivityTimeout;
+    }
 }

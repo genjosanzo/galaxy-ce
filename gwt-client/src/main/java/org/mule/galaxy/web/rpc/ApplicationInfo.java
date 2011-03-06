@@ -8,7 +8,8 @@ public class ApplicationInfo implements Serializable {
     private WUser user;
     private Collection<PluginTabInfo> pluginTabs;
     private Collection<WExtensionInfo> extensions;
-    
+    private int consoleInactivityTimeout;
+
     public boolean isUserManagementSupported() {
         return userManagementSupported;
     }
@@ -33,5 +34,12 @@ public class ApplicationInfo implements Serializable {
     public void setExtensions(Collection<WExtensionInfo> extensions) {
         this.extensions = extensions;
     }
-    
+
+    public int getConsoleInactivityTimeout() {
+        return consoleInactivityTimeout;
+    }
+
+    public void setConsoleInactivityTimeout(int consoleInactivityTimeout) {
+        this.consoleInactivityTimeout = consoleInactivityTimeout;
+    }
 }

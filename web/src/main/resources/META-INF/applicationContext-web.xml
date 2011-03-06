@@ -33,6 +33,7 @@
       <property name="registry" ref="registry"/>
       <property name="userManager" ref="userManager"/>
       <property name="webManager" ref="webManager"/>
+      <property name="consoleInactivityTimeout" value="${console.inactivityTimeout}"/>
     </bean>
 
     <bean id="gwtSecurityService" class="org.mule.galaxy.web.server.SecurityServiceImpl">
