@@ -601,13 +601,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.1.1</version>
-                <configuration>
-                    <attach>true</attach>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.4.3</version>
                 <configuration>
@@ -640,15 +633,6 @@
                     <downloadSources>true</downloadSources>
                     <jdkName>1.5</jdkName>
                     <jdkLevel>1.5</jdkLevel>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>2.2.0</version>
-                <configuration>
-                    <module>org.mule.galaxy.repository.Repository</module>
-                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
                 </configuration>
             </plugin>
             <!--
@@ -694,6 +678,27 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.1</version>
+                    <configuration>
+                        <attach>true</attach>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>gwt-maven-plugin</artifactId>
+                    <version>2.2.0</version>
+                    <configuration>
+                        <module>org.mule.galaxy.repository.Repository</module>
+                        <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
 
         <defaultGoal>install</defaultGoal>
 
