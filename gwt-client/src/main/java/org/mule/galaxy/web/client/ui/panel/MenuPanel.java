@@ -29,6 +29,7 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer implements Showable {
@@ -85,6 +86,15 @@ public abstract class MenuPanel extends AbstractErrorShowingLayoutContainer impl
         }
 
         add(leftMenu, westData);
+        setMonitorWindowResize(true);
+    }
+
+    @Override
+    protected void onWindowResize(int width, int height) {
+        super.onWindowResize(width, height);
+        
+        GWT.log("layout//");
+        layout(true);
     }
 
     protected Layout createMenuLayout() {

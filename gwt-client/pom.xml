@@ -29,12 +29,6 @@
             <artifactId>gwt-user</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-incubator</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -54,7 +48,7 @@
                         </goals>
                     </execution>
                 </executions>
-                    </plugin>
+            </plugin>
         </plugins>
     </build>
 
