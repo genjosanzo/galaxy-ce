@@ -18,12 +18,8 @@
 package org.mule.galaxy.web.client;
 
 import static org.mule.galaxy.web.client.ClientId.MAIN_WELCOME_MESSAGE_ID;
+import static org.mule.galaxy.web.client.ClientId.TAB_HEADER_ADMINISTRATION_ID;
 import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.ui.ExternalHyperlink;
@@ -68,6 +64,11 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -323,7 +324,7 @@ public class Galaxy {
 
     protected void loadAdminTab() {
         if (showAdminTab()) {
-            adminTabIndex = pageManager.createTab("Administration", "admin", administrationConstants.admin_TabTip());
+            adminTabIndex = pageManager.createTab("Administration", "admin", administrationConstants.admin_TabTip(), TAB_HEADER_ADMINISTRATION_ID);
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
     }

@@ -19,7 +19,19 @@
 package org.mule.galaxy.web.client;
 
 public final class ClientId {
-
+    
+    // General tab:
+    public static final String TAB_HEADER_ADMINISTRATION_ID = "TAB_HEADER_ADMINISTRATION_ID";
+    public static final String TAB_HEADER_SERVERS_ID = "TAB_HEADER_SERVERS_ID";
+    public static final String TAB_HEADER_DEPLOYMENTS_ID = "TAB_HEADER_DEPLOYMENTS_ID";
+    public static final String TAB_HEADER_DASHBOARD_ID = "TAB_HEADER_DASHBOARD_ID";
+    public static final String TAB_HEADER_ALERTS_ID = "TAB_HEADER_ALERTS_ID";
+    public static final String TAB_HEADER_REPOSITORY_ID = "TAB_HEADER_REPOSITORY_ID";
+    public static final String TAB_HEADER_FLOWS_ID = "TAB_HEADER_FLOWS_ID";
+    public static final String TAB_HEADER_AUDIT_ID = "TAB_HEADER_AUDIT_ID";
+    
+    public static final String TAB_HEADER_SUFFIX = "-header";
+    
     // User List Panel.
     public static final String GROUP_LIST_PANEL_USERS_ID = "GROUP_LIST_PANEL_USERS_ID";
     public static final String GROUP_LIST_PANEL_USERS_GRID_ID = "GROUP_LIST_PANEL_USERS_GRID_ID";

@@ -1,5 +1,7 @@
 package org.mule.galaxy.repository.client;
 
+import static org.mule.galaxy.web.client.ClientId.TAB_HEADER_REPOSITORY_ID;
+
 import org.mule.galaxy.repository.client.activity.ActivityPanel;
 import org.mule.galaxy.repository.client.item.ArtifactPanel;
 import org.mule.galaxy.repository.client.item.ItemPanel;
@@ -57,7 +59,7 @@ public class RepositoryModule implements GalaxyModule {
 
     protected void loadRepositoryTab() {
         if (galaxy.hasPermission("READ_ITEM")) {
-            galaxy.getPageManager().createTab(repositoryTabIndex, "Repository", "browse", repositoryConstants.repo_TabTip());
+            galaxy.getPageManager().createTab(repositoryTabIndex, "Repository", "browse", repositoryConstants.repo_TabTip(), TAB_HEADER_REPOSITORY_ID);
         }
         createRepositoryPanels();
     }

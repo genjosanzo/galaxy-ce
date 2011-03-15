@@ -1,5 +1,7 @@
 package org.mule.galaxy.web.client;
 
+import static org.mule.galaxy.web.client.ClientId.TAB_HEADER_SUFFIX;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,7 @@ public class PageManager implements ValueChangeHandler<String>{
 
     public static final String WILDCARD = "*";
     private static final String DEFAULT_PAGE = "browse";
+    
     private PageInfo curInfo;
     private String currentToken;
     private final TabPanel tabPanel;
@@ -59,7 +62,6 @@ public class PageManager implements ValueChangeHandler<String>{
                     History.newItem(tabNames.get(newTab));
                 }
             }
-
         });
     }
 
@@ -123,9 +125,7 @@ public class PageManager implements ValueChangeHandler<String>{
         return currentToken;
     }
 
-    public PageInfo createPageInfo(String token,
-                                   final Widget composite,
-                                   int tab) {
+    public PageInfo createPageInfo(String token, final Widget composite, int tab) {
         PageInfo page = new PageInfo(token, tab) {
             public Widget createInstance() {
                 return composite;
@@ -137,24 +137,19 @@ public class PageManager implements ValueChangeHandler<String>{
 
     public PageInfo getPageInfo(String token) {
         PageInfo page = history.get(token);
-
         if (page == null) {
-
             // hack to match "foo/*" style tokens
             int slashIdx = token.indexOf("/");
             if (slashIdx == -1) {
                 slashIdx = token.length();
             }
-            
             if (slashIdx != -1) {
                 page = history.get(token.substring(0, slashIdx) + "/" + WILDCARD);
             }
-
             if (page == null) {
                 page = history.get(token.substring(0, slashIdx));
             }
         }
-
         if (page == null) {
             throw new IllegalStateException("Could not find page: " + token);
         }
@@ -164,11 +159,8 @@ public class PageManager implements ValueChangeHandler<String>{
 
     public void setMessageAndGoto(String token, String message) {
         PageInfo pi = getPageInfo(token);
-
         ErrorPanel ep = (ErrorPanel) pi.getInstance();
-
         History.newItem(token);
-
         ep.setMessage(message);
     }
 
@@ -178,8 +170,6 @@ public class PageManager implements ValueChangeHandler<String>{
 
     /**
      * Shows a page, but does not trigger a history event.
-     *
-     * @param token
      */
     public void show(String token) {
         show(getPageInfo(token), getParams(token));
@@ -216,22 +206,41 @@ public class PageManager implements ValueChangeHandler<String>{
         createTab(index, name, token, toolTip);
         return index;
     }
+    
+    public int createTab(String name, String token, String toolTip, String tabId) {
+        int index = tabPanel.getItemCount();
+        createTab(index, name, token, toolTip, tabId);
+        return index;
+    }
 
     public void createTab(int index, String name, String token, String toolTip) {
-        tabPanel.insert(createEmptyTab(name, toolTip), index);
+        tabPanel.insert(createEmptyTab(name, toolTip, null), index);
+        tabNames.add(index, token);
+    }
+    
+    public void createTab(int index, String name, String token, String toolTip, String tabId) {
+        tabPanel.insert(createEmptyTab(name, toolTip, tabId), index);
         tabNames.add(index, token);
     }
 
     protected TabItem createEmptyTab(String name, String toolTip) {
+        return createEmptyTab(name, toolTip, null);
+    }
+    
+    protected TabItem createEmptyTab(String name, String toolTip, String tabId) {
         TabItem tab = new TabItem();
         TabItem.HeaderItem header = tab.getHeader();
-        header.setText(name);
-
+        if (tabId != null) {
+            tab.setId(tabId);
+            header.setId(tabId + TAB_HEADER_SUFFIX);
+        }
+        if (name != null) {
+            header.setText(name);
+        }
         if (toolTip != null) {
             header.setToolTip(toolTip);
         }
         tab.setLayout(new FitLayout());
         return tab;
     }
-
 }
