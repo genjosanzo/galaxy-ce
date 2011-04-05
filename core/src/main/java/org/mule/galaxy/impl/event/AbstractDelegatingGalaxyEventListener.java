@@ -109,7 +109,7 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
                     // execute without timeout
                     executor.execute(wrapper);
                 } catch (TaskRejectedException e) {
-                    logger.error("Rejected async event " + event, e.getMostSpecificCause());
+                    logger.error("Rejected async event " + event, e.getCause());
                 }
             } else {
                 // get hold of the native ThreadPoolExecutor which can return Futures
