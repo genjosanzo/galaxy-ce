@@ -7,7 +7,7 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
     
-    <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+    <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" scope="singleton">
         <constructor-arg>
             <bean class="org.mule.galaxy.rest.jackson.ObjectMapper">
                 
@@ -16,5 +16,5 @@
     </bean>
     <bean class="com.sun.jersey.core.impl.provider.entity.InputStreamProvider"/>
     <bean class="com.sun.jersey.core.impl.provider.entity.MimeMultipartProvider"/>
-    <bean class="org.mule.galaxy.rest.AccessExceptionMapper"/>
+    <bean class="org.mule.galaxy.rest.AccessExceptionMapper" scope="singleton" />
 </beans>
