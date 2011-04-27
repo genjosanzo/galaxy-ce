@@ -3,13 +3,12 @@ package org.mule.galaxy.security.ldap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.acegisecurity.ldap.InitialDirContextFactory;
-import org.acegisecurity.providers.ldap.populator.DefaultLdapAuthoritiesPopulator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.Group;
-
+import org.springframework.ldap.core.ContextSource;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
 /**
  * Custom authorities populator for producing an intersection of
@@ -21,9 +20,8 @@ public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
 
     private final Log log = LogFactory.getLog(getClass());
     private AccessControlManager accessControlManager;
-    
 
-    public LdapAuthoritiesPopulator(InitialDirContextFactory initialDirContextFactory, String groupSearchBase) {
+    public LdapAuthoritiesPopulator(ContextSource initialDirContextFactory, String groupSearchBase) {
         super(initialDirContextFactory, groupSearchBase);
     }
 

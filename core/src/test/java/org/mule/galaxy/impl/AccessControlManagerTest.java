@@ -265,7 +265,7 @@ public class AccessControlManagerTest extends AbstractGalaxyTest {
     @Override
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml",
-                "/META-INF/applicationContext-acegi-security.xml", "/META-INF/applicationContext-test.xml" };
+                "/META-INF/applicationContext-spring-security.xml", "/META-INF/applicationContext-test.xml" };
     }
 
     @BindToEvent("org.mule.galaxy.security.AccessChangeEvent")

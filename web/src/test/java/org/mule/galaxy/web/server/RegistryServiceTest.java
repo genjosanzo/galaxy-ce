@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContextHolder;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.artifact.Artifact;
@@ -38,6 +36,8 @@ import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.SearchPredicate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class RegistryServiceTest extends AbstractGalaxyTest {
     protected RegistryService gwtRegistry;
@@ -47,7 +47,7 @@ public class RegistryServiceTest extends AbstractGalaxyTest {
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml", 
                               "/META-INF/applicationContext-core-extensions.xml", 
-                              "/META-INF/applicationContext-acegi-security.xml",  
+                              "/META-INF/applicationContext-spring-security.xml",  
                               "/META-INF/applicationContext-web.xml", 
                               "classpath*:/META-INF/galaxy-applicationContext.xml",
                               "/META-INF/applicationContext-test.xml" };

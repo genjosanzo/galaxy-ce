@@ -4,15 +4,16 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.Stack;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.context.SecurityContextImpl;
-import org.acegisecurity.runas.RunAsUserToken;
 import org.mule.galaxy.impl.jcr.UserDetailsWrapper;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
+import org.springframework.security.access.intercept.RunAsUserToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 
 public final class SecurityUtils {
     public static final User SYSTEM_USER = new User("system");
@@ -49,7 +50,7 @@ public final class SecurityUtils {
 
         Set<Permission> perms = Collections.emptySet();
         UserDetailsWrapper wrapper = new UserDetailsWrapper(SYSTEM_USER, perms, "");
-        Authentication auth = new RunAsUserToken("system", wrapper, "", new GrantedAuthority[0], User.class);
+        Authentication auth = new RunAsUserToken("system", wrapper, "", new GrantedAuthority[0], UsernamePasswordAuthenticationToken.class);
         SecurityContextImpl context = new SecurityContextImpl();
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);

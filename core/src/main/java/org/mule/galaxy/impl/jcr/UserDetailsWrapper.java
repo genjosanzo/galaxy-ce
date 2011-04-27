@@ -2,19 +2,21 @@ package org.mule.galaxy.impl.jcr;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.naming.directory.Attributes;
 import javax.naming.ldap.Control;
 
-import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
-import org.acegisecurity.userdetails.ldap.LdapUserDetails;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
-
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
 public class UserDetailsWrapper implements LdapUserDetails {
+
+    private static final long serialVersionUID = 1L;
 
     private User user;
     private String password;
@@ -35,7 +37,7 @@ public class UserDetailsWrapper implements LdapUserDetails {
         return user;
     }
 
-    public GrantedAuthority[] getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         if (authorities == null) {
             Object[] pArray = permissions.toArray();
             authorities = new GrantedAuthority[pArray.length+1];
@@ -44,7 +46,7 @@ public class UserDetailsWrapper implements LdapUserDetails {
             }
             authorities[pArray.length] = new GrantedAuthorityImpl("role_user");
         }
-        return authorities;
+        return Arrays.asList(authorities);
     }
 
     public String getPassword() {

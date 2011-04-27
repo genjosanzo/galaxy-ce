@@ -37,7 +37,6 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.abdera.i18n.text.CharUtils.Profile;
 import org.apache.abdera.i18n.text.UrlEncoding;
 import org.apache.commons.logging.Log;
@@ -111,6 +110,7 @@ import org.mule.galaxy.web.rpc.ItemNotFoundException;
 import org.mule.galaxy.web.rpc.LinkInfo;
 import org.mule.galaxy.web.rpc.SearchPredicate;
 import org.mule.galaxy.web.rpc.WActivity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class RegistryServiceImpl implements RegistryService {
 

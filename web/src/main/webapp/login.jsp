@@ -30,7 +30,7 @@
 <div id="body">
 
 
-    <form action="./j_acegi_security_check" method="post">
+    <form action="./j_spring_security_check" method="post">
         <div class="loginBox">
             <div class="loginHeader">
                 <img src="images/logo_main.gif" border="0"/>

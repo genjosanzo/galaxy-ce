@@ -11,7 +11,7 @@
   class="org.mule.galaxy.security.ldap.GalaxyAuthenticationProvider">
   <constructor-arg>
    <bean
-    class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
+    class="org.springframework.security.ldap.authentication.BindAuthenticator">
     <constructor-arg ref="initialDirContextFactory" />
     <property name="userSearch" ref="userSearch" />
    </bean>
@@ -23,7 +23,7 @@
 
  <bean id="userDetailsMapper" class="org.mule.galaxy.security.ldap.UserLdapEntryMapper" />
 
- <bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
+ <bean id="authenticationManager" class="org.springframework.security.authentication.ProviderManager">
   <property name="providers">
    <list>
     <ref bean="ldapAuthProvider" />

@@ -10,15 +10,6 @@ import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchResult;
 
-import org.acegisecurity.ldap.InitialDirContextFactory;
-import org.acegisecurity.ldap.LdapCallback;
-import org.acegisecurity.ldap.LdapEntryMapper;
-import org.acegisecurity.ldap.LdapTemplate;
-import org.acegisecurity.ldap.LdapUserSearch;
-import org.acegisecurity.userdetails.UserDetails;
-import org.acegisecurity.userdetails.UserDetailsService;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.acegisecurity.userdetails.ldap.LdapUserDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.Dao;
@@ -32,6 +23,16 @@ import org.mule.galaxy.security.UserExistsException;
 import org.mule.galaxy.security.UserManager;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.dao.DataAccessException;
+import org.springframework.ldap.core.ContextExecutor;
+import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.ldap.search.LdapUserSearch;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
 public class LdapUserManager 
     implements UserManager, UserDetailsService {
@@ -42,10 +43,10 @@ public class LdapUserManager
     
     private String userSearchBase;
     private LdapUserSearch userSearch;
-    private LdapEntryMapper userMapper;
+    private ContextMapper userMapper;
     
     private LdapTemplate ldapTemplate;
-    private InitialDirContextFactory initialDirContextFactory;
+    private ContextSource initialDirContextFactory;
     private PersisterManager persisterManager;
     
     private Dao<LdapUserMetadata> ldapUserMetadataDao;
@@ -97,15 +98,13 @@ public class LdapUserManager
             return SecurityUtils.SYSTEM_USER;
         }
         try {
-            LdapUserDetails d = userSearch.searchForUser(id);
+            DirContextOperations d = userSearch.searchForUser(id);
 
-            User user = (User)userMapper.mapAttributes(d.getDn(), d.getAttributes());
+            User user = (User)userMapper.mapFromContext(d);
             user.setProperties(getUserProperties(id));
             return user;
         } catch (UsernameNotFoundException e) {
             throw new NotFoundException(id);
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -119,9 +118,8 @@ public class LdapUserManager
     }
 
     public List<User> listAll() {
-        return (List<User>) getLdapTemplate().execute(new LdapCallback() {
-
-            public Object doInDirContext(DirContext dirContext) throws NamingException {
+        return (List<User>) getLdapTemplate().executeReadWrite(new ContextExecutor() {
+            public Object executeWithContext(DirContext dirContext) throws NamingException {
                 List<User> users = new ArrayList<User>();
                 
                 BasicAttributes atts = new BasicAttributes();
@@ -133,7 +131,7 @@ public class LdapUserManager
                 while (results.hasMore()) {
                     SearchResult result = results.next();
                     
-                    users.add((User) userMapper.mapAttributes(null, result.getAttributes()));
+                    users.add((User) userMapper.mapFromContext(result));
                 }
 
                 dirContext.close();
@@ -144,9 +142,8 @@ public class LdapUserManager
     }
     
     public List<User> getUsersForGroup(String groupId) {
-        return (List<User>) getLdapTemplate().execute(new LdapCallback() {
-
-            public Object doInDirContext(DirContext dirContext) throws NamingException {
+        return (List<User>) getLdapTemplate().executeReadWrite(new ContextExecutor() {
+            public Object executeWithContext(DirContext dirContext) throws NamingException {
                 List<User> users = new ArrayList<User>();
                 
                 BasicAttributes atts = new BasicAttributes();
@@ -158,7 +155,7 @@ public class LdapUserManager
                 while (results.hasMore()) {
                     SearchResult result = results.next();
                     
-                    users.add((User) userMapper.mapAttributes(null, result.getAttributes()));
+                    users.add((User) userMapper.mapFromContext(result));
                 }
 
                 dirContext.close();
@@ -217,7 +214,7 @@ public class LdapUserManager
         return ldapTemplate;
     }
     
-    public void setInitialDirContextFactory(InitialDirContextFactory initialDirContextFactory) {
+    public void setInitialDirContextFactory(ContextSource initialDirContextFactory) {
         this.initialDirContextFactory = initialDirContextFactory;
     }
 
@@ -237,7 +234,7 @@ public class LdapUserManager
         this.userSearchAttributes = userSearchAttributes;
     }
 
-    public void setUserMapper(LdapEntryMapper userMapper) {
+    public void setUserMapper(ContextMapper userMapper) {
         this.userMapper = userMapper;
     }
 

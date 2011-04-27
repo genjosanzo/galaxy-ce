@@ -9,9 +9,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 
-import org.acegisecurity.ldap.InitialDirContextFactory;
-import org.acegisecurity.ldap.LdapCallback;
-import org.acegisecurity.ldap.LdapTemplate;
 import org.apache.directory.server.ldap.LdapService;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.mule.galaxy.Item;
@@ -23,12 +20,15 @@ import org.mule.galaxy.test.AbstractGalaxyTest;
 import org.mule.galaxy.util.GalaxyUtils;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.ldap.core.ContextExecutor;
+import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.LdapTemplate;
 
 /**
  * Tests LDAP + Galaxy.
  */
 public class IntegratedLdapTest extends AbstractGalaxyTest {
-    protected  InitialDirContextFactory initialDirContextFactory;
+    protected  ContextSource initialDirContextFactory;
     
     final String groupName = "Long - name with asdfsadfdwfsd";
     final String name = "cn=" + groupName + ",ou=groups,ou=system";
@@ -92,12 +92,11 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
         group.setName(groupName);
         accessControlManager.save(group);
         
-        InitialDirContextFactory factory = (InitialDirContextFactory) applicationContext.getBean("initialDirContextFactory");
+        ContextSource factory = (ContextSource) applicationContext.getBean("initialDirContextFactory");
         LdapTemplate ldapTemplate = new LdapTemplate(factory);
         
-        ldapTemplate.execute(new LdapCallback() {
-
-            public Object doInDirContext(DirContext ctx) throws NamingException {
+        ldapTemplate.executeReadWrite(new ContextExecutor() {
+            public Object executeWithContext(DirContext ctx) throws NamingException {
                 BasicAttributes atts = new BasicAttributes();
                 atts.put("test", "value");
                 atts.put("objectClass", "groupOfUniqueNames");
@@ -107,7 +106,6 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
                 ctx.close();
                 return null;
             }
-            
         });
         
         logout();
@@ -120,9 +118,8 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
     protected void onTearDown() throws Exception {
         LdapTemplate ldapTemplate = new LdapTemplate(initialDirContextFactory);
         
-        ldapTemplate.execute(new LdapCallback() {
-
-            public Object doInDirContext(DirContext ctx) throws NamingException {
+        ldapTemplate.executeReadWrite(new ContextExecutor() {
+            public Object executeWithContext(DirContext ctx) throws NamingException {
                 try {
                     ctx.destroySubcontext(name);
                 } catch (Exception e) {
@@ -158,7 +155,7 @@ public class IntegratedLdapTest extends AbstractGalaxyTest {
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml",
                               "/META-INF/applicationContext-cache.xml",
-                              "/META-INF/applicationContext-acegi-security.xml",
+                              "/META-INF/applicationContext-spring-security.xml",
                               "/META-INF/applicationContext-test.xml",
                               "/server.xml",
                               "classpath*:/META-INF/galaxy-applicationContext.xml"};

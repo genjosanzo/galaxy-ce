@@ -106,7 +106,7 @@ class HeartbeatTimer extends Timer {
 
         // else follow the old method, not too a reliable one
         final String msg = t.getMessage();
-        if (msg.indexOf("/j_acegi_security_check") > -1) {
+        if (msg.indexOf("/j_spring_security_check") > -1) {
             return true;
         }
 

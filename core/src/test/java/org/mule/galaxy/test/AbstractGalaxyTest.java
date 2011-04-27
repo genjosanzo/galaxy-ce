@@ -10,10 +10,6 @@ import java.util.Map;
 
 import javax.jcr.Session;
 
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.providers.ProviderManager;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.api.JackrabbitRepository;
@@ -49,6 +45,10 @@ import org.mule.galaxy.type.TypeManager;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springmodules.jcr.SessionFactory;
@@ -193,7 +193,7 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
     protected String[] getConfigLocations() {
         return new String[] {
             "/META-INF/applicationContext-core.xml",
-            "/META-INF/applicationContext-acegi-security.xml",
+            "/META-INF/applicationContext-spring-security.xml",
             "/META-INF/applicationContext-cache.xml",            
             "classpath*:/META-INF/galaxy-applicationContext.xml",
             "/META-INF/applicationContext-test.xml"

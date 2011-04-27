@@ -22,7 +22,7 @@ public class ScriptManagerImplTest extends AbstractGalaxyTest {
         return new String[] {
             "/META-INF/applicationContext-core.xml",
             "/META-INF/applicationContext-core-extensions.xml",
-            "/META-INF/applicationContext-acegi-security.xml",
+            "/META-INF/applicationContext-spring-security.xml",
             "/META-INF/applicationContext-cache.xml",
             "classpath*:/META-INF/galaxy-applicationContext.xml",
             "/META-INF/applicationContext-test.xml"

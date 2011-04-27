@@ -15,8 +15,8 @@
             classpath:/META-INF/applicationContext-core-extensions.xml
             classpath:/META-INF/applicationContext-cache.xml
             classpath:/META-INF/applicationContext-abdera.xml
-            classpath:/META-INF/applicationContext-acegi-security.xml
-            classpath:/META-INF/applicationContext-acegi-security-web.xml
+            classpath:/META-INF/applicationContext-spring-security.xml
+            classpath:/META-INF/applicationContext-spring-security-web.xml
             classpath:/META-INF/applicationContext-web.xml
             classpath:/META-INF/applicationContext-web-plugin.xml
             classpath*:/META-INF/galaxy-applicationContext.xml
@@ -31,16 +31,15 @@
     </filter>
 
     <filter>
-        <filter-name>Acegi Filter Chain Proxy</filter-name>
-        <filter-class>
-            org.acegisecurity.util.FilterToBeanProxy
-        </filter-class>
-        <init-param>
-            <param-name>targetClass</param-name>
-            <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
-        </init-param>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
-    
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <filter>
         <filter-name>ContextPathSaver</filter-name>
         <filter-class>org.mule.galaxy.web.ContextPathSaverFilter</filter-class>
@@ -50,11 +49,6 @@
         <filter-name>ThreadLocalCache</filter-name>
         <filter-class>org.mule.galaxy.web.ThreadLocalCacheFilter</filter-class>
     </filter>
-
-    <filter-mapping>
-        <filter-name>Acegi Filter Chain Proxy</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
 
     <filter-mapping>
         <filter-name>jcr</filter-name>

@@ -1,20 +1,19 @@
 package org.mule.galaxy.impl.security;
 
-import org.acegisecurity.event.authentication.AbstractAuthenticationEvent;
-import org.acegisecurity.event.authentication.AbstractAuthenticationFailureEvent;
-import org.acegisecurity.event.authentication.InteractiveAuthenticationSuccessEvent;
-import org.acegisecurity.event.authorization.AbstractAuthorizationEvent;
-import org.acegisecurity.event.authorization.AuthorizationFailureEvent;
-import org.acegisecurity.event.authorization.AuthorizedEvent;
-import org.acegisecurity.ui.WebAuthenticationDetails;
 import org.mule.galaxy.activity.ActivityManager;
 import org.mule.galaxy.activity.ActivityManager.EventType;
 import org.mule.galaxy.util.SecurityUtils;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.access.event.AbstractAuthorizationEvent;
+import org.springframework.security.access.event.AuthorizedEvent;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
+import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.util.ClassUtils;
 
-public class AcegiAuthEventListener implements ApplicationListener {
+public class AuthEventListener implements ApplicationListener {
     
     private ActivityManager activityManager;
 

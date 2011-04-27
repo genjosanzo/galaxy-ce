@@ -31,14 +31,14 @@
     </bean>
 
     <bean id="initialDirContextFactory"
-            class="org.acegisecurity.ldap.DefaultInitialDirContextFactory"
+            class="org.springframework.security.ldap.DefaultSpringSecurityContextSource"
             depends-on="ldapService">
       <constructor-arg value="${providerURL}"/>
       <property name="managerDn"><value>${managerDn}</value></property>
       <property name="managerPassword"><value>${managerPassword}</value></property>
     </bean>
     
-    <bean id="userSearch" class="org.acegisecurity.ldap.search.FilterBasedLdapUserSearch">
+    <bean id="userSearch" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
       <constructor-arg value="${userSearchBaseContext}"/>
       <constructor-arg value="${userSearchFilterExpression}"/>
       <constructor-arg ref="initialDirContextFactory" />

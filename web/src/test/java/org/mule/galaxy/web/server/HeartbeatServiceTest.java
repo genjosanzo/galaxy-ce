@@ -29,7 +29,7 @@ public class HeartbeatServiceTest extends AbstractGalaxyTest {
     protected String[] getConfigLocations() {
         return new String[] { "/META-INF/applicationContext-core.xml",
                               "/META-INF/applicationContext-core-extensions.xml",
-                              "/META-INF/applicationContext-acegi-security.xml",
+                              "/META-INF/applicationContext-spring-security.xml",
                               "/META-INF/applicationContext-web.xml",
                               "classpath*:/META-INF/galaxy-applicationContext.xml",
                               "/META-INF/applicationContext-test.xml" };

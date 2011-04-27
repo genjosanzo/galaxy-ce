@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Application context containing authentication, channel
+  - security and web URI beans.
+  -
+  - Only used by "filter" artifact.
+  -
+  - $Id: applicationContext-spring-security.xml 1425 2006-04-28 06:43:50Z benalex $
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:security="http://www.springframework.org/schema/security"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+   <!-- ======================== FILTER CHAIN ======================= -->
+
+    <!--  if you wish to use channel security, add "channelProcessingFilter," in front
+          of "httpSessionContextIntegrationFilter" in the list below -->
+    <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
+        <security:filter-chain-map path-type="ant">
+            <security:filter-chain pattern="/**" filters="
+                httpSessionContextIntegrationFilter,
+                logoutFilter,
+                authenticationProcessingFilter,
+                basicProcessingFilter,
+                securityContextHolderAwareRequestFilter,
+                rememberMeProcessingFilter,
+                anonymousProcessingFilter,
+                switchUserProcessingFilter,
+                exceptionTranslationFilter,
+                filterInvocationInterceptor" />
+        </security:filter-chain-map>
+    </bean>
+
+   <!-- ===================== HTTP REQUEST SECURITY ==================== -->
+
+   <bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+      <property name="authenticationEntryPoint"><ref local="authenticationProcessingFilterEntryPoint"/></property>
+      <property name="accessDeniedHandler">
+          <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+              <property name="errorPage" value="/login.jsp?accessdenied=true"/>
+          </bean>
+      </property>
+   </bean>
+
+   <bean id="authenticationProcessingFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="authenticationSuccessHandler">
+          <bean class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+              <property name="defaultTargetUrl" value="/index.jsp"/>
+              <property name="alwaysUseDefaultTargetUrl" value="true"/>
+          </bean>
+      </property>
+      <property name="authenticationFailureHandler">
+          <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+              <property name="defaultFailureUrl" value="/login.jsp?login_error=1"/>
+          </bean>
+      </property>
+      <property name="filterProcessesUrl"><value>/j_spring_security_check</value></property>
+      <property name="rememberMeServices"><ref bean="rememberMeServices"/></property>
+   </bean>
+
+   <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.AuthenticationProcessingFilterEntryPoint">
+      <property name="loginFormUrl"><value>/login.jsp</value></property>
+      <property name="forceHttps"><value>false</value></property>
+   </bean>
+
+   <bean id="httpRequestAccessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+      <property name="allowIfAllAbstainDecisions"><value>false</value></property>
+      <property name="decisionVoters">
+         <list>
+            <ref bean="roleVoter"/>
+         </list>
+      </property>
+   </bean>
+    <bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
+        <property name="rolePrefix" value=""/>
+    </bean>
+    
+   <!-- Note the order that entries are placed against the objectDefinitionSource is critical.
+        The FilterSecurityInterceptor will work from the top of the list down to the FIRST pattern that matches the request URL.
+        Accordingly, you should place MOST SPECIFIC (ie a/b/c/d.*) expressions first, with LEAST SPECIFIC (ie a/.*) expressions last -->
+   <bean id="filterInvocationInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref local="httpRequestAccessDecisionManager"/></property>
+      <property name="securityMetadataSource">
+          <security:filter-security-metadata-source>
+              <security:intercept-url pattern="/logoff.jsp" access="ROLE_ANONYMOUS,role_user" />
+              <security:intercept-url pattern="/login.jsp" access="ROLE_ANONYMOUS,role_user" />
+              <security:intercept-url pattern="/login.css" access="ROLE_ANONYMOUS,role_user" />
+              <security:intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,role_user" />
+              <security:intercept-url pattern="/favicon.ico*" access="ROLE_ANONYMOUS,role_user" />
+              <security:intercept-url pattern="/handler/userservice.rpc" access="MANAGE_USERS" />
+              <security:intercept-url pattern="/j_spring_switch_user" access="ROLE_SUPERVISOR" />
+              <security:intercept-url pattern="/switchuser.jsp" access="ROLE_SUPERVISOR" />
+              <security:intercept-url pattern="/**" access="role_user" />
+          </security:filter-security-metadata-source>
+      </property>
+   </bean>
+
+   <!-- Filter used to switch the user context. Note: the switch and exit url must be secured
+        based on the role granted the ability to 'switch' to another user -->
+   <!-- In this example 'marissa' has ROLE_SUPERVISOR that can switch to regular role_user(s) -->
+   <bean id="switchUserProcessingFilter" class="org.springframework.security.web.authentication.switchuser.SwitchUserFilter">
+      <property name="userDetailsService" ref="userManager" />
+      <property name="switchUserUrl"><value>/j_spring_switch_user</value></property>
+      <property name="exitUserUrl"><value>/j_spring_exit_user</value></property>
+      <property name="targetUrl"><value>/index.jsp</value></property>
+   </bean>
+
+</beans>
