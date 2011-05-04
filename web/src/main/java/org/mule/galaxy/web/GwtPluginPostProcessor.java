@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.gwtwidgets.server.spring.RPCServiceExporter;
 import org.gwtwidgets.server.spring.ReflectionUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -23,11 +22,6 @@ public class GwtPluginPostProcessor
     private GwtRpcHandlerMapping gwtHandler;
     private ServletContext servletContext;
     boolean noweb = false;
-    
-    public GwtPluginPostProcessor() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (noweb) return bean;
@@ -58,7 +52,7 @@ public class GwtPluginPostProcessor
             if (services != null) {
 	            for (Map.Entry<String,RemoteService> e : services.entrySet()) {
 	                // create a spring service which gets mapped to the specified URL
-	                RPCServiceExporter exporter = new GwtRpcServiceExporter(Thread.currentThread().getContextClassLoader());
+	                final GwtRpcServiceExporter exporter = new GwtRpcServiceExporter(Thread.currentThread().getContextClassLoader());
 	                exporter.setResponseCachingDisabled(false);
 	                exporter.setServletContext(servletContext);
 	                exporter.setService(e.getValue());

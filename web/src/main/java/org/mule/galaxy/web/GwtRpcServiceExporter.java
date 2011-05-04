@@ -5,15 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.gwtwidgets.server.spring.GWTRPCServiceExporter;
 
-import com.google.gwt.user.client.rpc.SerializationException;
+import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
 
@@ -23,21 +27,57 @@ import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
  */
 public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
 
-    private ClassLoader classLoader;
-    
+	private static final long serialVersionUID = 1L;
 
-    public GwtRpcServiceExporter(ClassLoader classLoader) {
-        super();
-        this.classLoader = classLoader;
+	private static final Log logger = LogFactory.getLog("org.mule.galaxy.web.services");
+	private final ClassLoader classLoader;
+	private final long maxExpectedExecutionTime;
+	private static final long DEFAULT_MAX_EXPECTED_EXECUTION_TIME = 5000L;
+    
+    public GwtRpcServiceExporter(final ClassLoader classLoader) {
+        this(classLoader, GwtRpcServiceExporter.DEFAULT_MAX_EXPECTED_EXECUTION_TIME);
+    }
+
+    public GwtRpcServiceExporter(final ClassLoader classLoader, final long maxExpectedExecutionTime) {
+    	this.classLoader = classLoader;
+        this.maxExpectedExecutionTime = maxExpectedExecutionTime;
+    }
+
+    protected String extractMethodInvocationIdentifier(final Method method) {
+    	return method.getDeclaringClass().getSimpleName()+":"+method.getName()+"("+Arrays.toString(method.getParameterTypes());
     }
 
     @Override
-    public String processCall(String payload) throws SerializationException {
-        Thread.currentThread().setContextClassLoader(classLoader);
-        
-        return super.processCall(payload);
+    protected final String invokeMethodOnService(final Object service, final Method targetMethod, final Object[] targetParameters, final RPCRequest rpcRequest) throws Exception {
+		final long before = System.currentTimeMillis();
+		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(this.classLoader);
+		try {
+			return super.invokeMethodOnService(service, targetMethod, targetParameters, rpcRequest);
+		} finally {
+			Thread.currentThread().setContextClassLoader(classLoader);
+			final long time = System.currentTimeMillis()-before;
+			final String message = "Execution of <"+extractMethodInvocationIdentifier(targetMethod)+")> with parameters <"+Arrays.toString(targetParameters)+"> took <"+time+"> ms.";
+			if (time > this.maxExpectedExecutionTime) {
+				if (GwtRpcServiceExporter.logger.isWarnEnabled()) {
+					GwtRpcServiceExporter.logger.warn(message);
+				}
+			} else {
+				if (GwtRpcServiceExporter.logger.isDebugEnabled()) {
+					GwtRpcServiceExporter.logger.debug(message);
+				}
+			}
+		}
     }
-    
+
+    @Override
+    protected String handleServiceException(final Exception e, final Object service, final Method targetMethod, final RPCRequest rpcRequest) throws Exception {
+    	if (GwtRpcServiceExporter.logger.isWarnEnabled()) {
+    		GwtRpcServiceExporter.logger.warn("Got exception while executing <"+extractMethodInvocationIdentifier(targetMethod)+">: "+e.toString());
+    	}
+    	return super.handleServiceException(e, service, targetMethod, rpcRequest);
+    }
+
     protected SerializationPolicy doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL,
                                                            String strongName) {
         // The request can tell you the path of the web app relative to the
@@ -128,5 +168,5 @@ public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
     public String getServletName() {
         return "GwtRpcServiceExorter";
     }
-    
+
 }
