@@ -35,6 +35,7 @@ import java.util.Collection;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.ui.AbstractErrorHandlingPopup;
 import org.mule.galaxy.web.client.ui.dialog.LightBox;
+import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.panel.SelectionPanel;
 import org.mule.galaxy.web.client.ui.panel.SelectionPanel.ItemInfo;
@@ -55,6 +56,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -78,31 +80,28 @@ public class UserForm extends AbstractAdministrationForm {
     private CheckBox resetPassword;
     
     private Collection<WGroup> wgroups;
-    
+    private static final AdministrationMessages administrationMessages = (AdministrationMessages) GWT.create(AdministrationMessages.class);
 
     public UserForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "users", "User was saved.", "User was deleted.",
-                "A user with that username already exists.");
+        super(adminPanel, "users", administrationMessages.userSaved(), administrationMessages.userDeleted(),
+                administrationMessages.userExists());
 
-        galaxy = (Galaxy) adminPanel.getGalaxy();
-        setHelpPanel(new InlineHelpPanel(
-                galaxy.getAdministrationConstants().admin_Add_User_Tip(), 21));
-
+       setHelpPanel(new InlineHelpPanel(administrationMessages.addUserTip(), 21));
     }
 
     protected void addFields(final FlexTable table) {
         // a simple row counter to simplify table.setWidget() calls
         int row = 0;
-        table.setText(row++, 0, "Username:");
-        table.setText(row++, 0, "Name:");
-        table.setText(row++, 0, "Email:");
+        table.setText(row++, 0, administrationMessages.usernameForm());
+        table.setText(row++, 0, administrationMessages.name());
+        table.setText(row++, 0, administrationMessages.email());
         if (newItem) {
-            table.setText(row++, 0, "Password:");
-            table.setText(row++, 0, "Confirm Password:");
+            table.setText(row++, 0, administrationMessages.password());
+            table.setText(row++, 0, administrationMessages.confirmPassword());
         } else {
             table.setText(row++, 0, "");
         }
-        table.setText(row++, 0, "Groups:");
+        table.setText(row++, 0, administrationMessages.groups());
 
         // reset row counter for input fields
         row = 0;
@@ -117,9 +116,9 @@ public class UserForm extends AbstractAdministrationForm {
                 public String validate(Field<?> field, String s) {
                     final String reason = super.validate(field, s);
                     if (reason != null) {
-                        return "Cannot contain '/'";
+                        return administrationMessages.cannotContain();
                     } else if ((s == null || s.trim().length() < 1)) {
-                        return "This field is required";
+                        return administrationMessages.fieldRequired();
                     }
                     return null;
                 }
@@ -165,7 +164,7 @@ public class UserForm extends AbstractAdministrationForm {
             table.setWidget(row, 1, confirmTB);
         } else {
             row++;
-            resetPassword = new CheckBox(" Reset Password ");
+            resetPassword = new CheckBox(administrationMessages.resetPassword());
             resetPassword.getElement().setId(MANAGE_USER_CHECKBOX_PASSWORD_RESET_ID);
             table.setWidget(row, 1, resetPassword);
             resetPassword.addClickListener(new ClickListener() {
@@ -180,7 +179,7 @@ public class UserForm extends AbstractAdministrationForm {
         }
 
         row++;
-        table.setText(row, 1, "Loading Groups...");
+        table.setText(row, 1, administrationMessages.loadingGroups());
         // temp var for anonymous class
         final int groupRow = row;
         getSecurityService().getGroups(new AbstractCallback(adminPanel) {
@@ -201,7 +200,7 @@ public class UserForm extends AbstractAdministrationForm {
         confirmTB.setAllowBlank(false);
         confirmTB.setPassword(true);
         confirmTB.setMinLength(PASSWORD_MIN_LENGTH);
-        confirmTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
+        confirmTB.setToolTip(administrationMessages.charactersLength(PASSWORD_MIN_LENGTH));
         return confirmTB;
     }
 
@@ -212,7 +211,7 @@ public class UserForm extends AbstractAdministrationForm {
         }
         passTB.setAllowBlank(false);
         passTB.setPassword(true);
-        passTB.setToolTip("Must be at least " + PASSWORD_MIN_LENGTH + " characters in length");
+        passTB.setToolTip(administrationMessages.charactersLength(PASSWORD_MIN_LENGTH));
         passTB.setMinLength(PASSWORD_MIN_LENGTH);
         return passTB;
     }
@@ -223,9 +222,9 @@ public class UserForm extends AbstractAdministrationForm {
 
     public String getTitle() {
         if (newItem) {
-            return "Add User";
+            return administrationMessages.addUser();
         } else {
-            return "Edit User " + user.getUsername();
+            return administrationMessages.editUser() + user.getUsername();
         }
     }
 
@@ -248,7 +247,7 @@ public class UserForm extends AbstractAdministrationForm {
                 return ((WGroup) o).getId();
             }
         };
-        groupPanel = new SelectionPanel(groups, itemInfo, user.getGroupIds(), 6, "Available Groups", "Joined Groups");
+        groupPanel = new SelectionPanel(groups, itemInfo, user.getGroupIds(), 6, administrationMessages.availableGroups(), administrationMessages.joinedGroups());
         groupPanel.getElement().setId(MANAGE_USER_GROUPS_ID);
         table.setWidget(currentRow, 1, groupPanel);
         FlexTable.FlexCellFormatter cellFormatter = (FlexTable.FlexCellFormatter) table.getCellFormatter();
@@ -295,21 +294,21 @@ public class UserForm extends AbstractAdministrationForm {
             isOk &= confirmTB.validate();
             // Passwords must match.
             if (!passTB.getValue().equals(confirmTB.getValue())) {
-                getErrorPanel().addMessage("Passwords must match");
+                getErrorPanel().addMessage(administrationMessages.passwordsMatch());
                 isOk = false;
             }
         }
 
         // At least one group must be selected.
         if (groupPanel.getSelectedValues().isEmpty()) {
-            getErrorPanel().addMessage("User must be a member of at least one group");
+            getErrorPanel().addMessage(administrationMessages.userWarning());
             isOk = false;
         }
 
         // Make sure admin user is still a member of the Administrators group.
         if (!(newItem) && user.getUsername().equals(UBER_USER)) {
             if (!(groupPanel.getSelectedValues().contains(getAdminGroupKey(this.wgroups)))) {
-                getErrorPanel().addMessage(UBER_USER + " user must be a member of the " + UBER_GROUP + " group");
+                getErrorPanel().addMessage(UBER_USER + administrationMessages.userMemberOf(UBER_GROUP));
                 isOk = false;
             }
         }
@@ -346,7 +345,7 @@ public class UserForm extends AbstractAdministrationForm {
                 }
             }
         };
-        MessageBox.confirm("Confirm", "Are you sure you want to delete user " + user.getName() + " (" + user.getUsername() + ")?", l);
+        MessageBox.confirm(administrationMessages.confirm(), administrationMessages.deleteUser() + user.getName() + " (" + user.getUsername() + ")?", l);
     }
 
     private class ResetPasswordDialog extends AbstractErrorHandlingPopup {
@@ -354,13 +353,13 @@ public class UserForm extends AbstractAdministrationForm {
         public ResetPasswordDialog() {
 
             fpanel.setHeaderVisible(true);
-            fpanel.setHeading("Reset&nbsp;Password");
+            fpanel.setHeading(administrationMessages.resetPasswordButton());
 
             passTB = createPasswordTextBox(MANAGE_USER_NEW_PASSWORD_ID);
-            passTB.setFieldLabel("New Password");
+            passTB.setFieldLabel(administrationMessages.newPassword());
 
             confirmTB = createPasswordConfirmTextBox(MANAGE_USER_NEW_PASSWORD2_ID);
-            confirmTB.setFieldLabel("Confirm Password");
+            confirmTB.setFieldLabel(administrationMessages.confirmPasswordField());
 
             fpanel.add(passTB);
             fpanel.add(confirmTB);
@@ -379,7 +378,7 @@ public class UserForm extends AbstractAdministrationForm {
                 }
             });
 
-            Button cancelButton = new Button("Cancel");
+            Button cancelButton = new Button(administrationMessages.cancel());
             cancelButton.setId(MANAGE_USER_NEW_PASSWORD_BUTTON_CANCEL_ID);
             cancelButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 

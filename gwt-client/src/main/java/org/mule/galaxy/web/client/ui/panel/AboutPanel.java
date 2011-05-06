@@ -18,12 +18,17 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
+import org.mule.galaxy.web.client.ui.help.GalaxyMessages;
+
 import com.extjs.gxt.ui.client.widget.Html;
+import com.google.gwt.core.client.GWT;
 
 /**
  * Used to display version and license information
  */
 public class AboutPanel extends AbstractInfoPanel {
+	
+	private static final GalaxyMessages galaxyMessages = (GalaxyMessages) GWT.create(GalaxyMessages.class);
 
     public AboutPanel() {
         super();
@@ -34,7 +39,7 @@ public class AboutPanel extends AbstractInfoPanel {
     }
 
     public String getHeading() {
-        return "About...";
+        return galaxyMessages.aboutSpace();
     }
 
     @Override

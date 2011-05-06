@@ -21,6 +21,7 @@ package org.mule.galaxy.web.client.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
 import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.renderer.FauxLinkRenderer;
@@ -44,12 +45,15 @@ import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 
 /**
  * Show all scheduled items
  */
 public class ScheduleListPanel extends AbstractAdministrationComposite {
+	
+	private static final AdministrationMessages administrationMessages = (AdministrationMessages) GWT.create(AdministrationMessages.class);
 
     public ScheduleListPanel(AdministrationPanel a) {
         super(a);
@@ -73,11 +77,11 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
     private void showJobs(List<WScriptJob> jobs) {
 
         ContentPanel contentPanel = new FullContentPanel();
-        contentPanel.setHeading("Scheduled Jobs");
+        contentPanel.setHeading(administrationMessages.scheduledJobs());
 
         // add inline help string and widget
         contentPanel.setTopComponent(
-                new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().admin_Scheduler_Tip(), 12));
+                new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationMessages().schedulerTip(), 12));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WScriptJob.class);
 
@@ -89,13 +93,13 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(r);
         
-        ColumnConfig nameConfig = new ColumnConfig("name", "Name", 150);
+        ColumnConfig nameConfig = new ColumnConfig("name", administrationMessages.scheduleName(), 150);
         nameConfig.setRenderer(new FauxLinkRenderer());
         columns.add(nameConfig);
 
-        columns.add(new ColumnConfig("scriptName", "Script", 150));
-        columns.add(new ColumnConfig("expression", "Cron Expression", 150));
-        columns.add(new ColumnConfig("description", "Description", 300));
+        columns.add(new ColumnConfig("scriptName", administrationMessages.script(), 150));
+        columns.add(new ColumnConfig("expression", administrationMessages.cronExpression(), 150));
+        columns.add(new ColumnConfig("description", administrationMessages.description(), 300));
         ColumnModel cm = new ColumnModel(columns);
 
         Grid<BeanModel> grid = new Grid<BeanModel>(store, cm);
@@ -140,8 +144,8 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
             }
         };
 
-        filter.setName("Search");
-        filter.setFieldLabel("Search");
+        filter.setName(administrationMessages.search());
+        filter.setFieldLabel(administrationMessages.search());
         filter.setWidth(300);
         filter.setTriggerStyle("x-form-search-trigger");
         filter.addStyleName("x-form-search-field");
@@ -151,7 +155,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
         ToolBar toolbar = new ToolBar();
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
-        toolbar.add(createToolbarHistoryButton("New", "schedules/new"));
+        toolbar.add(createToolbarHistoryButton(administrationMessages.newUser(), "schedules/new"));
 
         contentPanel.add(toolbar);
         contentPanel.add(grid);

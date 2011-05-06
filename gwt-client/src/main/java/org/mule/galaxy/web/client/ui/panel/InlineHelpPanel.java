@@ -1,11 +1,13 @@
 package org.mule.galaxy.web.client.ui.panel;
 
+import org.mule.galaxy.web.client.ui.help.PanelMessages;
 import org.mule.galaxy.web.client.ui.util.StringUtil;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.google.gwt.core.client.GWT;
 
 
 /**
@@ -14,6 +16,7 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 public class InlineHelpPanel extends ContentPanel {
 
     private String status;
+    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public InlineHelpPanel() {
         this(true);
@@ -67,8 +70,8 @@ public class InlineHelpPanel extends ContentPanel {
             public void handleEvent(ComponentEvent ce) {
                 String s = header;
                 if (body != null) {
-                    s = s + WidgetHelper.createFauxLink(" [less]");
-                    getHeader().setToolTip("Collapse");
+                    s = s + WidgetHelper.createFauxLink(panelMessages.less());
+                    getHeader().setToolTip(panelMessages.collapse());
                 }
                 setHeading(s);
             }
@@ -78,8 +81,8 @@ public class InlineHelpPanel extends ContentPanel {
             public void handleEvent(ComponentEvent ce) {
                 String s = header;
                 if (body != null) {
-                    s = s + WidgetHelper.createFauxLink(" [more]");
-                    getHeader().setToolTip("Expand");
+                    s = s + WidgetHelper.createFauxLink(panelMessages.more());
+                    getHeader().setToolTip(panelMessages.expand());
                 }
                 setHeading(s);
             }

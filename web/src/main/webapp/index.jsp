@@ -20,6 +20,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="gwt:property" content="locale=<%= request.getLocale()%>">
     <title>MuleSoft | <%=mgr.getProductName()%>
     </title>
     <link type="text/css" rel="stylesheet" href="column-view.css"/>

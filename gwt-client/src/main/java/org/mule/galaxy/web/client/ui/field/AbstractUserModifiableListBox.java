@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mule.galaxy.web.client.ui.grid.BasicGrid;
+import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BaseModel;
@@ -42,6 +43,7 @@ import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
 import com.extjs.gxt.ui.client.widget.layout.TableLayout;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
@@ -53,6 +55,7 @@ public abstract class AbstractUserModifiableListBox extends ContentPanel {
     private TextField<String> textBox;
     private ListStore<ModelData> store;
     private BasicGrid<ModelData> grid;
+    private static final AdministrationMessages administrationMessages = (AdministrationMessages) GWT.create(AdministrationMessages.class);
 
     public AbstractUserModifiableListBox(Collection list, Validator validator) {
         super();
@@ -74,7 +77,7 @@ public abstract class AbstractUserModifiableListBox extends ContentPanel {
 
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
 
-        ColumnConfig nameConfig = new ColumnConfig("value", "Name", 200);
+        ColumnConfig nameConfig = new ColumnConfig("value", administrationMessages.userName(), 200);
         columns.add(nameConfig);
 
         ColumnConfig edit = new ColumnConfig("remove", " ", 60);
@@ -111,7 +114,7 @@ public abstract class AbstractUserModifiableListBox extends ContentPanel {
 
         textBox = new RequiredTextField<String>();
         textBox.setWidth(260);
-        addButton = new Button("Add", new SelectionListener<ButtonEvent>() {
+        addButton = new Button(administrationMessages.add(), new SelectionListener<ButtonEvent>() {
 
             @Override
             public void componentSelected(ButtonEvent ce) {
