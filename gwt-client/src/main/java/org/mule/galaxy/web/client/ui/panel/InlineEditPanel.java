@@ -18,14 +18,12 @@
 
 package org.mule.galaxy.web.client.ui.panel;
 
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -45,7 +43,6 @@ public abstract class InlineEditPanel extends Composite {
     private ErrorPanel errorPanel;
     private Button saveButton;
     private Button cancelButton;
-    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public InlineEditPanel(ErrorPanel errorPanel) {
         super();
@@ -71,7 +68,7 @@ public abstract class InlineEditPanel extends Composite {
 
         WidgetComponent imageWrapper = new WidgetComponent(editImg);
         imageWrapper.setStyleAttribute("display", "inline");
-        imageWrapper.setToolTip(panelMessages.editServerName());
+        imageWrapper.setToolTip("Edit Server Name");
         panel.add(imageWrapper);
     }
 
@@ -85,7 +82,7 @@ public abstract class InlineEditPanel extends Composite {
         final HorizontalPanel row = new HorizontalPanel();
         row.add(createEditWidget());
 
-        saveButton = new Button(panelMessages.save());
+        saveButton = new Button("Save");
         saveButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
             @Override
             public void componentSelected(ButtonEvent ce) {
@@ -94,7 +91,7 @@ public abstract class InlineEditPanel extends Composite {
             }
         });
 
-        cancelButton = new Button(panelMessages.cancel());
+        cancelButton = new Button("Cancel");
         cancelButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
             @Override
             public void componentSelected(ButtonEvent ce) {

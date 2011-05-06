@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mule.galaxy.web.client.PageManager;
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.LayoutRegion;
@@ -32,7 +31,6 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -48,7 +46,6 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
     private Widget topWidget;
     private FlowPanel leftMenu;
     private boolean firstShow = true;
-    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     private LayoutContainer base;
     private ContentPanel centerPanel;
@@ -213,7 +210,7 @@ public abstract class ApplicationPanel extends AbstractErrorShowingComposite {
                                      WidgetHelper form) {
 
         Hyperlink link = new Hyperlink(title, tokenBase);
-        Hyperlink addLink = new Hyperlink(panelMessages.add(), tokenBase + "/new");
+        Hyperlink addLink = new Hyperlink("Add", tokenBase + "/new");
 
         createDivWithAdd(manageBox, link, addLink);
         createPageInfo(tokenBase, list);

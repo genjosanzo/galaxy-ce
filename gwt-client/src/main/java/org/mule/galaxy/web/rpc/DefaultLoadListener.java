@@ -18,7 +18,6 @@
 
 package org.mule.galaxy.web.rpc;
 
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 import com.extjs.gxt.ui.client.data.LoadEvent;
@@ -27,7 +26,6 @@ import com.google.gwt.core.client.GWT;
 
 public class DefaultLoadListener extends LoadListener {
     private ErrorPanel errorPanel;
-    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public DefaultLoadListener(ErrorPanel panel) {
         super();
@@ -42,9 +40,9 @@ public class DefaultLoadListener extends LoadListener {
         
         GWT.log("Exception loading data.", caught);
         if (msg != null || !"".equals(msg)) {
-            errorPanel.setMessage(panelMessages.errorCommunicatingServer() + caught.getMessage() + "");
+            errorPanel.setMessage("Error communicating with server: " + caught.getMessage() + "");
         } else {
-            errorPanel.setMessage(panelMessages.errorCommunicatingExeption() + caught.getClass().getName());
+            errorPanel.setMessage("There was an error communicating with the server. Please try again." + caught.getClass().getName());
         }
     }
     

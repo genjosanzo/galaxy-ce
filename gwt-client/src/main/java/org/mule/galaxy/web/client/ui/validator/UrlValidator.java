@@ -1,18 +1,14 @@
 package org.mule.galaxy.web.client.ui.validator;
 
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
-
 import com.extjs.gxt.ui.client.widget.form.Field;
-import com.google.gwt.core.client.GWT;
 
 public class UrlValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
 
-	 private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
     public String validate(Field<?> field, String value) {
         if (isValidUrl(value)) {
             return null;
         }
-        return panelMessages.urlMalformed();
+        return "The Url is malformed";
     }
 
     public static boolean isValidUrl(String value) {

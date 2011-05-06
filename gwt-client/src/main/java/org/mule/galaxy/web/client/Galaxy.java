@@ -21,15 +21,11 @@ import static org.mule.galaxy.web.client.ClientId.MAIN_WELCOME_MESSAGE_ID;
 import static org.mule.galaxy.web.client.ClientId.TAB_HEADER_ADMINISTRATION_ID;
 import static org.mule.galaxy.web.client.ui.panel.WidgetHelper.newSpacerPipe;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.ui.ExternalHyperlink;
-import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
-import org.mule.galaxy.web.client.ui.help.GalaxyMessages;
+import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
+import org.mule.galaxy.web.client.ui.help.BaseConstants;
+import org.mule.galaxy.web.client.ui.help.BaseMessages;
 import org.mule.galaxy.web.client.ui.panel.AboutPanel;
 import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 import org.mule.galaxy.web.client.ui.panel.PluginPanel;
@@ -69,6 +65,11 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -85,11 +86,12 @@ public class Galaxy {
     protected List<WExtensionInfo> extensions;
     protected Label product;
     protected InlineFlowPanel footerPanel;
-    protected int repositoryTabIndex;
-   
-    private GalaxyMessages galaxyMessages;
-    private AdministrationMessages administrationMessages;
 
+    protected int repositoryTabIndex;
+    private BaseConstants baseConstants;
+    private BaseMessages baseMessages;
+
+    private AdministrationConstants administrationConstants;
     protected Collection<PluginTabInfo> plugins;
     protected boolean userManagementSupported;
     private PageManager pageManager;
@@ -122,9 +124,10 @@ public class Galaxy {
         target = (ServiceDefTarget) adminService;
         target.setServiceEntryPoint(baseUrl + "../handler/admin.rpc");
 
-        this.galaxyMessages = (GalaxyMessages) GWT.create(GalaxyMessages.class);
-        this.administrationMessages = (AdministrationMessages) GWT.create(AdministrationMessages.class);
+        this.baseConstants = (BaseConstants) GWT.create(BaseConstants.class);
+        this.baseMessages = (BaseMessages) GWT.create(BaseMessages.class);
 
+        this.administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
         base = new Viewport();
         base.setBorders(false);
         base.setLayout(new BorderLayout());
@@ -161,7 +164,7 @@ public class Galaxy {
         
         user = (WUser) appInfo.getUser();
         // always the left most item
-        final Label welcomeLabel = new Label(galaxyMessages.welcome() + user.getName());
+        final Label welcomeLabel = new Label("Welcome, " + user.getName());
         welcomeLabel.getElement().setId(MAIN_WELCOME_MESSAGE_ID);
         rightHeaderPanel.insert(welcomeLabel, 0);
         
@@ -208,7 +211,7 @@ public class Galaxy {
      * Adds to the left of the  copyright info.
      */
     protected void prependFooterConent() {
-        product = new Label(galaxyMessages.about() + getProductName());
+        product = new Label("About " + getProductName());
         product.setStyleName("footer-link footer-text");
         product.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
@@ -260,7 +263,7 @@ public class Galaxy {
 
     protected final Image createLogo(final String url) {
         final Image logo = new Image(url);
-        logo.setTitle(galaxyMessages.home());
+        logo.setTitle("Home");
         logo.addClickHandler(new ClickHandler() {
             public void onClick(final ClickEvent clickEvent) {
                 onLogoClick(clickEvent);
@@ -290,7 +293,7 @@ public class Galaxy {
         InlineFlowPanel options = new InlineFlowPanel();
         options.setStyleName("header-right-options");
 
-        ExternalHyperlink logout = new ExternalHyperlink(galaxyMessages.logOut(), GWT.getHostPageBaseURL() + "j_logout");
+        ExternalHyperlink logout = new ExternalHyperlink("Log Out", GWT.getHostPageBaseURL() + "j_logout");
         options.add(newSpacerPipe());
         options.add(logout);
 
@@ -305,7 +308,7 @@ public class Galaxy {
     }
 
     protected String getFooterText() {
-        return galaxyMessages.rights();
+        return "&copy; MuleSoft, Inc. All rights reserved";
     }
 
     protected native String getProductName()
@@ -321,7 +324,7 @@ public class Galaxy {
 
     protected void loadAdminTab() {
         if (showAdminTab()) {
-            adminTabIndex = pageManager.createTab(galaxyMessages.Administration(), "admin", administrationMessages.tabTip(), TAB_HEADER_ADMINISTRATION_ID);
+            adminTabIndex = pageManager.createTab("Administration", "admin", administrationConstants.admin_TabTip(), TAB_HEADER_ADMINISTRATION_ID);
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
     }
@@ -386,7 +389,7 @@ public class Galaxy {
      */
     public void setInfoMessageAndGoto(String token, String message) {
         History.newItem(token);
-        Info.display(galaxyMessages.info(), message);
+        Info.display("Info:", message);
     }
 
     public PageManager getPageManager() {
@@ -419,6 +422,14 @@ public class Galaxy {
 
     public TabPanel getTabPanel() {
         return pageManager.getTabPanel();
+    }
+
+    public BaseConstants getBaseConstants() {
+        return baseConstants;
+    }
+
+    public BaseMessages getBaseMessages() {
+        return baseMessages;
     }
 
     public boolean hasPermission(final String requiredPermission) {
@@ -458,8 +469,8 @@ public class Galaxy {
         return null;
     }
 
-    public AdministrationMessages getAdministrationMessages() {
-        return administrationMessages;
+    public AdministrationConstants getAdministrationConstants() {
+        return administrationConstants;
     }
 
     public void setMessageAndGoto(String successToken, String successMessage) {
