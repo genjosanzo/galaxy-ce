@@ -476,7 +476,7 @@ public class JcrUtil {
      * @return
      */
     public static boolean isSimpleType(Class<?> cls) {
-        return Number.class.isAssignableFrom(cls) || cls == long.class || cls == double.class || cls == short.class
+        return Number.class.isAssignableFrom(cls) || cls == int.class || cls == long.class || cls == double.class || cls == short.class
                 || cls == String.class
                 || cls == Calendar.class
                 || cls == Identifiable.class
