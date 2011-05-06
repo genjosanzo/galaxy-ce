@@ -18,8 +18,10 @@
 
 package org.mule.galaxy.web.client.ui.dialog;
 
+import org.mule.galaxy.web.client.ui.help.PanelMessages;
 import org.mule.galaxy.web.client.ui.panel.InlineFlowPanel;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -27,13 +29,15 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ConfirmDialog extends DialogBox
 {
-
+	
+	private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
+	
     public ConfirmDialog(final ConfirmDialogListener confirmListener, final String caption) {
       setText(caption);
 
       InlineFlowPanel buttonPanel = new InlineFlowPanel();
 
-      Button cancelButton = new Button("Cancel");
+      Button cancelButton = new Button(panelMessages.cancel());
       cancelButton.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
             ConfirmDialog.this.hide();

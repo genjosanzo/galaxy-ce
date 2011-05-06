@@ -18,7 +18,10 @@
 
 package org.mule.galaxy.web.client.ui.validator;
 
+import org.mule.galaxy.web.client.ui.help.PanelMessages;
+
 import com.extjs.gxt.ui.client.widget.form.Field;
+import com.google.gwt.core.client.GWT;
 
 /**
  * Checks that a String is not null or empty (after trimming it).
@@ -26,12 +29,13 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 public class FieldNotEmptyValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
 
     protected static final int MIN_LENGTH = 1;
+    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public String validate(Field<?> field, String value) {
         if (!(value == null || value.trim().length() < 1)) {
             return null;
         }
-        return "This field is required";
+        return panelMessages.fieldRequired();
     }
 
 }
