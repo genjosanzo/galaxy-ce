@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mule.galaxy.web.client.Galaxy;
+import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
 import org.mule.galaxy.web.client.ui.panel.AbstractFlowComposite;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 import org.mule.galaxy.web.client.ui.panel.FullContentPanel;
@@ -57,10 +58,12 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     private Button resetButton;
     protected final Galaxy galaxy;
     protected FlowPanel mainPanel;
+    private AdministrationMessages administrationMessages;
 
     public AbstractGroupPanel(Galaxy galaxy, ErrorPanel errorPanel) {
         super();
         this.galaxy = galaxy;
+        this.administrationMessages = galaxy.getAdministrationMessages();
         this.errorPanel = errorPanel;
         mainPanel = panel;
     }
@@ -69,7 +72,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
     public void doShowPage() {
         // table.setStyleName("permission-grant-table");
         mainPanel.clear();
-        mainPanel.add(new Label("Loading..."));
+        mainPanel.add(new Label(administrationMessages.loading()));
 
         AbstractCallback callback = new AbstractCallback(errorPanel) {
             public void onCallSuccess(Object permissions) {
@@ -99,7 +102,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         mainPanel.clear();
 
         ContentPanel cp = new FullContentPanel();
-        cp.setHeading("User Groups");
+        cp.setHeading(administrationMessages.usersGroup());
 
         // add inline help string and widget
 //        cp.setTopComponent(new InlineHelpPanel(galaxy.getRepositoryConstants().repo_Security_Tip(), 15));
@@ -133,7 +136,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             int row = rows.indexOf(groupName) + 1;
 
             // certain groups should not be removed or edited via the GUI
-            boolean isUberGroup = groupName.equals("Administrators") || groupName.equals("Anonymous");
+            boolean isUberGroup = groupName.equals(administrationMessages.administrators()) || groupName.equals(administrationMessages.anonymous());
             if (isUberGroup) {
                 table.setWidget(row, 0, new Label(groupName));
             } else {
@@ -172,13 +175,13 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
         };
 
         
-        applyButton = new Button("Save", listener);
-        resetButton = new Button("Cancel", listener);
+        applyButton = new Button(administrationMessages.save(), listener);
+        resetButton = new Button(administrationMessages.cancel(), listener);
 
         ButtonBar bb = new ButtonBar();
         bb.add(applyButton);
         bb.add(resetButton);
-        bb.add(createHistoryButton("New", "groups/new"));
+        bb.add(createHistoryButton(administrationMessages.newAdmin(), "groups/new"));
 
         //table.setWidget(rows.size() + 1, 0, bb);
         cp.add(bb);
@@ -217,7 +220,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             }
 
             public void onCallSuccess(Object arg0) {
-                errorPanel.setMessage("Permissions Saved");
+                errorPanel.setMessage(administrationMessages.permissionsSaved());
                 setEnabled(true);
             }
         };
