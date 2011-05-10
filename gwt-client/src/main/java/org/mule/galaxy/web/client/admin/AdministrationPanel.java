@@ -29,7 +29,6 @@ import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
 import org.mule.galaxy.web.client.ui.NavMenuItem;
-import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
 import org.mule.galaxy.web.client.ui.panel.BasicContentPanel;
 import org.mule.galaxy.web.client.ui.panel.MenuPanel;
 import org.mule.galaxy.web.client.ui.panel.WidgetHelper;
@@ -46,11 +45,9 @@ public class AdministrationPanel extends MenuPanel {
     protected List<NavMenuItem> manageItems;
     protected List<NavMenuItem> utilityItems;
     private ContentPanel accordionPanel;
-    private AdministrationMessages administrationMessages;
 
     protected AdministrationPanel(Galaxy galaxy, boolean init) {
         this.galaxy = galaxy;
-        this.administrationMessages = galaxy.getAdministrationMessages();
         if (init) {
             init();
         }
@@ -77,7 +74,7 @@ public class AdministrationPanel extends MenuPanel {
         utilityItems = new ArrayList<NavMenuItem>();
 
         if (galaxy.hasPermission("MANAGE_USERS") && galaxy.isUserManagementSupported()) {
-            addManageMenuItem(new NavMenuItem(administrationMessages.users(),
+            addManageMenuItem(new NavMenuItem("Users",
                     "users",
                     new UserListPanel(this),
                     new UserForm(this)));
@@ -91,11 +88,11 @@ public class AdministrationPanel extends MenuPanel {
         } */
 
         if (galaxy.hasPermission("EXECUTE_ADMIN_SCRIPTS")) {
-            addUtilityMenuItem(new NavMenuItem(administrationMessages.adminShell(),
+            addUtilityMenuItem(new NavMenuItem("Admin Shell",
                     "adminShell",
                     new AdminShellPanel(this)));
     
-            addUtilityMenuItem(new NavMenuItem(administrationMessages.scheduler(),
+            addUtilityMenuItem(new NavMenuItem("Scheduler",
                     "schedules",
                     new ScheduleListPanel(this),
                     new ScheduleForm(this)));
@@ -120,14 +117,14 @@ public class AdministrationPanel extends MenuPanel {
         if (manageItems.size() > 0) {
             ContentPanel managePanel = new BasicContentPanel();
             managePanel.setId(ADMIN_PANEL_LIST_VIEW_MANAGE_ID);
-            WidgetHelper.createPanelWithListView(administrationMessages.manage(), manageItems, managePanel);
+            WidgetHelper.createPanelWithListView("Manage", manageItems, managePanel);
             managePanel.setStyleAttribute("margin-bottom", "4px"); 
             accordionPanel.add(managePanel);
             
         }
         if (utilityItems.size() > 0) {
             ContentPanel utilityPanel = new BasicContentPanel();
-            WidgetHelper.createPanelWithListView(administrationMessages.utility(), utilityItems, utilityPanel);
+            WidgetHelper.createPanelWithListView("Utility", utilityItems, utilityPanel);
             utilityPanel.setId(ADMIN_PANEL_LIST_VIEW_UTILITY_ID);
             accordionPanel.add(utilityPanel);
         }

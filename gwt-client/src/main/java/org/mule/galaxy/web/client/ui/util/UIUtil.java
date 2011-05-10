@@ -3,17 +3,12 @@ package org.mule.galaxy.web.client.ui.util;
 import java.util.Date;
 import java.util.Map;
 
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
-
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.util.Util;
 import com.extjs.gxt.ui.client.widget.Dialog;
-import com.google.gwt.core.client.GWT;
 
 public class UIUtil {
 
-	private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
-	
     public static boolean validatePromptInput(MessageBoxEvent be, final String errorMsg) {
         // handle Cancel button
         if (Dialog.CANCEL.equals(be.getButtonClicked().getItemId())) {
@@ -34,7 +29,8 @@ public class UIUtil {
     public static String getBulkItemExceptionMessage(String action,
             String generalExceptionPreface, Map<String, String> idAndName,
             Map<String, Exception> m) {
-        String html = panelMessages.serversError(action);
+        String html = "<div>There were errors " + action
+                + " the selected servers:</div><ul>";
         for (Map.Entry<String, Exception> e : m.entrySet()) {
             Exception value = e.getValue();
             html += "<li>";

@@ -18,10 +18,7 @@
 
 package org.mule.galaxy.web.client.ui.validator;
 
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
-
 import com.extjs.gxt.ui.client.widget.form.Field;
-import com.google.gwt.core.client.GWT;
 
 /**
  * Checks that a String has at least specified length, with optional trimming.
@@ -30,7 +27,6 @@ public class MinLengthValidator implements com.extjs.gxt.ui.client.widget.form.V
 
     protected boolean shouldTrim = true;
     protected int minLength;
-    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public MinLengthValidator(int minLength) {
         this.minLength = minLength;
@@ -45,7 +41,7 @@ public class MinLengthValidator implements com.extjs.gxt.ui.client.widget.form.V
         if (validate(s)) {
             return null;
         }
-        return panelMessages.minPermSize(minLength);
+        return "Entry too short. Min " + minLength + " chars";
 
     }
 

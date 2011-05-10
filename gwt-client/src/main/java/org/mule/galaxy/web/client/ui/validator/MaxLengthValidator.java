@@ -18,10 +18,7 @@
 
 package org.mule.galaxy.web.client.ui.validator;
 
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
-
 import com.extjs.gxt.ui.client.widget.form.Field;
-import com.google.gwt.core.client.GWT;
 
 /**
  * Checks that a String is less or equal to a specified length, with optional trimming.
@@ -30,7 +27,6 @@ public class MaxLengthValidator implements com.extjs.gxt.ui.client.widget.form.V
 
     protected boolean shouldTrim = true;
     protected int maxLength;
-    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public MaxLengthValidator(int maxLength) {
         this.maxLength = maxLength;
@@ -46,7 +42,7 @@ public class MaxLengthValidator implements com.extjs.gxt.ui.client.widget.form.V
         if (validate(s)) {
             return null;
         }
-        return panelMessages.maxPermSize(maxLength);
+        return "Entry too long. Max " + maxLength + " chars";
     }
 
     public boolean validate(final String s) {

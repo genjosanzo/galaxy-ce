@@ -32,7 +32,6 @@ import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.client.ui.renderer.FauxLinkRenderer;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WUser;
-import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.BeanModelFactory;
@@ -51,15 +50,9 @@ import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.RowNumberer;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 
-
-
-
 public class UserListPanel extends AbstractAdministrationComposite {
-	
-	private final AdministrationMessages administrationMessages = (AdministrationMessages) GWT.create(AdministrationMessages.class);
 
     public UserListPanel(AdministrationPanel a) {
         super(a);
@@ -80,10 +73,12 @@ public class UserListPanel extends AbstractAdministrationComposite {
     private void showUsers(List<WUser> users) {
         ContentPanel contentPanel = new FullContentPanel();
         contentPanel.setId(GROUP_LIST_PANEL_USERS_ID);
-        contentPanel.setHeading(administrationMessages.users());
+        contentPanel.setHeading("Users");
 
         // Add inline help string and widget.
-        contentPanel.setTopComponent(new InlineHelpPanel(administrationMessages.usersTip(), 19));
+        contentPanel.setTopComponent(new InlineHelpPanel(adminPanel.getGalaxy()
+            .getAdministrationConstants()
+            .admin_Users_Tip(), 19));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WUser.class);
 
@@ -94,11 +89,11 @@ public class UserListPanel extends AbstractAdministrationComposite {
         RowNumberer r = new RowNumberer();
         List<ColumnConfig> columns = new ArrayList<ColumnConfig>();
         columns.add(r);
-        ColumnConfig userConfig = new ColumnConfig("username", administrationMessages.username(), 100);
+        ColumnConfig userConfig = new ColumnConfig("username", "Username", 100);
         userConfig.setRenderer(new FauxLinkRenderer());
         columns.add(userConfig);
-        columns.add(new ColumnConfig("name", administrationMessages.userName(), 200));
-        columns.add(new ColumnConfig("email", administrationMessages.emailAddress(), 200));
+        columns.add(new ColumnConfig("name", "Name", 200));
+        columns.add(new ColumnConfig("email", "Email Address", 200));
         ColumnModel cm = new ColumnModel(columns);
 
         Grid grid = new Grid<BeanModel>(store, cm);
@@ -141,9 +136,9 @@ public class UserListPanel extends AbstractAdministrationComposite {
             }
         };
 
-        filter.setName(administrationMessages.search());
+        filter.setName("Search");
         filter.setId(GROUP_LIST_PANEL_USERS_SEARCH_ID);
-        filter.setFieldLabel(administrationMessages.search());
+        filter.setFieldLabel("Search");
         filter.setWidth(300);
         filter.setTriggerStyle("x-form-search-trigger");
         filter.addStyleName("x-form-search-field");
@@ -154,8 +149,8 @@ public class UserListPanel extends AbstractAdministrationComposite {
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
 
-        String buttonTip = adminPanel.getGalaxy().getAdministrationMessages().usersNew();
-        ToolbarButton button = createToolbarHistoryButton(administrationMessages.newUser(), "users/new", buttonTip);
+        String buttonTip = adminPanel.getGalaxy().getAdministrationConstants().admin_Users_New();
+        ToolbarButton button = createToolbarHistoryButton("New", "users/new", buttonTip);
         button.setId(GROUP_LIST_PANEL_USERS_BUTTON_NEW_ID);
         toolbar.add(button);
 

@@ -25,7 +25,6 @@ import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_SAVE_ID;
 import java.util.List;
 
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.ItemExistsException;
 
@@ -35,7 +34,6 @@ import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -51,8 +49,7 @@ public abstract class AbstractForm extends AbstractShowable {
     private final String successMessage;
     protected final ErrorPanel errorPanel;
     private final String deleteMessage;
-    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
-    private final String CANCEL_MESSAGE = panelMessages.actionCanceled();
+    private final String CANCEL_MESSAGE = "Action Canceled";
     private String existsMessage;
     private InlineHelpPanel helpPanel;
 
@@ -116,11 +113,11 @@ public abstract class AbstractForm extends AbstractShowable {
             }
         };
 
-        save = new Button(panelMessages.save(), listener);
+        save = new Button("Save", listener);
         save.setId(GRAL_FORM_SAVE_ID);
-        delete = new Button(panelMessages.delete(), listener);
+        delete = new Button("Delete", listener);
         delete.setId(GRAL_FORM_DELETE_ID);
-        cancel = new Button(panelMessages.cancel(), listener);
+        cancel = new Button("Cancel", listener);
         cancel.setId(GRAL_FORM_CANCEL_ID);
 
         FlexTable table = createFormTable();
@@ -173,7 +170,7 @@ public abstract class AbstractForm extends AbstractShowable {
 
     protected void delete() {
         setEnabled(false);
-        save.setText(panelMessages.deleting());
+        save.setText("Deleting...");
     }
 
     protected void setEnabled(boolean enabled) {
@@ -182,21 +179,21 @@ public abstract class AbstractForm extends AbstractShowable {
         cancel.setEnabled(enabled);
 
         if (enabled) {
-            save.setText(panelMessages.save());
-            delete.setText(panelMessages.delete());
-            cancel.setText(panelMessages.cancel());
+            save.setText("Save");
+            delete.setText("Delete");
+            cancel.setText("Cancel");
         }
     }
 
     protected void save() {
         setEnabled(false);
-        save.setText(panelMessages.saving());
+        save.setText("Saving...");
     }
 
     /* Use the successToken page as the cancel redirect page */
     protected void cancel() {
         setEnabled(false);
-        cancel.setText(panelMessages.canceling());
+        cancel.setText("Canceling...");
         /*((AdministrationPanel) errorPanel).getGalaxy().setMessageAndGoto(successToken,
                 CANCEL_MESSAGE);
                 */

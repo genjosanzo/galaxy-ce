@@ -5,7 +5,6 @@ import java.util.List;
 import org.mule.galaxy.web.client.ui.NavMenuItem;
 import org.mule.galaxy.web.client.ui.button.ToolbarButton;
 import org.mule.galaxy.web.client.ui.button.ToolbarButtonEvent;
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
 import org.mule.galaxy.web.client.ui.util.Images;
 
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -22,7 +21,6 @@ import com.extjs.gxt.ui.client.widget.WidgetComponent;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.TableData;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -32,8 +30,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class WidgetHelper extends Composite {
-	
-	private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public static Label newSpacer() {
         Label spacer = new Label(" ");
@@ -353,7 +349,7 @@ public class WidgetHelper extends Composite {
     @Deprecated
     public static WidgetComponent deleteImage(String tooltip) {
         if (tooltip == null) {
-            tooltip = panelMessages.removeThisItem();
+            tooltip = "Remove this item";
         }
         return newImage(Images.ICON_DELETE, tooltip);
     }
@@ -366,7 +362,7 @@ public class WidgetHelper extends Composite {
             throw new IllegalArgumentException("Id expected to construct deleteImage icon, none found.");
         }
         if (tooltip == null) {
-            tooltip = panelMessages.removeThisItem();
+            tooltip = "Remove this item";
         }
         final WidgetComponent deleteImage = newImage(Images.ICON_DELETE, tooltip);
         deleteImage.setId(id);
@@ -375,7 +371,7 @@ public class WidgetHelper extends Composite {
 
     public static WidgetComponent restoreImage(String tooltip) {
         if (tooltip == null) {
-            tooltip = panelMessages.restore();
+            tooltip = "Restore";
         }
         return newImage(Images.ICON_RECYCLE, tooltip);
     }
@@ -456,7 +452,7 @@ public class WidgetHelper extends Composite {
 
     public static String noneIfNull(String s) {
         if (Util.isEmptyString(s)) {
-            return panelMessages.none();
+            return "None";
         }
         return s;
     }

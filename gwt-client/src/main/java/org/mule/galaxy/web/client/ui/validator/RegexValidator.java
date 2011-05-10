@@ -18,10 +18,7 @@
 
 package org.mule.galaxy.web.client.ui.validator;
 
-import org.mule.galaxy.web.client.ui.help.PanelMessages;
-
 import com.extjs.gxt.ui.client.widget.form.Field;
-import com.google.gwt.core.client.GWT;
 
 /**
  * Validates a string against a regular expression.
@@ -29,7 +26,6 @@ import com.google.gwt.core.client.GWT;
 public class RegexValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
 
     protected String pattern;
-    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
 
     public RegexValidator(final String pattern) {
         this.pattern = pattern;
@@ -39,7 +35,7 @@ public class RegexValidator implements com.extjs.gxt.ui.client.widget.form.Valid
         if (validate(s)) {
             return null;
         }
-        return panelMessages.notMatchRegex() + pattern;
+        return "Does not match regex: " + pattern;
     }
 
     public boolean validate(final Object value) {
