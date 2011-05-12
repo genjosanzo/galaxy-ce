@@ -204,7 +204,7 @@ public abstract class AbstractDelegatingGalaxyEventListener implements Delegatin
             } catch (InvocationTargetException itex) {
                 final Throwable cause = itex.getTargetException();
                 // Throw RuntimeException as long as it didn't fail because the session is closed.
-                if (!cause.getMessage().contains("this session has been closed")) {
+                if (cause.getMessage() != null && !cause.getMessage().contains("this session has been closed")) {
                     throw new RuntimeException(cause);
                 }
             } catch (Throwable t) {
