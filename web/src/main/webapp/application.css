@@ -207,6 +207,14 @@ body {
     font-size:14px;
 }
 
+.field-title {
+    color:#336699;
+    padding:5px;
+    font-weight:bold;
+    font-size:12px;
+    font-family: "sans serif", tahoma, verdana, helvetica;
+}
+
 .a-faux-link {
     color: #016c96;
     text-decoration: none;
