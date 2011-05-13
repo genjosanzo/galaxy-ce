@@ -18,18 +18,23 @@
 
 package org.mule.galaxy.web.client.ui.validator;
 
+import org.mule.galaxy.web.client.ui.help.PanelConstants;
+
 import com.extjs.gxt.ui.client.widget.form.Field;
+import com.google.gwt.core.client.GWT;
 
 /**
  * Validates that a string represents a valid email address.
  */
 public class EmailValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
 
+	private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
+	
     public String validate(Field<?> field, String value) {
         if (isValidEmail(value)) {
             return null;
         }
-        return "Is not a valid email address";
+        return panelMessages.validEmailAddress();
     }
 
     public static boolean isValidEmail(String value) {

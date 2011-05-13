@@ -20,6 +20,8 @@ package org.mule.galaxy.web.client.admin;
 
 import java.util.List;
 
+import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
+import org.mule.galaxy.web.client.ui.help.AdministrationMessages;
 import org.mule.galaxy.web.client.ui.panel.BasicContentPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.WScript;
@@ -34,6 +36,7 @@ import com.extjs.gxt.ui.client.widget.Html;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -64,6 +67,8 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     private TextArea scriptArea;
     private Label scriptResultsLabel;
     private CheckBox loadOnStartupCB;
+    private static final AdministrationConstants administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
+    private static final AdministrationMessages administrationMessages = (AdministrationMessages) GWT.create(AdministrationMessages.class);
 
     public AdminShellPanel(AdministrationPanel a) {
         super(a);
@@ -101,9 +106,9 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                     
                     TreeItem ti = scriptTree.getSelectedItem();
                     if (null == ti) {
-                    	MessageBox.alert("Nothing Selected", "Please select a script to delete", null);
+                    	MessageBox.alert(administrationConstants.nothingSelected(), administrationConstants.selectTip(), null);
                     } else {
-                    	MessageBox.confirm("Confirm", "Are you sure you want to delete the script \"" + ti.getText() + "\"?", l);
+                    	MessageBox.confirm(administrationConstants.confirm(), administrationConstants.deleteScript() + ti.getText() + "\"?", l);
                     }
                 }
 
@@ -118,7 +123,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                     adminPanel.getGalaxy().getAdminService().executeScript(scriptArea.getText(), new AbstractCallback<Object>(adminPanel) {
                         @Override
                         public void onCallFailure(final Throwable caught) {
-                            setErrorMessage("Script execution failure: "+caught.getMessage());
+                            setErrorMessage(administrationConstants.scriptFailure() + caught.getMessage());
                             evaluateBtn.setEnabled(true);
                             scriptResultsLabel.setText("");
                         }
@@ -126,7 +131,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                         public void onCallSuccess(final Object o) {
                             adminPanel.clearErrorMessage();
                             evaluateBtn.setEnabled(true);
-                            scriptResultsLabel.setText(o == null ? "The script did not return a value" : o.toString());
+                            scriptResultsLabel.setText(o == null ? administrationConstants.scriptValue() : o.toString());
                         }
                     });
 
@@ -135,12 +140,12 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             }
         };
 
-        saveBtn = new Button("Save", buttonListner);
-        deleteBtn = new Button("Delete", buttonListner);
-        clearBtn = new Button("Reset", buttonListner);
-        evaluateBtn = new Button("Evaluate", buttonListner);
+        saveBtn = new Button(administrationConstants.save(), buttonListner);
+        deleteBtn = new Button(administrationConstants.delete(), buttonListner);
+        clearBtn = new Button(administrationConstants.reset(), buttonListner);
+        evaluateBtn = new Button(administrationConstants.evaluate(), buttonListner);
 
-        saveAsCB = new CheckBox(" Save As... ");
+        saveAsCB = new CheckBox(administrationConstants.saveAs());
         saveAsCB.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 saveAsTB.setEnabled(true);
@@ -156,7 +161,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         saveAsTB = new TextField<String>();
         saveAsTB.setEnabled(true);
 
-        loadOnStartupCB = new CheckBox(" Run on startup ");
+        loadOnStartupCB = new CheckBox(administrationConstants.runOnStartup());
 
         // where the scripts are pasted into
         scriptArea = new TextArea();
@@ -172,18 +177,16 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         initLocalWidgets();
 
         ContentPanel cp = new BasicContentPanel();
-        cp.setHeading("Admin Shell");
+        cp.setHeading(administrationConstants.adminShell());
         cp.setBodyStyleName("padded-panel");
 
-        Label instructions = new Label("Type or paste a Groovy script to be executed on the server. A return value will be displayed below the area. ");
+        Label instructions = new Label(administrationConstants.groovyScriptTip());
         instructions.setStyleName("padded-label");
         cp.add(instructions);
 
         Html tips = new Html();
         tips.setStyleName("padded-label");
-        tips.setHtml("Tips:<br>&nbsp;&nbsp;Spring's context is available as an 'applicationContext' variable." +
-                "<br>&nbsp;&nbsp;Logger (commons-logging) is available as a 'log' variable." +
-                "<br>&nbsp;&nbsp;Only String return values are supported (or null).");
+        tips.setHtml(administrationConstants.scriptTip());
 
         cp.add(tips);
 
@@ -197,7 +200,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         this.createScriptTree();
         VerticalPanel vp = new VerticalPanel();
-        vp.add(createTitleText("Saved Scripts"));
+        vp.add(createTitleText(administrationConstants.saveScripts()));
         vp.add(scriptTree);
 
         table.setWidget(2, 1, vp);
@@ -298,7 +301,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             ws.setId(null);
         } else {
             if (ws.getId() == null) {
-                adminPanel.setMessage("Check 'Save As' if saving for the first time.");
+                adminPanel.setMessage(administrationConstants.checkSaveAs());
                 // reenable all save related buttons
                 saveAsTB.enable();
                 saveBtn.enable();
@@ -318,7 +321,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
             public void onCallSuccess(Object o) {
                 saveBtn.setEnabled(true);
-                adminPanel.setMessage("Script '" + localCopyWs.getName() + "' has been saved");
+                adminPanel.setMessage(administrationMessages.scriptSaved(localCopyWs.getName()));
                 refresh();
                 // if it was not a New script, redisplay it in the window.
                 if (ti != null) {
@@ -345,7 +348,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             public void onCallSuccess(Object o) {
                 deleteBtn.setEnabled(true);
                 scriptArea.setText(null);
-                adminPanel.setMessage("Script '" + wsx.getName() + "' has been deleted");
+                adminPanel.setMessage(administrationMessages.scriptDeleted(wsx.getName()));
                 refresh();
             }
         });

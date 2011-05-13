@@ -18,19 +18,24 @@
 
 package org.mule.galaxy.web.client.ui.validator;
 
+import org.mule.galaxy.web.client.ui.help.PanelConstants;
+
 import com.extjs.gxt.ui.client.widget.form.Field;
+import com.google.gwt.core.client.GWT;
 
 /**
  * Checks that a String contains digits only (after trimming it).
  * This is only for demo purposes, a better and more robust way is to have a regexp validator.
  */
 public class DigitsOnlyValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
+	
+	private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
 
     public String validate(Field<?> field, String s) {
         if (validate(s)) {
             return null;
         }
-        return "Must be digits only";
+        return panelMessages.digitsOnly();
     }
 
     public boolean validate(final String value) {

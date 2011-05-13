@@ -18,9 +18,11 @@
 
 package org.mule.galaxy.web.rpc;
 
+import org.mule.galaxy.web.client.ui.help.PanelConstants;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 import com.extjs.gxt.ui.client.widget.Text;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
@@ -40,6 +42,7 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     private final ErrorPanel errorPanel;
+    private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
     private final Timer longRunningCallTimer = new Timer() {
         @Override
         public void run() {
@@ -50,7 +53,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
     private Text message = new Text();
     private final int longRunningCallTimeout;
     private static final int DEFAULT_LONG_RUNNING_CALL_TIMEOUT = 20000;
-    private static final String DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE = "Server is taking longer to respond than normal.";
+    private static final String DEFAULT_LONG_RUNNING_CALL_ERROR_MESSAGE = panelMessages.serverTakingLonger();
 
     public AbstractCallback(final ErrorPanel panel) {
         this(panel, AbstractCallback.DEFAULT_LONG_RUNNING_CALL_TIMEOUT);
@@ -101,11 +104,11 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
             // happens after server is back online, and got a forward to a login page
             // typically would be displayed with a session killed dialog
-            errorMessage = "Current session has been killed, please re-login.";
+            errorMessage = panelMessages.currentSession();
         } else if (exceptionMessage != null && !"".equals(exceptionMessage)) {
-            errorMessage = "Error communicating with server: " + exceptionMessage;
+            errorMessage = panelMessages.errorCommunicatingServer() + exceptionMessage;
         } else {
-            errorMessage = "There was an error communicating with the server. Please try again. <br />Exception: " + caught.getClass().getName();
+            errorMessage = panelMessages.errorCommunicatingExeption() + caught.getClass().getName();
         }
         return errorMessage;
     }

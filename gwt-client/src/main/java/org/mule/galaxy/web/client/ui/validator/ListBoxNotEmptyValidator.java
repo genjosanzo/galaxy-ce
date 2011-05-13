@@ -1,18 +1,21 @@
 package org.mule.galaxy.web.client.ui.validator;
 
 import org.mule.galaxy.web.client.ui.field.Validator;
+import org.mule.galaxy.web.client.ui.help.PanelConstants;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ListBox;
 
 public class ListBoxNotEmptyValidator implements Validator {
 
     private String msg;
     private final ListBox listBox;
+    private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
 
     public ListBoxNotEmptyValidator(ListBox listBox) {
         super();
         this.listBox = listBox;
-        this.msg = "At least one value must be selected.";
+        this.msg = panelMessages.selectValue();
     }
 
     public String getFailureMessage() {

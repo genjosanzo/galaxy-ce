@@ -20,6 +20,7 @@ package org.mule.galaxy.web.client.admin;
 
 import java.util.List;
 
+import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
 import org.mule.galaxy.web.client.ui.panel.InlineHelpPanel;
 import org.mule.galaxy.web.rpc.AbstractCallback;
 import org.mule.galaxy.web.rpc.AdminServiceAsync;
@@ -35,6 +36,7 @@ import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.tips.ToolTipConfig;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -48,13 +50,14 @@ public class ScheduleForm extends AbstractAdministrationForm {
     private TextArea descriptionTA;
     private WScriptJob job;
     private CheckBox concurrentCB;
+    private static final AdministrationConstants administrationMessages = (AdministrationConstants) GWT.create(AdministrationConstants.class);
 
     public ScheduleForm(AdministrationPanel administrationPanel) {
-        super(administrationPanel, "schedules", "Scheduled item was saved.", "Scheduled item was deleted.",
-                "A Scheduled item with that name already exists");
+        super(administrationPanel, "schedules", administrationMessages.scheduledSaved(), administrationMessages.scheduledDeleted(),
+                administrationMessages.scheduledExists());
 
         setHelpPanel(new InlineHelpPanel(
-                galaxy.getAdministrationConstants().admin_Add_Scheduled_Item_Tip(), 17));
+                galaxy.getAdministrationMessages().scheduledItemTip(), 17));
 
     }
 
@@ -74,11 +77,11 @@ public class ScheduleForm extends AbstractAdministrationForm {
 
         // a simple row counter to simplify table.setWidget() calls
         int row = 0;
-        table.setText(row++, 0, "Script:");
-        table.setText(row++, 0, "Name:");
-        table.setText(row++, 0, "Description:");
-        table.setText(row++, 0, "Cron Command:");
-        table.setText(row++, 0, "Allow Concurrent Execution:");
+        table.setText(row++, 0, administrationMessages.script());
+        table.setText(row++, 0, administrationMessages.name());
+        table.setText(row++, 0, administrationMessages.description());
+        table.setText(row++, 0, administrationMessages.cronCommand());
+        table.setText(row++, 0, administrationMessages.allowConcurrentExecution());
 
         row = 0;
         scriptLB = new ListBox();
@@ -105,7 +108,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         cronTB.setAllowBlank(false);
         cronTB.setValue(job.getExpression());
         
-        ToolTipConfig ttcfg = new ToolTipConfig("Cron Help:", getCronHelpString());
+        ToolTipConfig ttcfg = new ToolTipConfig(administrationMessages.cronHelp(), getCronHelpString());
         ttcfg.setTrackMouse(true);
         ttcfg.setAutoHide(true);
         cronTB.setToolTip(ttcfg);
@@ -143,51 +146,51 @@ public class ScheduleForm extends AbstractAdministrationForm {
 
     private String getCronHelpString() {
         FlexTable t = new FlexTable();
-        t.setText(0, 0, "Field Name");
-        t.setText(0, 1, "Mandatory");
-        t.setText(0, 2, "Allowed Values");
-        t.setText(0, 3, "Allowed Special Characters");
+        t.setText(0, 0, administrationMessages.fieldName());
+        t.setText(0, 1, administrationMessages.mandatory());
+        t.setText(0, 2, administrationMessages.allowedValues());
+        t.setText(0, 3, administrationMessages.allowedSpecialCharacters());
 
-        t.setText(1, 0, "Seconds");
-        t.setText(1, 1, "YES");
+        t.setText(1, 0, administrationMessages.seconds());
+        t.setText(1, 1, administrationMessages.yes());
         t.setText(1, 2, "0-59");
         t.setText(1, 3, ", - * / ");
 
-        t.setText(2, 0, "Minutes");
-        t.setText(2, 1, "YES");
+        t.setText(2, 0, administrationMessages.minutes());
+        t.setText(2, 1, administrationMessages.yes());
         t.setText(2, 2, "0-59");
         t.setText(2, 3, ", - * / ");
 
-        t.setText(3, 0, "Hours");
-        t.setText(3, 1, "YES");
+        t.setText(3, 0, administrationMessages.hours());
+        t.setText(3, 1, administrationMessages.yes());
         t.setText(3, 2, "0-23");
         t.setText(3, 3, ", - * / ");
 
-        t.setText(4, 0, "Day Of Month");
-        t.setText(4, 1, "YES");
+        t.setText(4, 0, administrationMessages.dayOfMonth());
+        t.setText(4, 1, administrationMessages.yes());
         t.setText(4, 2, "0-31");
         t.setText(4, 3, ", - * / L W");
 
-        t.setText(5, 0, "Month");
-        t.setText(5, 1, "YES");
+        t.setText(5, 0, administrationMessages.month());
+        t.setText(5, 1, administrationMessages.yes());
         t.setText(5, 2, "1-12 or JAN-DEC");
         t.setText(5, 3, ", - * / ");
 
-        t.setText(6, 0, "Day Of Week");
-        t.setText(6, 1, "YES");
+        t.setText(6, 0, administrationMessages.dayOfWeek());
+        t.setText(6, 1, administrationMessages.yes());
         t.setText(6, 2, "1-7 or SUN-SAT");
         t.setText(6, 3, ", - * / L #");
 
-        t.setText(7, 0, "Year");
-        t.setText(7, 1, "NO");
+        t.setText(7, 0, administrationMessages.year());
+        t.setText(7, 1, administrationMessages.yes());
         t.setText(7, 2, "empty, 1970-2099");
         t.setText(7, 3, ", - * / ");
         return t.toString();
     }
 
     public String getTitle() {
-        String s = (newItem) ? "Add" : "Edit";
-        return s + " Scheduled Item";
+        String s = (newItem) ? administrationMessages.add() : administrationMessages.edit();
+        return s + administrationMessages.scheduledItem();
     }
 
     protected void save() {
@@ -222,7 +225,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
             }
         };
 
-        MessageBox.confirm("Confirm", "Are you sure you want to delete schedule " + job.getName() + "?", l);
+        MessageBox.confirm(administrationMessages.confirm(), administrationMessages.deleteSchedule() + job.getName() + "?", l);
     }
 
     protected boolean validate() {

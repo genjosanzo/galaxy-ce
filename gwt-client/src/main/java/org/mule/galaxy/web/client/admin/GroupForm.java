@@ -18,6 +18,7 @@
 
 package org.mule.galaxy.web.client.admin;
 
+import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
 import org.mule.galaxy.web.rpc.WGroup;
 
 import com.extjs.gxt.ui.client.event.Listener;
@@ -26,6 +27,7 @@ import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlexTable;
 
 
@@ -33,14 +35,15 @@ public class GroupForm extends AbstractAdministrationForm {
 
     private WGroup group;
     private TextField<String> nameTB;
+    private static final AdministrationConstants administrationMessages = (AdministrationConstants) GWT.create(AdministrationConstants.class);
 
     public GroupForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "groups", "Group was saved.", "Group was deleted.",
-                "A group with that name already exists.");
+        super(adminPanel, "groups", administrationMessages.groupSaved(), administrationMessages.groupDeleted(),
+                administrationMessages.groupExists());
     }
 
     protected void addFields(FlexTable table) {
-        table.setText(0, 0, "Name:");
+        table.setText(0, 0, administrationMessages.name());
 
         nameTB = new TextField<String>();
         nameTB.setAllowBlank(false);
@@ -57,9 +60,9 @@ public class GroupForm extends AbstractAdministrationForm {
 
     public String getTitle() {
         if (newItem) {
-            return "Add Role";
+            return administrationMessages.addRole();
         } else {
-            return "Edit Role: " + group.getName();
+            return administrationMessages.editRole() + group.getName();
         }
     }
 
@@ -96,7 +99,7 @@ public class GroupForm extends AbstractAdministrationForm {
           }
         };
 
-        MessageBox.confirm("Confirm", "Are you sure you want to delete group " + group.getName() + "?", l);
+        MessageBox.confirm(administrationMessages.confirm(), administrationMessages.deleteGroup() + group.getName() + "?", l);
     }
 
 }

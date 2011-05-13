@@ -89,7 +89,7 @@ public class ActivityPanel extends AbstractFlowComposite {
 
         // add inline help string and widget
         cp.setTopComponent(
-                new InlineHelpPanel(galaxy.getAdministrationConstants().admin_Activity_Tip(), 22));
+                new InlineHelpPanel(galaxy.getAdministrationMessages().activityTip(), 22));
 
         FlowPanel searchContainer = new FlowPanel();
         cp.add(searchContainer);
