@@ -2,112 +2,112 @@ package org.mule.galaxy.web.client.ui.help;
 
 public interface PanelConstants extends com.google.gwt.i18n.client.Constants {
 
-	@Key("less")
-	@DefaultStringValue(" [less]")
-	String less();
-	
-	@Key("more")
-	@DefaultStringValue(" [more]")
-	String more();
-	
-	@Key("collapse")
-	@DefaultStringValue("Collapse")
-	String collapse();
-	
-	@Key("expand")
-	@DefaultStringValue("Expand")
-	String expand();
+    @Key("less")
+    @DefaultStringValue(" [less]")
+    String less();
 
-	@Key("actionCanceled")
-	@DefaultStringValue("Action Canceled")
-	String actionCanceled();
+    @Key("more")
+    @DefaultStringValue(" [more]")
+    String more();
 
-	@Key("save")
-	@DefaultStringValue("Save")
-	String save();
+    @Key("collapse")
+    @DefaultStringValue("Collapse")
+    String collapse();
 
-	@Key("delete")
-	@DefaultStringValue("Delete")
-	String delete();
+    @Key("expand")
+    @DefaultStringValue("Expand")
+    String expand();
 
-	@Key("cancel")
-	@DefaultStringValue("Cancel")
-	String cancel();
+    @Key("actionCanceled")
+    @DefaultStringValue("Action Canceled")
+    String actionCanceled();
 
-	@Key("deleting")
-	@DefaultStringValue("Deleting...")
-	String deleting();
+    @Key("save")
+    @DefaultStringValue("Save")
+    String save();
 
-	@Key("saving")
-	@DefaultStringValue("Saving...")
-	String saving();
+    @Key("delete")
+    @DefaultStringValue("Delete")
+    String delete();
 
-	@Key("canceling")
-	@DefaultStringValue("Canceling...")
-	String canceling();
+    @Key("cancel")
+    @DefaultStringValue("Cancel")
+    String cancel();
 
-	@Key("editServerName")
-	@DefaultStringValue("Edit Server Name")
-	String editServerName();
+    @Key("deleting")
+    @DefaultStringValue("Deleting...")
+    String deleting();
 
-	@Key("add")
-	@DefaultStringValue("Add")
-	String add();
+    @Key("saving")
+    @DefaultStringValue("Saving...")
+    String saving();
 
-	@Key("none")
-	@DefaultStringValue("None")
-	String none();
+    @Key("canceling")
+    @DefaultStringValue("Canceling...")
+    String canceling();
 
-	@Key("restore")
-	@DefaultStringValue("Restore")
-	String restore();
+    @Key("editServerName")
+    @DefaultStringValue("Edit Server Name")
+    String editServerName();
 
-	@Key("removeThisItem")
-	@DefaultStringValue("Remove This Item")
-	String removeThisItem();
+    @Key("add")
+    @DefaultStringValue("Add")
+    String add();
 
-	@Key("serverTakingLonger")
-	@DefaultStringValue("Server is taking longer to respond than normal.")
-	String serverTakingLonger();
+    @Key("none")
+    @DefaultStringValue("None")
+    String none();
 
-	@Key("currentSession")
-	@DefaultStringValue("Current session has been killed, please re-login.")
-	String currentSession();
+    @Key("restore")
+    @DefaultStringValue("Restore")
+    String restore();
 
-	@Key("errorCommunicatingServer")
-	@DefaultStringValue("Error communicating with server: ")
-	String errorCommunicatingServer();
+    @Key("removeThisItem")
+    @DefaultStringValue("Remove This Item")
+    String removeThisItem();
 
-	@Key("errorCommunicatingExeption")
-	@DefaultStringValue("There was an error communicating with the server. Please try again. <br />Exception: ")
-	String errorCommunicatingExeption();
+    @Key("serverTakingLonger")
+    @DefaultStringValue("Server is taking longer to respond than normal.")
+    String serverTakingLonger();
 
-	@Key("digitsOnly")
-	@DefaultStringValue("Must be digits only")
-	String digitsOnly();
+    @Key("currentSession")
+    @DefaultStringValue("Current session has been killed, please re-login.")
+    String currentSession();
 
-	@Key("validEmailAddress")
-	@DefaultStringValue("Is not a valid Email Address")
-	String validEmailAddress();
+    @Key("errorCommunicatingServer")
+    @DefaultStringValue("Error communicating with server: ")
+    String errorCommunicatingServer();
 
-	@Key("fieldRequired")
-	@DefaultStringValue("This field is required")
-	String fieldRequired();
+    @Key("errorCommunicatingExeption")
+    @DefaultStringValue("There was an error communicating with the server. Please try again. <br />Exception: ")
+    String errorCommunicatingExeption();
 
-	@Key("selectValue")
-	@DefaultStringValue("At least one value must be selected.")
-	String selectValue();
+    @Key("digitsOnly")
+    @DefaultStringValue("Must be digits only")
+    String digitsOnly();
 
-	@Key("urlMalformed")
-	@DefaultStringValue("The Url is malformed")
-	String urlMalformed();
+    @Key("validEmailAddress")
+    @DefaultStringValue("Is not a valid Email Address")
+    String validEmailAddress();
 
-	@Key("fieldNotEmpty")
-	@DefaultStringValue("The field can not be empty")
-	String fieldNotEmpty();
+    @Key("fieldRequired")
+    @DefaultStringValue("This field is required")
+    String fieldRequired();
 
-	@Key("notMatchRegex")
-	@DefaultStringValue("Does not match regex: ")
-	String notMatchRegex();
-	
+    @Key("selectValue")
+    @DefaultStringValue("At least one value must be selected.")
+    String selectValue();
+
+    @Key("urlMalformed")
+    @DefaultStringValue("The Url is malformed")
+    String urlMalformed();
+
+    @Key("fieldNotEmpty")
+    @DefaultStringValue("The field can not be empty")
+    String fieldNotEmpty();
+
+    @Key("notMatchRegex")
+    @DefaultStringValue("Does not match regex: ")
+    String notMatchRegex();
+
 }

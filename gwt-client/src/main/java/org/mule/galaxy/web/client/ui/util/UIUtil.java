@@ -12,8 +12,8 @@ import com.google.gwt.core.client.GWT;
 
 public class UIUtil {
 
-	private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
-	
+    private static final PanelMessages panelMessages = (PanelMessages) GWT.create(PanelMessages.class);
+
     public static boolean validatePromptInput(MessageBoxEvent be, final String errorMsg) {
         // handle Cancel button
         if (Dialog.CANCEL.equals(be.getButtonClicked().getItemId())) {
@@ -31,8 +31,7 @@ public class UIUtil {
         return true;
     }
 
-    public static String getBulkItemExceptionMessage(String action,
-            String generalExceptionPreface, Map<String, String> idAndName,
+    public static String getBulkItemExceptionMessage(String action, String generalExceptionPreface, Map<String, String> idAndName,
             Map<String, Exception> m) {
         String html = panelMessages.serversError(action);
         for (Map.Entry<String, Exception> e : m.entrySet()) {
@@ -50,13 +49,11 @@ public class UIUtil {
         return html;
     }
 
-    public static String getExceptionMessage(Throwable value, String name,
-            String generalExceptionPreface) {
+    public static String getExceptionMessage(Throwable value, String name, String generalExceptionPreface) {
         return getExceptionMessage(name, generalExceptionPreface, value.toString());
     }
 
-    public static String getExceptionMessage(String name,
-            String generalExceptionPreface, String detail) {
+    public static String getExceptionMessage(String name, String generalExceptionPreface, String detail) {
         return format(generalExceptionPreface, name) + ": " + detail;
     }
 
@@ -71,5 +68,5 @@ public class UIUtil {
         Date date = new Date();
         return (int) (date.getTime() * .001);
     }
-    
+
 }

@@ -27,8 +27,8 @@ import com.google.gwt.core.client.GWT;
  * Used to display version and license information
  */
 public class AboutPanel extends AbstractInfoPanel {
-	
-	private static final GalaxyConstants galaxyMessages = (GalaxyConstants) GWT.create(GalaxyConstants.class);
+
+    private static final GalaxyConstants galaxyMessages = (GalaxyConstants) GWT.create(GalaxyConstants.class);
 
     public AboutPanel() {
         super();

@@ -24,12 +24,13 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.google.gwt.core.client.GWT;
 
 /**
- * Checks that a String contains digits only (after trimming it).
- * This is only for demo purposes, a better and more robust way is to have a regexp validator.
+ * Checks that a String contains digits only (after trimming it). This is only
+ * for demo purposes, a better and more robust way is to have a regexp
+ * validator.
  */
 public class DigitsOnlyValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
-	
-	private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
+
+    private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
 
     public String validate(Field<?> field, String s) {
         if (validate(s)) {
@@ -51,6 +52,5 @@ public class DigitsOnlyValidator implements com.extjs.gxt.ui.client.widget.form.
         }
         return true;
     }
-
 
 }

@@ -12,8 +12,8 @@ import com.google.gwt.core.client.GWT;
 
 public abstract class SearchStoreFilterField<M extends ModelData> extends StoreFilterField<M> {
 
-	private static final AdministrationConstants administrationMessages = (AdministrationConstants) GWT.create(AdministrationConstants.class);
-	
+    private static final AdministrationConstants administrationMessages = (AdministrationConstants) GWT.create(AdministrationConstants.class);
+
     public SearchStoreFilterField() {
         super();
         setName(administrationMessages.search());
@@ -32,6 +32,5 @@ public abstract class SearchStoreFilterField<M extends ModelData> extends StoreF
             }
         });
     }
-
 
 }

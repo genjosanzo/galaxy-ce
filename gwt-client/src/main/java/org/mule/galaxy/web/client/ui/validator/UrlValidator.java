@@ -7,7 +7,8 @@ import com.google.gwt.core.client.GWT;
 
 public class UrlValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
 
-	 private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
+    private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
+
     public String validate(Field<?> field, String value) {
         if (isValidUrl(value)) {
             return null;
@@ -18,6 +19,5 @@ public class UrlValidator implements com.extjs.gxt.ui.client.widget.form.Validat
     public static boolean isValidUrl(String value) {
         return value.matches("https?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.\\-]*(\\?\\S+)?)?)?");
     }
-
 
 }

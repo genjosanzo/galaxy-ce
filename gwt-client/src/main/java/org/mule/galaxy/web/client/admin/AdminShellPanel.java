@@ -52,9 +52,7 @@ import com.google.gwt.user.client.ui.TreeListener;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AdminShellPanel extends AbstractAdministrationComposite
-        implements KeyboardListener {
-
+public class AdminShellPanel extends AbstractAdministrationComposite implements KeyboardListener {
 
     private Tree scriptTree;
     private FlexTable table;
@@ -73,7 +71,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
     public AdminShellPanel(AdministrationPanel a) {
         super(a);
     }
-
 
     private void initLocalWidgets() {
         // create objects, set initial state including listeners
@@ -103,15 +100,14 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                             }
                         }
                     };
-                    
+
                     TreeItem ti = scriptTree.getSelectedItem();
                     if (null == ti) {
-                    	MessageBox.alert(administrationConstants.nothingSelected(), administrationConstants.selectTip(), null);
+                        MessageBox.alert(administrationConstants.nothingSelected(), administrationConstants.selectTip(), null);
                     } else {
-                    	MessageBox.confirm(administrationConstants.confirm(), administrationConstants.deleteScript() + ti.getText() + "\"?", l);
+                        MessageBox.confirm(administrationConstants.confirm(), administrationConstants.deleteScript() + ti.getText() + "\"?", l);
                     }
                 }
-
 
                 if (sender == clearBtn) {
                     adminPanel.clearErrorMessage();
@@ -127,6 +123,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
                             evaluateBtn.setEnabled(true);
                             scriptResultsLabel.setText("");
                         }
+
                         @Override
                         public void onCallSuccess(final Object o) {
                             adminPanel.clearErrorMessage();
@@ -190,7 +187,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
 
         cp.add(tips);
 
-
         scriptArea.setText(null);
 
         // text area to paste script into
@@ -237,7 +233,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         saveBtn.setEnabled(true);
     }
 
-
     protected void createScriptTree() {
         scriptTree = new Tree();
         scriptTree.addTreeListener(new TreeListener() {
@@ -269,7 +264,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         }
     }
 
-
     protected void refresh() {
         doShowPage();
         saveAsCB.setChecked(false);
@@ -277,12 +271,10 @@ public class AdminShellPanel extends AbstractAdministrationComposite
         loadOnStartupCB.setChecked(false);
     }
 
-
     private void save() {
 
         // validate script name
-        if (scriptTree.getItemCount() > 0 && scriptTree.getSelectedItem() == null
-                && !saveAsTB.validate()) {
+        if (scriptTree.getItemCount() > 0 && scriptTree.getSelectedItem() == null && !saveAsTB.validate()) {
             return;
         }
 
@@ -330,9 +322,7 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             }
         });
 
-
     }
-
 
     private void delete() {
         TreeItem ti = scriptTree.getSelectedItem();
@@ -359,7 +349,6 @@ public class AdminShellPanel extends AbstractAdministrationComposite
             save();
         }
     }
-
 
     public void onKeyDown(Widget widget, char c, int i) {
     }

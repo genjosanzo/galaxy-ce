@@ -32,8 +32,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class WidgetHelper extends Composite {
-	
-	private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
+
+    private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
 
     public static Label newSpacer() {
         Label spacer = new Label(" ");
@@ -186,8 +186,9 @@ public class WidgetHelper extends Composite {
 
     /**
      * Creates a simple toolbar button that links to a History item.
-     *
-     * @param style toolbar-btn_left, toolbar-btn_center, toolbar-btn_right.
+     * 
+     * @param style
+     *            toolbar-btn_left, toolbar-btn_center, toolbar-btn_right.
      */
     public static ToolbarButton createToolbarHistoryButton(String buttonLabel, final String token, String style, String toolTip) {
         ToolbarButton newBtn = new ToolbarButton(buttonLabel);
@@ -244,7 +245,7 @@ public class WidgetHelper extends Composite {
         l.addStyleName("bold-right-label");
         return l;
     }
-    
+
     public static Label columnLabel(String s, String id) {
         final Label result = columnLabel(s);
         result.getElement().setId(id);
@@ -256,7 +257,7 @@ public class WidgetHelper extends Composite {
         l.addStyleName("bold-left-label");
         return l;
     }
-    
+
     public static Label leftColumnLabel(String s, String id) {
         final Label result = leftColumnLabel(s);
         result.getElement().setId(id);
@@ -268,7 +269,7 @@ public class WidgetHelper extends Composite {
         l.addStyleName("cell-alt");
         return l;
     }
-    
+
     public static Label cellLabel(String s, String id) {
         final Label result = cellLabel(s);
         result.getElement().setId(id);
@@ -279,7 +280,7 @@ public class WidgetHelper extends Composite {
         l.addStyleName("cell-alt");
         return l;
     }
-    
+
     public static Label cellLabel(Label l, String id) {
         final Label result = cellLabel(l);
         result.getElement().setId(id);
@@ -291,7 +292,7 @@ public class WidgetHelper extends Composite {
         l.addStyleName("cell-alt");
         return l;
     }
-    
+
     public static Label cellLabel(Long lg, String id) {
         final Label result = longLabel(lg);
         result.getElement().setId(id);
@@ -303,7 +304,7 @@ public class WidgetHelper extends Composite {
         l.addStyleName("cell-alt");
         return l;
     }
-    
+
     public static Label cellLabel(Boolean b, String id) {
         final Label result = cellLabel(b);
         result.getElement().setId(id);
@@ -313,7 +314,7 @@ public class WidgetHelper extends Composite {
     public static Label cellLabel(int i) {
         return cellLabel(Integer.toString(i));
     }
-    
+
     public static Label cellLabel(int i, String id) {
         final Label result = cellLabel(i);
         result.getElement().setId(id);
@@ -323,7 +324,7 @@ public class WidgetHelper extends Composite {
     public static Label longLabel(Long l) {
         return new Label(Long.toString(l));
     }
-    
+
     public static Label longLabel(Long l, String id) {
         final Label result = longLabel(l);
         result.getElement().setId(id);
@@ -357,9 +358,11 @@ public class WidgetHelper extends Composite {
         }
         return newImage(Images.ICON_DELETE, tooltip);
     }
-    
+
     /**
-     * @param tooltip is nullable. If null value is provided, then a default message is used instead.
+     * @param tooltip
+     *            is nullable. If null value is provided, then a default message
+     *            is used instead.
      */
     public static WidgetComponent deleteImage(String tooltip, String id) {
         if (id == null) {
@@ -447,7 +450,7 @@ public class WidgetHelper extends Composite {
         c.add(lv);
         return c;
     }
-    
+
     public static ContentPanel createPanelWithListView(String heading, List<NavMenuItem> items, String id) {
         final ContentPanel result = createPanelWithListView(heading, items);
         result.setId(id);

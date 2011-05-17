@@ -28,8 +28,8 @@ import com.google.gwt.core.client.GWT;
  */
 public class EmailValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
 
-	private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
-	
+    private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
+
     public String validate(Field<?> field, String value) {
         if (isValidEmail(value)) {
             return null;

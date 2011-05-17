@@ -86,7 +86,7 @@ public class Galaxy {
     protected Label product;
     protected InlineFlowPanel footerPanel;
     protected int repositoryTabIndex;
-   
+
     private GalaxyConstants galaxyMessages;
     private AdministrationConstants administrationMessages;
 
@@ -100,9 +100,9 @@ public class Galaxy {
     private ApplicationInfo applicationInfo;
 
     public void initialize(final List<GalaxyModule> modules) {
-        //GXT.setDefaultTheme(Theme.GRAY, true);
+        // GXT.setDefaultTheme(Theme.GRAY, true);
         GXT.BLANK_IMAGE_URL = "gxtresources/images/default/s.gif";
-        
+
         this.galaxyService = (GalaxyServiceAsync) GWT.create(GalaxyService.class);
 
         ServiceDefTarget target = (ServiceDefTarget) galaxyService;
@@ -137,9 +137,9 @@ public class Galaxy {
         createFooter();
 
         RootPanel.get().add(base);
-        
+
         galaxyService.getApplicationInfo(new AsyncCallback<ApplicationInfo>() {
-            
+
             public void onFailure(Throwable e) {
                 GWT.log("Could not load application.", e);
             }
@@ -151,37 +151,38 @@ public class Galaxy {
 
         new HeartbeatTimer(Galaxy.this);
 
-        // prefetch the image, so that e.g. SessionKilled dialog can be properly displayed for the first time
+        // prefetch the image, so that e.g. SessionKilled dialog can be properly
+        // displayed for the first time
         // when the server is already down and cannot serve it.
         Image.prefetch("images/lightbox.png");
     }
 
     protected void initializeApplication(ApplicationInfo appInfo, final List<GalaxyModule> modules) {
         this.applicationInfo = appInfo;
-        
+
         user = (WUser) appInfo.getUser();
         // always the left most item
         final Label welcomeLabel = new Label(galaxyMessages.welcome() + user.getName());
         welcomeLabel.getElement().setId(MAIN_WELCOME_MESSAGE_ID);
         rightHeaderPanel.insert(welcomeLabel, 0);
-        
+
         extensions = (List<WExtensionInfo>) appInfo.getExtensions();
         Collections.sort(extensions);
-        
+
         plugins = appInfo.getPluginTabs();
         userManagementSupported = appInfo.isUserManagementSupported();
         adminPanel = createAdministrationPanel();
-        
+
         for (GalaxyModule module : modules) {
             module.initialize(Galaxy.this);
         }
-        
+
         loadTabs(Galaxy.this);
         showFirstPage();
 
         pageManager.initialize();
     }
-    
+
     public ApplicationInfo getApplicationInfo() {
         return applicationInfo;
     }
@@ -205,7 +206,7 @@ public class Galaxy {
     }
 
     /**
-     * Adds to the left of the  copyright info.
+     * Adds to the left of the copyright info.
      */
     protected void prependFooterConent() {
         product = new Label(galaxyMessages.about() + getProductName());
@@ -224,9 +225,9 @@ public class Galaxy {
         HTML copyright = new HTML(getFooterText());
         footerPanel.add(copyright);
     }
-    
+
     protected void postProductInfoAdded() {
-    	
+
     }
 
     protected AboutPanel getAboutPanel() {
@@ -313,7 +314,6 @@ public class Galaxy {
         return $wnd.productName;
     }-*/;
 
-
     protected void loadTabs(final Galaxy galaxy) {
         loadPluginTabs();
         loadAdminTab();
@@ -321,7 +321,8 @@ public class Galaxy {
 
     protected void loadAdminTab() {
         if (showAdminTab()) {
-            adminTabIndex = pageManager.createTab(galaxyMessages.Administration(), "admin", administrationMessages.tabTip(), TAB_HEADER_ADMINISTRATION_ID);
+            adminTabIndex = pageManager.createTab(galaxyMessages.Administration(), "admin", administrationMessages.tabTip(),
+                    TAB_HEADER_ADMINISTRATION_ID);
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
     }
@@ -357,9 +358,9 @@ public class Galaxy {
     }
 
     protected void showFirstPage() {
-        ///Remove the loading message
+        // /Remove the loading message
         DOM.setInnerHTML(RootPanel.get("loading-msg").getElement(), "");
-        
+
         // Show the initial screen.
         String initToken = History.getToken();
         if (initToken != null && initToken.length() > 0) {
@@ -372,15 +373,15 @@ public class Galaxy {
             pageManager.show(getFirstPage());
         }
     }
-  
+
     protected String getFirstPage() {
         return firstPage;
     }
 
     /**
-     * just for informational messages.
-     * should not be used for errors because this fades out.
-     *
+     * just for informational messages. should not be used for errors because
+     * this fades out.
+     * 
      * @param token
      * @param message
      */
@@ -434,7 +435,7 @@ public class Galaxy {
      * @param permissions
      * @return true if at least one of specified permissions applies
      */
-    public boolean hasAtLeastOnePermission(final String ... permissions) {
+    public boolean hasAtLeastOnePermission(final String... permissions) {
         for (final String permission : permissions) {
             if (hasPermission(permission)) {
                 return true;

@@ -27,34 +27,33 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConfirmDialog extends DialogBox
-{
-	
-	private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
-	
+public class ConfirmDialog extends DialogBox {
+
+    private static final PanelConstants panelMessages = (PanelConstants) GWT.create(PanelConstants.class);
+
     public ConfirmDialog(final ConfirmDialogListener confirmListener, final String caption) {
-      setText(caption);
+        setText(caption);
 
-      InlineFlowPanel buttonPanel = new InlineFlowPanel();
+        InlineFlowPanel buttonPanel = new InlineFlowPanel();
 
-      Button cancelButton = new Button(panelMessages.cancel());
-      cancelButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-            ConfirmDialog.this.hide();
-            confirmListener.onCancel();
-        }
-      });
+        Button cancelButton = new Button(panelMessages.cancel());
+        cancelButton.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                ConfirmDialog.this.hide();
+                confirmListener.onCancel();
+            }
+        });
 
-      Button okButton = new Button("OK");
-      okButton.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-            ConfirmDialog.this.hide();
-            confirmListener.onConfirm();
-        }
-      });
-      buttonPanel.add(okButton);
-      buttonPanel.add(cancelButton);
+        Button okButton = new Button("OK");
+        okButton.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                ConfirmDialog.this.hide();
+                confirmListener.onConfirm();
+            }
+        });
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
 
-      setWidget(buttonPanel);
+        setWidget(buttonPanel);
     }
-  }
+}
