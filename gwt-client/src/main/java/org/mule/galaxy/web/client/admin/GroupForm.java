@@ -30,7 +30,6 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlexTable;
 
-
 public class GroupForm extends AbstractAdministrationForm {
 
     private WGroup group;
