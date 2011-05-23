@@ -2,6 +2,7 @@ package org.mule.galaxy.security.ldap;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.naming.NamingException;
@@ -34,7 +35,7 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
     private final Log log = LogFactory.getLog(getClass());
     private AccessControlManager accessControlManager;
     private ContextMapper userMapper;
-    private String requiredAuthority;
+    private List<String> requiredAuthorities;
     
     public GalaxyAuthenticationProvider(LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
         super(authenticator, authoritiesPopulator);
@@ -56,11 +57,13 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
         
         Collection<GrantedAuthority> authorities = userDetails.getAuthorities();
         boolean found = false;
-        if (authorities != null && requiredAuthority != null) {
+        if (authorities != null && requiredAuthorities != null) {
             for (GrantedAuthority auth : authorities) {
-                if (auth.getAuthority().equals(requiredAuthority)) {
-                    found = true;  
-                    break;
+                for (String requiredAuthority : requiredAuthorities) {
+                    if (auth.getAuthority().equals(requiredAuthority)) {
+                        found = true;  
+                        break;
+                    }
                 }
             }
         }
@@ -100,8 +103,8 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
         return wrapper;
     }*/
 
-    public void setRequiredAuthority(String requiredAuthority) {
-        this.requiredAuthority = requiredAuthority;
+    public void setRequiredAuthorities(List<String> requiredAuthorities) {
+        this.requiredAuthorities = requiredAuthorities;
     }
-    
+
 }
