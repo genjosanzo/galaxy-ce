@@ -87,8 +87,8 @@ public class Galaxy {
     protected InlineFlowPanel footerPanel;
     protected int repositoryTabIndex;
 
-    private GalaxyConstants galaxyMessages;
-    private AdministrationConstants administrationMessages;
+    private GalaxyConstants galaxyConstants;
+    private AdministrationConstants administrationConstants;
 
     protected Collection<PluginTabInfo> plugins;
     protected boolean userManagementSupported;
@@ -122,8 +122,8 @@ public class Galaxy {
         target = (ServiceDefTarget) adminService;
         target.setServiceEntryPoint(baseUrl + "../handler/admin.rpc");
 
-        this.galaxyMessages = (GalaxyConstants) GWT.create(GalaxyConstants.class);
-        this.administrationMessages = (AdministrationConstants) GWT.create(AdministrationConstants.class);
+        this.galaxyConstants = (GalaxyConstants) GWT.create(GalaxyConstants.class);
+        this.administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
 
         base = new Viewport();
         base.setBorders(false);
@@ -162,7 +162,7 @@ public class Galaxy {
 
         user = (WUser) appInfo.getUser();
         // always the left most item
-        final Label welcomeLabel = new Label(galaxyMessages.welcome() + user.getName());
+        final Label welcomeLabel = new Label(galaxyConstants.welcome() + user.getName());
         welcomeLabel.getElement().setId(MAIN_WELCOME_MESSAGE_ID);
         rightHeaderPanel.insert(welcomeLabel, 0);
 
@@ -209,7 +209,7 @@ public class Galaxy {
      * Adds to the left of the copyright info.
      */
     protected void prependFooterConent() {
-        product = new Label(galaxyMessages.about() + getProductName());
+        product = new Label(galaxyConstants.about() + getProductName());
         product.setStyleName("footer-link footer-text");
         product.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent arg0) {
@@ -261,7 +261,7 @@ public class Galaxy {
 
     protected final Image createLogo(final String url) {
         final Image logo = new Image(url);
-        logo.setTitle(galaxyMessages.home());
+        logo.setTitle(galaxyConstants.home());
         logo.addClickHandler(new ClickHandler() {
             public void onClick(final ClickEvent clickEvent) {
                 onLogoClick(clickEvent);
@@ -291,7 +291,7 @@ public class Galaxy {
         InlineFlowPanel options = new InlineFlowPanel();
         options.setStyleName("header-right-options");
 
-        ExternalHyperlink logout = new ExternalHyperlink(galaxyMessages.logOut(), GWT.getHostPageBaseURL() + "j_logout");
+        ExternalHyperlink logout = new ExternalHyperlink(galaxyConstants.logOut(), GWT.getHostPageBaseURL() + "j_logout");
         options.add(newSpacerPipe());
         options.add(logout);
 
@@ -306,7 +306,7 @@ public class Galaxy {
     }
 
     protected String getFooterText() {
-        return galaxyMessages.rights();
+        return galaxyConstants.rights();
     }
 
     protected native String getProductName()
@@ -321,7 +321,7 @@ public class Galaxy {
 
     protected void loadAdminTab() {
         if (showAdminTab()) {
-            adminTabIndex = pageManager.createTab(galaxyMessages.Administration(), "admin", administrationMessages.tabTip(),
+            adminTabIndex = pageManager.createTab(galaxyConstants.Administration(), "admin", administrationConstants.tabTip(),
                     TAB_HEADER_ADMINISTRATION_ID);
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
@@ -387,7 +387,7 @@ public class Galaxy {
      */
     public void setInfoMessageAndGoto(String token, String message) {
         History.newItem(token);
-        Info.display(galaxyMessages.info(), message);
+        Info.display(galaxyConstants.info(), message);
     }
 
     public PageManager getPageManager() {
@@ -459,8 +459,8 @@ public class Galaxy {
         return null;
     }
 
-    public AdministrationConstants getAdministrationMessages() {
-        return administrationMessages;
+    public AdministrationConstants getAdministrationConstants() {
+        return administrationConstants;
     }
 
     public void setMessageAndGoto(String successToken, String successMessage) {

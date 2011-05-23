@@ -50,7 +50,7 @@ public class AdministrationPanel extends MenuPanel {
 
     protected AdministrationPanel(Galaxy galaxy, boolean init) {
         this.galaxy = galaxy;
-        this.administrationMessages = galaxy.getAdministrationMessages();
+        this.administrationMessages = galaxy.getAdministrationConstants();
         if (init) {
             init();
         }

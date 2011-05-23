@@ -81,7 +81,7 @@ public class ScheduleListPanel extends AbstractAdministrationComposite {
 
         // add inline help string and widget
         contentPanel.setTopComponent(
-                new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationMessages().schedulerTip(), 12));
+                new InlineHelpPanel(adminPanel.getGalaxy().getAdministrationConstants().schedulerTip(), 12));
 
         BeanModelFactory factory = BeanModelLookup.get().getFactory(WScriptJob.class);
 

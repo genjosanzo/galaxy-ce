@@ -93,7 +93,7 @@ public class PolicyPanel extends AbstractShowable {
 
         // add inline help string and widget
         cp.setTopComponent(
-                new InlineHelpPanel(galaxy.getAdministrationMessages().policiesTip(), 20));
+                new InlineHelpPanel(galaxy.getAdministrationConstants().policiesTip(), 20));
 
 
         panel.clear();

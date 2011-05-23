@@ -154,7 +154,7 @@ public class UserListPanel extends AbstractAdministrationComposite {
         toolbar.add(filter);
         toolbar.add(new FillToolItem());
 
-        String buttonTip = adminPanel.getGalaxy().getAdministrationMessages().usersNew();
+        String buttonTip = adminPanel.getGalaxy().getAdministrationConstants().usersNew();
         ToolbarButton button = createToolbarHistoryButton(administrationMessages.newUser(), "users/new", buttonTip);
         button.setId(GROUP_LIST_PANEL_USERS_BUTTON_NEW_ID);
         toolbar.add(button);

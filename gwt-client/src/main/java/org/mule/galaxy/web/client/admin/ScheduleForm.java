@@ -57,7 +57,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
                 administrationMessages.scheduledExists());
 
         setHelpPanel(new InlineHelpPanel(
-                galaxy.getAdministrationMessages().scheduledItemTip(), 17));
+                galaxy.getAdministrationConstants().scheduledItemTip(), 17));
 
     }
 
