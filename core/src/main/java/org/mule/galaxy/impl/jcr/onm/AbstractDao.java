@@ -62,15 +62,14 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
     public T get(final String id) throws NotFoundException {
         // catch bad people who send in nulls
         if (id == null) {
-            throw new NotFoundException("null is not a valid id.");
+            throw new NotFoundException("null");
         }
         if (generateId) {
             // aggresively try to catch malformed ids
             try {
                 UUID.fromString(id);
-
             } catch (IllegalArgumentException e) {
-                throw new NotFoundException(id + " is not a valid id.");
+                throw new NotFoundException(id);
             }
         }
 
