@@ -60,6 +60,20 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
 
     @SuppressWarnings("unchecked")
     public T get(final String id) throws NotFoundException {
+        // catch bad people who send in nulls
+        if (id == null) {
+            throw new NotFoundException("null is not a valid id.");
+        }
+        if (generateId) {
+            // aggresively try to catch malformed ids
+            try {
+                UUID.fromString(id);
+
+            } catch (IllegalArgumentException e) {
+                throw new NotFoundException(id + " is not a valid id.");
+            }
+        }
+
         T t =  (T) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
                 return doGet(id, session);
