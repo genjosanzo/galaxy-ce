@@ -138,7 +138,8 @@ public class ItemResolver implements Resolver<Target> {
 
         String method = context.getMethod();
         boolean isArtifact = item.getType().inheritsFrom(TypeManager.ARTIFACT);
-        if (isArtifact && (classifier != null || !"POST".equals(method))) {
+        // Send PUT and GET requests to /workspace/artifact to the version, not the artifact
+        if (isArtifact && (classifier != null || (!"POST".equals(method) && !"DELETE".equals(method)))) {
             Item child = selectVersion(item, context);
             
             // this is when we refer to an artifact without a ?version=foo

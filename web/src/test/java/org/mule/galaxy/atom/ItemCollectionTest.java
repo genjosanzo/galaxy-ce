@@ -23,11 +23,19 @@ import org.apache.abdera.protocol.client.AbderaClient;
 import org.apache.abdera.protocol.client.ClientResponse;
 import org.apache.abdera.protocol.client.RequestOptions;
 import org.apache.axiom.om.util.Base64;
+import org.mule.galaxy.DuplicateItemException;
+import org.mule.galaxy.Item;
+import org.mule.galaxy.NotFoundException;
+import org.mule.galaxy.PropertyException;
+import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.impl.jcr.JcrUtil;
+import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.test.AbstractAtomTest;
 import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.TypeManager;
+import org.mule.galaxy.util.SecurityUtils;
 import org.springmodules.jcr.JcrCallback;
 
 public class ItemCollectionTest extends AbstractAtomTest {
@@ -386,8 +394,16 @@ public class ItemCollectionTest extends AbstractAtomTest {
                      res.getLocation().toString());
         res.release();
         
-        res = client.delete(collection + "/Default%20Workspace/hello_world.wsdl/0.1;atom", defaultOpts);
+        res = client.delete(collection + "/Default%20Workspace/hello_world.wsdl", defaultOpts);
         assertEquals(204, res.getStatus());
+        res.release();
+
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl", defaultOpts);
+        assertEquals(404, res.getStatus());
+        res.release();
+
+        res = client.get(collection + "/Default%20Workspace/hello_world.wsdl;atom", defaultOpts);
+        assertEquals(404, res.getStatus());
         res.release();
         
         res = client.get(collection + "/Default%20Workspace/hello_world.wsdl/0.1;atom", defaultOpts);
@@ -399,10 +415,9 @@ public class ItemCollectionTest extends AbstractAtomTest {
         res.release();
         
         // create multiple versions and delete one
-        res = client.post(collection + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
+        res = client.post(collection + "/Default%20Workspace", getWsdl(), opts);
         assertEquals(201, res.getStatus());
-        res.release();
-
+        
         opts.setHeader("X-Artifact-Version", "0.2");
         res = client.post(collection + "/Default%20Workspace/hello_world.wsdl", getWsdl(), opts);
         assertEquals(201, res.getStatus());
