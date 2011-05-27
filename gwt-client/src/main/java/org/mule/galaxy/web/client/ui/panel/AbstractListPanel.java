@@ -5,18 +5,13 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.store.StoreEvent;
 import com.extjs.gxt.ui.client.store.StoreListener;
-import com.extjs.gxt.ui.client.util.Size;
 import com.extjs.gxt.ui.client.widget.Component;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
-import com.extjs.gxt.ui.client.widget.Layout;
 import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
-import com.extjs.gxt.ui.client.widget.layout.ToolBarLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Element;
 
 /**
  *
@@ -88,36 +83,6 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         return null;
     }
 
-    class CustomToolbar extends ToolBar {
-        boolean first = true;
-        @Override
-                protected void onRender(Element target, int index) {
-                    // TODO Auto-generated method stub
-            if (first) {
-                    super.onRender(target, index);
-                    first = false;}
-                }
-@Override
-protected void onResize(int width, int height) {
-    // TODO Auto-generated method stub
-    //super.onResize(width, height);
-}
-@Override
-protected boolean layout(boolean force) {
-    // TODO Auto-generated method stub
-    return true;
-}
-@Override
-        public boolean layout() {
-            // TODO Auto-generated method stub
-            return true;
-        }
-@Override
-        public Size getSize() {
-        Size size = super.getSize();
-            return size;
-        }
-    }
     @Override
     public void doShowPage() {
         super.doShowPage();
