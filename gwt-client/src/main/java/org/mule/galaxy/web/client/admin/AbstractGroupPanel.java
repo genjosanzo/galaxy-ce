@@ -136,7 +136,7 @@ public abstract class AbstractGroupPanel extends AbstractFlowComposite {
             int row = rows.indexOf(groupName) + 1;
 
             // certain groups should not be removed or edited via the GUI
-            boolean isUberGroup = groupName.equals(administrationConstants.administrators()) || groupName.equals(administrationConstants.anonymous());
+            boolean isUberGroup = groupName.equals("Administrators") || groupName.equals("Anonymous");
             if (isUberGroup) {
                 table.setWidget(row, 0, new Label(groupName));
             } else {

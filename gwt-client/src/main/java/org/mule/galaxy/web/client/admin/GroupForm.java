@@ -34,15 +34,15 @@ public class GroupForm extends AbstractAdministrationForm {
 
     private WGroup group;
     private TextField<String> nameTB;
-    private static final AdministrationConstants administrationMessages = (AdministrationConstants) GWT.create(AdministrationConstants.class);
+    private static final AdministrationConstants administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
 
     public GroupForm(AdministrationPanel adminPanel) {
-        super(adminPanel, "groups", administrationMessages.groupSaved(), administrationMessages.groupDeleted(),
-                administrationMessages.groupExists());
+        super(adminPanel, "groups", administrationConstants.groupSaved(), administrationConstants.groupDeleted(),
+                administrationConstants.groupExists());
     }
 
     protected void addFields(FlexTable table) {
-        table.setText(0, 0, administrationMessages.name());
+        table.setText(0, 0, administrationConstants.name());
 
         nameTB = new TextField<String>();
         nameTB.setAllowBlank(false);
@@ -59,9 +59,9 @@ public class GroupForm extends AbstractAdministrationForm {
 
     public String getTitle() {
         if (newItem) {
-            return administrationMessages.addRole();
+            return administrationConstants.addRole();
         } else {
-            return administrationMessages.editRole() + group.getName();
+            return administrationConstants.editRole() + group.getName();
         }
     }
 
@@ -98,7 +98,7 @@ public class GroupForm extends AbstractAdministrationForm {
           }
         };
 
-        MessageBox.confirm(administrationMessages.confirm(), administrationMessages.deleteGroup() + group.getName() + "?", l);
+        MessageBox.confirm(administrationConstants.confirm(), administrationConstants.deleteGroup() + group.getName() + "?", l);
     }
 
 }

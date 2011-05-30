@@ -130,11 +130,11 @@ public interface AdministrationConstants extends com.google.gwt.i18n.client.Cons
     @Key("addRole")
     String addRole();
 
-    @DefaultStringValue("Name:")
+    @DefaultStringValue("Name")
     @Key("name")
     String name();
 
-    @DefaultStringValue("Edit Role: ")
+    @DefaultStringValue("Edit Role")
     @Key("editRole")
     String editRole();
 
@@ -142,7 +142,7 @@ public interface AdministrationConstants extends com.google.gwt.i18n.client.Cons
     @Key("confirm")
     String confirm();
 
-    @DefaultStringValue("Are you sure you want to delete group  ")
+    @DefaultStringValue("Are you sure you want to delete group?")
     @Key("deleteGroup")
     String deleteGroup();
 
