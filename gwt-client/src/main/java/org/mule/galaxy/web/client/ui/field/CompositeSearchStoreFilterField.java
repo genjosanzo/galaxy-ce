@@ -4,10 +4,9 @@ import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.Store;
 
 /**
- *
  * Generic composite {@link SearchStoreFilterField} implementation.
  * <br />
- * Filter criterions are abstracted as {@link Criteria}.
+ * Filter criterion are abstracted as {@link Criteria}.
  *
  * @param <M>
  */
@@ -51,7 +50,7 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
             if (convertedValue == null) {
                 return null;
             }
-            return convertedValue.toLowerCase();
+            return convertedValue;
         }
 
         protected String convertValue(final V propertyValue) {
@@ -63,49 +62,50 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
     private static final String CRITERIA_SEPARATOR = " ";
     private static final String PROPERTY_SEPARATOR = ":";
 
-    private final Criteria<?>[] criterias;
+    private final Criteria<?>[] criteria;
 
-    public CompositeSearchStoreFilterField(final Criteria<?> ... criterias) {
-        this.criterias = criterias;
+    public CompositeSearchStoreFilterField(final Criteria<?> ... criteria) {
+        this.criteria = criteria;
 
-        setToolTip(createToolTip(criterias));
+        setToolTip(createToolTip(criteria));
     }
 
-   protected String createToolTip(final Criteria<?> ... criterias) {
+   protected String createToolTip(final Criteria<?> ... criteria) {
        final StringBuilder builder = new StringBuilder("Filter by ");
-       for (int i = 0; i < criterias.length; i++) {
-           final Criteria<?> criteria = criterias[i];
-           builder.append(criteria.getPrefix());
-           if (i == criterias.length-2) {
+       for (int i = 0; i < criteria.length; i++) {
+           final Criteria<?> criterion = criteria[i];
+           builder.append(criterion.getPrefix());
+           if (i == criteria.length-2) {
                builder.append(" or ");
-           } else if (i != criterias.length-1) {
+           } else if (i != criteria.length-1) {
                builder.append(", ");
            }
        }
+       builder.append(".");
        return builder.toString();
    }
 
-    protected final Criteria<?> findCriteria(final String property) {
-        for (final Criteria<?> criteria : this.criterias) {
-            if (criteria.getPrefix().equals(property)) {
-                return criteria;
+    protected final Criteria<?> findCriterion(final String property) {
+        for (final Criteria<?> criterion : this.criteria) {
+            if (criterion.getPrefix().equals(property)) {
+                return criterion;
             }
         }
         return null;
     }
 
     protected final boolean matches(final M record, final String prefix, final String filter) {
-        final Criteria<?> criteria = findCriteria(prefix);
-        if (criteria != null) {
-            return matches(record, criteria, filter);
+        final Criteria<?> criterion = findCriterion(prefix);
+        if (criterion != null) {
+            return matches(record, criterion, filter);
         }
-        //Ignore filter with non matching criteria
-        return true;
+        //Ignore filter with non matching criterion
+        return false;
     }
 
     protected final boolean matches(final M record, final String filter) {
-        for (final Criteria<?> criteria : this.criterias) {
-            final boolean matches = matches(record, criteria, filter);
+        for (final Criteria<?> criterion : this.criteria) {
+            final boolean matches = matches(record, criterion, filter);
             if (matches) {
                 return true;
             }
@@ -113,24 +113,29 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
         return false;
     }
 
-    protected final boolean matches(final M record, final Criteria<?> criteria, final String filter) {
-        final String value = criteria.extractValue(record);
+    protected final boolean matches(final M record, final Criteria<?> criterion, final String filter) {
+        final String value = criterion.extractValue(record);
+        //TODO regex matching ?
         return value != null && value.contains(filter);
     }
 
     @Override
     protected final boolean doSelect(final Store<M> store, final M parent, final M record, final String property, final String filter) {
-        final String[] normalizedFilters = filter.toLowerCase().split(CompositeSearchStoreFilterField.CRITERIA_SEPARATOR);
+        final String[] normalizedFilters = filter.split(CompositeSearchStoreFilterField.CRITERIA_SEPARATOR);
         for (final String normalizedFilter : normalizedFilters) {
             final boolean matches;
             if (normalizedFilter.contains(CompositeSearchStoreFilterField.PROPERTY_SEPARATOR)) {
                 //Filter contains a prefix.
-                //Apply to a single criteria.
+                //Apply to a single criterion.
                 final String[] prefixedNormalizedFilter = normalizedFilter.split(CompositeSearchStoreFilterField.PROPERTY_SEPARATOR);
+                if (prefixedNormalizedFilter.length != 2) {
+                    //No value provided yet, skip
+                    return true;
+                }
                 matches = matches(record, prefixedNormalizedFilter[0], prefixedNormalizedFilter[1]);
             } else {
                 //Filter does not contain a prefix.
-                //Applies to all criterias.
+                //Applies to all criterion.
                 matches = matches(record, normalizedFilter);
             }
             //If one of filter does not match then do not select this record
@@ -138,7 +143,7 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
                 return false;
             }
         }
-        //All criterias match.
+        //All criterion match.
         return true;
     }
 
