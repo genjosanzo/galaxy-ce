@@ -646,10 +646,11 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
         q.setStart(startOfResults);
         q.setMaxResults(maxResults);
-        q.orderBy("name");
+        q.groupBy("name");
         
         return search(q);
     }
+    
 
     public SearchResults search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
@@ -797,6 +798,10 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         base.append(itemQuery);
         base.append("[@jcr:primaryType='galaxy:item']");
+        
+        if(query.getOrderBy() != null) {
+            base.append(" order by @" + query.getOrderBy());
+        }
         
         return base.toString();
     }

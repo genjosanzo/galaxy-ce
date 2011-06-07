@@ -74,17 +74,9 @@ public abstract class AbstractItem implements Item {
     }
     
     public Item getLatestItem() throws RegistryException {
-        Item latest = null;
-        for (Item i : getItems()) {
-            if (latest == null) {
-                latest = i;
-            } else if (i.getCreated().after(latest.getCreated())) {
-                latest = i;
-            }
-        }
-        return latest;
+        return manager.getLatestItem(this);
     }
-
+    
     public String getPath() {
         StringBuilder sb = new StringBuilder();
         

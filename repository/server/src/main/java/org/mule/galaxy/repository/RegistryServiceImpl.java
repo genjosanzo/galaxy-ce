@@ -505,7 +505,7 @@ public class RegistryServiceImpl implements RegistryService {
     }
     
     private Query getQuery(Set<SearchPredicate> searchPredicates, int start, int maxResults) {
-        Query q = new Query().orderBy("name");
+        Query q = new Query().groupBy("name");
 
         q.setMaxResults(maxResults);
         q.setStart(start);

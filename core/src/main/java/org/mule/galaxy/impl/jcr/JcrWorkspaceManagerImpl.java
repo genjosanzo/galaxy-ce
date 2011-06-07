@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -43,6 +44,8 @@ import org.mule.galaxy.lifecycle.LifecycleManager;
 import org.mule.galaxy.policy.ApprovalMessage;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.policy.PolicyManager;
+import org.mule.galaxy.query.Query;
+import org.mule.galaxy.query.SearchResults;
 import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
@@ -644,5 +647,18 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
             throw new RuntimeException(e);
         } 
         return items;
+    }
+    
+    public Item getLatestItem(Item w) throws RegistryException {
+        Query query = new Query().fromPath(w.getPath());
+        query.setMaxResults(1);
+        query.orderBy(JcrItem.CREATED + " descending");
+        SearchResults results = registry.search(query);
+        Set<Item> items = results.getResults();
+        // Should only return one result since the max results of the query is set to 1
+        for(Item latest : items) {
+            return latest;
+        }
+        return null;
     }
 }

@@ -305,7 +305,19 @@ public class AtomWorkspaceManager extends AbstractWorkspaceManager implements Wo
             res.release();
         }
     }
-
+    
+    public Item getLatestItem(Item w) throws RegistryException{
+        Item latest = null;
+        for (Item i : w.getItems()) {
+            if (latest == null) {
+                latest = i;
+            } else if (i.getCreated().after(latest.getCreated())) {
+                latest = i;
+            }
+        }
+        return latest;
+    }
+    
     private List<Item> getItems(ClientResponse res, String url, Item parent, List<Item> items) {
         Document<Feed> document = res.getDocument();
         Feed feed = document.getRoot();
