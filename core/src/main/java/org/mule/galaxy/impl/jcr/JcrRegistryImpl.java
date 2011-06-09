@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.jcr.AccessDeniedException;
@@ -685,10 +686,14 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                 NodeIterator nodes = result.getNodes(); 
                
                 if (query.getStart() != -1) {
-                    if (nodes.getSize() <= query.getStart()) {
+                    if (nodes.getSize() != -1 && nodes.getSize() <= query.getStart()) {
                         return new SearchResults(0, items);
-                    } else {
-                        nodes.skip(query.getStart());
+                    } else if (query.getStart() > 0) {
+                        try {
+                            nodes.skip(query.getStart());
+                        } catch (NoSuchElementException e) {
+                            return new SearchResults(0, items);
+                        }
                     }
                 }
                 
@@ -723,7 +728,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
                     }
                 }                                                   
 
-                long total = nodes.getSize() - filteredCount;
+                long total = nodes.getSize();
+                if (total == -1) {
+                    total = count;
+                } else {
+                    total -= filteredCount;
+                }
                 
                 return new SearchResults(total, items);
             }
@@ -797,6 +807,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         base.append(itemQuery);
         base.append("[@jcr:primaryType='galaxy:item']");
+        
+        String groupBy = query.getGroupBy(); 
+        if (groupBy == null) {
+            groupBy = "name";
+        }
+        base.append(" order by ").append(groupBy);
         
         return base.toString();
     }

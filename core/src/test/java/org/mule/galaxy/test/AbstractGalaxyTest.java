@@ -241,7 +241,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
             session = SessionFactoryUtils.getSession(sessionFactory, true);
             TransactionSynchronizationManager.bindResource(sessionFactory, sessionFactory.getSessionHolder(session));
         }
-
         ThreadLocalCacheProviderFacade.enableCache();
         
         login("admin", getPassword());
@@ -249,6 +248,16 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
 
     @Override
     protected void onTearDown() throws Exception {
+        if (!participate) {
+            try {
+                TransactionSynchronizationManager.unbindResource(sessionFactory);
+                logger.debug("Closing reindexing session");
+                SessionFactoryUtils.releaseSession(session, sessionFactory);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
         logout();
 
         ThreadLocalCacheProviderFacade.clearCache();
@@ -256,12 +265,6 @@ public abstract class AbstractGalaxyTest extends AbstractDependencyInjectionSpri
         
         if (repository != null) {
             setDirty();
-        }
-
-        if (!participate) {
-            TransactionSynchronizationManager.unbindResource(sessionFactory);
-            logger.debug("Closing reindexing session");
-            SessionFactoryUtils.releaseSession(session, sessionFactory);
         }
         super.onTearDown();
     }

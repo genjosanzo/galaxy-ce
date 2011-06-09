@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.UUID;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -17,7 +18,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.apache.jackrabbit.uuid.UUID;
 import org.mule.galaxy.impl.jcr.JcrUtil;
 import org.mule.galaxy.util.GalaxyUtils;
 import org.quartz.CronTrigger;

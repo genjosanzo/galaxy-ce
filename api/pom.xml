@@ -40,6 +40,10 @@
       <artifactId>abdera-server</artifactId>
     </dependency>
     
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+    </dependency>
     <!-- Maven/Surefire doesn't like it when this isn't here. -->
     <dependency>
       <groupId>junit</groupId>

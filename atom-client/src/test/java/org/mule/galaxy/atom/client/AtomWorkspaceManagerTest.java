@@ -8,6 +8,7 @@ import java.util.Map;
 import org.mule.galaxy.DuplicateItemException;
 import org.mule.galaxy.Item;
 import org.mule.galaxy.NewItemResult;
+import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.artifact.Artifact;
 import org.mule.galaxy.type.TypeManager;
 
@@ -50,6 +51,7 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
             fail("Expected Duplicate item exception");
         } catch (DuplicateItemException e) {
         }
+        
     }
 
     public void testItemCreation() throws Exception {
@@ -106,6 +108,12 @@ public class AtomWorkspaceManagerTest extends AbstractAtomTest {
         assertEquals("/parent/atom", attached.getPath());
         assertNotNull(attached);
         assertEquals(w.getId(), attached.getId());
+        
+        try {
+            remoteT2.getItem("Doesn'texist");
+            fail("Expected Not found");
+        } catch (NotFoundException e) {
+        }
     }
 
 }

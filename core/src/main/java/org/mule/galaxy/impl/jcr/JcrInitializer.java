@@ -10,10 +10,10 @@ import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 
-import org.apache.jackrabbit.core.nodetype.NodeTypeDef;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeRegistry;
 import org.apache.jackrabbit.core.nodetype.xml.NodeTypeReader;
+import org.apache.jackrabbit.spi.QNodeTypeDefinition;
 import org.springmodules.jcr.SessionFactory;
 
 public class JcrInitializer {
@@ -36,7 +36,7 @@ public class JcrInitializer {
             workspace.getNamespaceRegistry().registerNamespace("galaxy", NAMESPACE);
         }
 
-        NodeTypeDef[] nodeTypes = NodeTypeReader.read(getClass()
+        QNodeTypeDefinition[] nodeTypes = NodeTypeReader.read(getClass()
             .getResourceAsStream("/org/mule/galaxy/impl/jcr/nodeTypes.xml"));
 
         // Get the NodeTypeManager from the Workspace.
@@ -49,7 +49,7 @@ public class JcrInitializer {
         NodeTypeRegistry ntreg = ntmgr.getNodeTypeRegistry();        
 
         // Loop through the prepared NodeTypeDefs
-        for (NodeTypeDef ntd : nodeTypes) {
+        for (QNodeTypeDefinition ntd : nodeTypes) {
             // ...and register it
             if (!ntreg.isRegistered(ntd.getName())) {
                 ntreg.registerNodeType(ntd);
