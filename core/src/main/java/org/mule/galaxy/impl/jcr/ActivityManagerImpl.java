@@ -200,7 +200,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
         logActivity(activity, eventType, null, null);
     }
 
-    public void logActivity(String activity, EventType eventType, User user, String itemId) {
+    public synchronized void logActivity(String activity, EventType eventType, User user, String itemId) {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         try {
@@ -213,6 +213,7 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
             throw new RuntimeException(e1);
         }
     }
+
 
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;

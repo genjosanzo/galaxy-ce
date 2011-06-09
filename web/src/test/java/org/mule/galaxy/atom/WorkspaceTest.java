@@ -23,7 +23,7 @@ public class WorkspaceTest extends AbstractAtomTest {
     }
     
     public void testWorkspaceManipulation() throws Exception {
-        testWorkspace("http://localhost:9002/api/registry/Default%20Workspace", "/api/registry/Default%20Workspace", 5);
+        testWorkspace("http://localhost:9002/api/registry/Default%20Workspace", "/api/registry/Default%20Workspace", 0);
     }
     
     private void testWorkspace(String dwBase, String relBase, int entries)
