@@ -88,6 +88,9 @@
                 <configuration>
                     <forkMode>none</forkMode>
                     <useSystemClassLoader>true</useSystemClassLoader>
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
