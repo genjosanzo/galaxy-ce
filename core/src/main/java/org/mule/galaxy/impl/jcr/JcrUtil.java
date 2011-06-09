@@ -344,7 +344,14 @@ public class JcrUtil {
             } else if (value instanceof Calendar) {
                 n.setProperty(name, (Calendar) value);
             } else if (value == null) {
-                n.setProperty(name, (String) null);
+                if (n.hasProperty(name)) {
+                    Property property = n.getProperty(name);
+                    if (property.isMultiple()) {
+                        n.setProperty(name, (Value[]) null);
+                    } else {
+                        n.setProperty(name, (String) null);
+                    }
+                }
             } else if (value instanceof Identifiable) {
                 n.setProperty(name, ((Identifiable) value).getId());
             } else if (value instanceof Boolean) {
