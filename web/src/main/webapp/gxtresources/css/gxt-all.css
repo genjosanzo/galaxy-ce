@@ -901,16 +901,19 @@ ul.x-tab-strip li.x-tab-edge {
   right: 3px;
   cursor: pointer;
   z-index: 2;
+  background-image:url(../images/default/tabs/tab-close.gif);
 }
 
 .x-tab-strip .x-tab-strip-active a.x-tab-strip-close {
   opacity: .8;
   -moz-opacity: .8;
+  background-image:url(../images/default/tabs/tab-close.gif);
 }
 
 .x-tab-strip .x-tab-strip-closable a.x-tab-strip-close:hover {
   opacity: 1;
   -moz-opacity: 1;
+  background-image:url(../images/default/tabs/tab-close.gif);
 }
 
 .x-tab-panel-body {
