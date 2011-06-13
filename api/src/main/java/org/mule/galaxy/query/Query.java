@@ -17,6 +17,7 @@ public class Query {
     private boolean fomRecursive;
     private String fromPath;
     private int start = -1;
+    private String orderBy;
     private int maxResults = Integer.MAX_VALUE;
 
     public int getStart() {
@@ -52,7 +53,7 @@ public class Query {
         return restrictions;
     }
 
-    public Query orderBy(String field) {
+    public Query groupBy(String field) {
         this.groupBy = field;
         return this;
     }
@@ -83,6 +84,15 @@ public class Query {
         return groupBy;
     }
 
+    public String getOrderBy() {
+        return orderBy;
+    }
+    
+    public Query orderBy(String orderBy) {
+        this.orderBy = orderBy;
+        return this;
+    }
+    
     public String getFromId() {
         return fromId;
     }
@@ -123,6 +133,10 @@ public class Query {
                 sb.append(" and ");
 
             r.toString(sb);
+        }
+        
+        if (orderBy != null) {
+            sb.append(" order by ").append(orderBy);
         }
 
         return sb.toString();

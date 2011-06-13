@@ -243,6 +243,10 @@ public class DefaultEventManagerTest extends TestCase {
             return null;
         }
 
+        public List<Item> getLatestItems() throws RegistryException {
+            return null;
+        }
+        
         public List<Item> getItems() throws RegistryException {
             return null;
         }

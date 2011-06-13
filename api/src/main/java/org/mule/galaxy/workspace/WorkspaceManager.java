@@ -13,6 +13,7 @@ import org.mule.galaxy.RegistryException;
 import org.mule.galaxy.artifact.ContentService;
 import org.mule.galaxy.collab.CommentManager;
 import org.mule.galaxy.policy.PolicyException;
+import org.mule.galaxy.query.QueryException;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
@@ -39,6 +40,8 @@ public interface WorkspaceManager {
         throws DuplicateItemException, RegistryException, PolicyException, AccessException, PropertyException;
     
     List<Item> getItems(Item w) throws RegistryException;
+    
+    Item getLatestItem(Item w) throws RegistryException;
     
     Item getItemById(final String id) throws NotFoundException, RegistryException, AccessException;
     

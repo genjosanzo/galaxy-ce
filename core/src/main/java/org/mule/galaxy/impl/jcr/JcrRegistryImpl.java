@@ -72,6 +72,8 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, ApplicationContextAware {
+    private static final String DEFAULT_ORDER = "name";
+
     private final Log log = LogFactory.getLog(getClass());
 
     private String id;
@@ -651,6 +653,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         return search(q);
     }
+    
 
     public SearchResults search(final org.mule.galaxy.query.Query query) 
         throws RegistryException, QueryException {
@@ -807,13 +810,13 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         
         base.append(itemQuery);
         base.append("[@jcr:primaryType='galaxy:item']");
-        
-        String groupBy = query.getGroupBy(); 
-        if (groupBy == null) {
-            groupBy = "name";
+
+        String orderBy = query.getOrderBy();
+        if(orderBy == null) {
+            orderBy = DEFAULT_ORDER;
         }
-        base.append(" order by ").append(groupBy);
-        
+        base.append(" order by @" + orderBy);
+
         return base.toString();
     }
 

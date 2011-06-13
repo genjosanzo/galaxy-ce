@@ -84,6 +84,10 @@ public class DummyWorkspaceManager extends AbstractWorkspaceManager implements W
     public List<Item> getItems(Item w) {
         return new ArrayList<Item>();
     }
+    
+    public Item getLatestItem(Item w) {
+        return null;
+    }
 
     public Item getItem(Item w, String name) throws RegistryException, NotFoundException {
         return null;
