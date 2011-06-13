@@ -71,6 +71,8 @@ import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
 public class JcrRegistryImpl extends JcrTemplate implements Registry, ApplicationContextAware {
+    private static final String DEFAULT_ORDER = "name";
+    
     private final Log log = LogFactory.getLog(getClass());
 
     private String id;
@@ -646,7 +648,7 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
 
         q.setStart(startOfResults);
         q.setMaxResults(maxResults);
-        q.groupBy("name");
+        q.orderBy("name");
         
         return search(q);
     }
@@ -799,9 +801,12 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
         base.append(itemQuery);
         base.append("[@jcr:primaryType='galaxy:item']");
         
-        if(query.getOrderBy() != null) {
-            base.append(" order by @" + query.getOrderBy());
+        
+        String orderBy = query.getOrderBy();
+        if(orderBy == null) {
+            orderBy = DEFAULT_ORDER;
         }
+        base.append(" order by @" + query.getOrderBy());
         
         return base.toString();
     }

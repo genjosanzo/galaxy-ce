@@ -88,8 +88,9 @@ public class Query {
         return orderBy;
     }
     
-    public void orderBy(String orderBy) {
+    public Query orderBy(String orderBy) {
         this.orderBy = orderBy;
+        return this;
     }
     
     public String getFromId() {
