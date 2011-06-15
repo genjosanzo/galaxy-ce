@@ -41,7 +41,7 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
             return this.prefix;
         }
 
-        protected final <T extends ModelData> String extractValue(final T record) {
+        protected <T extends ModelData> String extractValue(final T record) {
             final V propertyValue = record.<V>get(this.property);
             if (propertyValue == null) {
                 return null;
