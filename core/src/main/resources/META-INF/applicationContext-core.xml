@@ -456,9 +456,6 @@
               <bean class="org.mule.galaxy.event.listener.activity.AccessChangeEventListener" parent="abstractActivityLogger"/>
         </g:listener>
         <g:listener>
-              <ref bean="propertyChangedEventListener"/>
-        </g:listener>
-        <g:listener>
               <ref bean="linkDao"/>
         </g:listener>
         <g:listener>
