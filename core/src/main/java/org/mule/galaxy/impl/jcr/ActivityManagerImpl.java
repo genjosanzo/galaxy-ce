@@ -1,6 +1,8 @@
 package org.mule.galaxy.impl.jcr;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -201,8 +203,24 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
     }
 
     public synchronized void logActivity(String activity, EventType eventType, User user, String itemId) {
+        String logDestination = System.getProperty("galaxy.activityLog.destination");
         Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
+        Date date = new Date();
+        c.setTime(date);
+        if (logDestination != null) {
+            if (logDestination.equals("disabled")) {
+                return;
+            } else if (logDestination.equals("stdout")) {
+                try {
+                    DateFormat format = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss aa");
+                    String loggerTime = format.format(date);
+                    System.out.println(loggerTime + " " + user.getUsername() + " " + eventType + " " + activity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        }
         try {
             save(new Activity(user, eventType, c, itemId, activity));
         } catch (DuplicateItemException e1) {
