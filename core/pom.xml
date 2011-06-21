@@ -547,6 +547,13 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.6.2</version>
         </dependency>
+        <dependency>
+        	<groupId>com.atomikos</groupId>
+        	<artifactId>transactions-jdbc</artifactId>
+        	<version>3.7.0</version>
+        	<type>jar</type>
+        	<scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
