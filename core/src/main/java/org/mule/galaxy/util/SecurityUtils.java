@@ -50,7 +50,7 @@ public final class SecurityUtils {
 
         Set<Permission> perms = Collections.emptySet();
         UserDetailsWrapper wrapper = new UserDetailsWrapper(SYSTEM_USER, perms, "");
-        Authentication auth = new RunAsUserToken("system", wrapper, "", new GrantedAuthority[0], UsernamePasswordAuthenticationToken.class);
+        Authentication auth = new RunAsUserToken("system", wrapper, "", Collections.<GrantedAuthority>emptyList(), UsernamePasswordAuthenticationToken.class);
         SecurityContextImpl context = new SecurityContextImpl();
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
