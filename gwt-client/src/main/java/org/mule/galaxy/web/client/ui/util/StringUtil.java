@@ -12,6 +12,52 @@ public class StringUtil {
         return extension;
     }
 
+    /**
+     * @param object
+     * @return regular representation of provided camel case string ie. testName => Test Name
+     */
+    public static String camelCaseToRegular(final String string) {
+        if (string.isEmpty()) {
+            return string;
+        }
+
+        final StringBuilder regular = new StringBuilder(string.length());
+        regular.append(Character.toUpperCase(string.charAt(0)));
+        for (int i = 1; i< string.length(); i++) {
+            final char character = string.charAt(i);
+            if (Character.isLowerCase(character)) {
+                regular.append(character);
+                if (string.length() > i+1 && Character.isUpperCase(string.charAt(i+1))) {
+                    regular.append(" ");
+                }
+            } else {
+                regular.append(character);
+            }
+        }
+        return regular.toString();
+    }
+
+    /**
+     * @param object
+     * @return regular representation of provided camel case string ie. testName => Test Name
+     */
+    public static String toRegular(final String string) {
+        if (!isConstant(string)) {
+            return camelCaseToRegular(string);
+        }
+
+        return string;
+    }
+
+    public static boolean isConstant(final String string) {
+        for (int i = 1; i< string.length(); i++) {
+            final char character = string.charAt(i);
+            if (!(Character.isUpperCase(character) || "_".equals(character))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * Split a string (sentence) into two sections.
