@@ -58,8 +58,7 @@
       <property name="key"><value>foobar</value></property>
    </bean>
 
-   <bean id="httpSessionContextIntegrationFilter" class="org.springframework.security.web.context.HttpSessionContextIntegrationFilter">
-   </bean>
+   <bean id="securityContextFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter" />
 
    <bean id="rememberMeProcessingFilter" class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
       <property name="authenticationManager"><ref local="authenticationManager"/></property>

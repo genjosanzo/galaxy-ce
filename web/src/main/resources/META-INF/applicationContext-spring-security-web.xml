@@ -12,15 +12,15 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
    <!-- ======================== FILTER CHAIN ======================= -->
 
     <!--  if you wish to use channel security, add "channelProcessingFilter," in front
-          of "httpSessionContextIntegrationFilter" in the list below -->
+          of "securityContextFilter" in the list below -->
     <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
         <security:filter-chain-map path-type="ant">
             <security:filter-chain pattern="/**" filters="
-                httpSessionContextIntegrationFilter,
+                securityContextFilter,
                 logoutFilter,
                 authenticationProcessingFilter,
                 basicProcessingFilter,
@@ -61,7 +61,7 @@
       <property name="rememberMeServices"><ref bean="rememberMeServices"/></property>
    </bean>
 
-   <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.AuthenticationProcessingFilterEntryPoint">
+   <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
       <property name="loginFormUrl"><value>/login.jsp</value></property>
       <property name="forceHttps"><value>false</value></property>
    </bean>
