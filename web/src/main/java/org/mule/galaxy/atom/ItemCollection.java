@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.activation.MimeType;
 import javax.xml.namespace.QName;
@@ -84,12 +86,14 @@ public class ItemCollection
     public static final String NAMESPACE = "http://galaxy.mule.org/2.0";
     public static final String ID_PREFIX = "urn:galaxy:artifact:";    
     public static final QName VERSION_QNAME = new QName(NAMESPACE, "version");
+    public static final String CONTEXT_API_REGISTRY = "/console/api/registry";
 
     protected final Log log = LogFactory.getLog(getClass());
 
     protected Factory factory;
     protected Registry registry;
     private final TypeManager typeManager;
+    private Pattern warVersionPattern;
     
     public ItemCollection(Registry registry, TypeManager typeManager) {
         super();
@@ -401,11 +405,20 @@ public class ItemCollection
     }
 
     @Override
-    public String getName(Item doc) {
-        return getNameOfArtifact(doc) + ";atom";
+    public String getName(Item i) {
+        return getNameOfArtifact(i) + ";atom";
     }
     
     public String getNameOfArtifact(Item i) {
+        // TCAT-1001: If it's clearly a version of a Tcat WAR file, return a full URI to use as the href value.
+        if (warVersionPattern == null) {
+            warVersionPattern = Pattern.compile(".*/[^/.]+.[Ww][Aa][Rr]/[^/]+$");
+        }
+        Matcher matcher = warVersionPattern.matcher(i.getPath());
+        if (matcher.matches()) {
+            return UrlEncoding.encode(CONTEXT_API_REGISTRY + i.getPath(), Profile.PATH.filter());
+        }
+
         return UrlEncoding.encode(i.getName(), Profile.PATH.filter());
     }
     
