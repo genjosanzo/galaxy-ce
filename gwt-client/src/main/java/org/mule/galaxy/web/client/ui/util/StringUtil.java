@@ -17,7 +17,7 @@ public class StringUtil {
      * @return regular representation of provided camel case string ie. testName => Test Name
      */
     public static String camelCaseToRegular(final String string) {
-        if (string.isEmpty()) {
+        if (string.length() == 0) {
             return string;
         }
 
