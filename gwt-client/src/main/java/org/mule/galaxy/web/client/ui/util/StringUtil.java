@@ -13,6 +13,18 @@ public class StringUtil {
     }
 
     /**
+     * @param string
+     * @param suffix
+     * @return a copy of provided {@link String} without suffix, if exist
+     */
+    public static String stripSuffix(final String string, final String suffix) {
+        if (string.endsWith(suffix)) {
+            return string.substring(0, string.length()-suffix.length());
+        }
+        return string;
+    }
+
+    /**
      * @param object
      * @return regular representation of provided camel case string ie. testName => Test Name
      */
@@ -39,14 +51,40 @@ public class StringUtil {
 
     /**
      * @param object
+     * @return regular representation of provided camel case string ie. TEST_NAME => Test Name
+     */
+    public static String constantToRegular(final String string) {
+        if (string.length() == 0) {
+            return string;
+        }
+
+        final StringBuilder regular = new StringBuilder(string.length());
+        regular.append(Character.toUpperCase(string.charAt(0)));
+        for (int i = 1; i< string.length(); i++) {
+            final char character = string.charAt(i);
+            if (character == '_') {
+                regular.append(" ");
+            } else {
+                if (string.charAt(i-1) == '_') {
+                    regular.append(Character.toUpperCase(character));
+                } else {
+                    regular.append(Character.toLowerCase(character));
+                }
+            }
+        }
+        return regular.toString();
+    }
+
+    /**
+     * @param object
      * @return regular representation of provided camel case string ie. testName => Test Name
      */
     public static String toRegular(final String string) {
-        if (!isConstant(string)) {
+        if (isConstant(string)) {
+            return constantToRegular(string);
+        } else {
             return camelCaseToRegular(string);
         }
-
-        return string;
     }
 
     public static boolean isConstant(final String string) {
