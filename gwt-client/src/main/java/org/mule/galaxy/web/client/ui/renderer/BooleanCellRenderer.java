@@ -15,7 +15,7 @@ public class BooleanCellRenderer implements GridCellRenderer<BaseModel> {
     public Object render(BaseModel model, String property, ColumnData config, int rowIndex,
                          int colIndex, ListStore<BaseModel> store, Grid<BaseModel> grid) {
         final Boolean propertyValue = model.get(property);
-        if (propertyValue) {
+        if (propertyValue != null && propertyValue) {
             return "Yes";
         }
         return "No";
