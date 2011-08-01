@@ -2367,6 +2367,11 @@ div.x-toolbar-no-items {
     opacity:0;
     filter: alpha(opacity=0);
 }
+
+.groupingGrid .x-grid3-row {
+    height: 35px;
+}
+
 .x-grid3 {
   position: relative;
   overflow: hidden;
