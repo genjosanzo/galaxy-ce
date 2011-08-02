@@ -29,12 +29,12 @@ public class AuthEventListener implements ApplicationListener {
                 // Interactive web console or REST API authentication failure.
                 message = "Authentication failure for user: " + username + "; "
                     + ((AbstractAuthenticationFailureEvent) event).getException().getMessage() + "; details: " + details;
-                activityManager.logActivity(message, EventType.WARNING, SecurityUtils.getCurrentUser(), null);
+                activityManager.logActivity(message, EventType.WARNING, SecurityUtils.getLoggedInUser(), null);
             } else if (event instanceof InteractiveAuthenticationSuccessEvent) {
                 // Interactive web console authentication was successful.
                 message = "Authenticated user " + username + "; details: " + details + "; "
                     + ClassUtils.getShortName(authEvent.getClass());
-                activityManager.logActivity(message, EventType.INFO, SecurityUtils.getCurrentUser(), null);
+                activityManager.logActivity(message, EventType.INFO, SecurityUtils.getLoggedInUser(), null);
             }
         } else if (event instanceof AbstractAuthorizationEvent) {
             if (event instanceof AuthorizedEvent) {
@@ -45,7 +45,7 @@ public class AuthEventListener implements ApplicationListener {
                     String username = authEvent.getAuthentication().getName();
                     message = "Authenticated user " + username + "; details: " + details + "; source: " + source + "; "
                         + ClassUtils.getShortName(authEvent.getClass());
-                    activityManager.logActivity(message, EventType.INFO, SecurityUtils.getCurrentUser(), null);
+                    activityManager.logActivity(message, EventType.INFO, SecurityUtils.getLoggedInUser(), null);
                 }
             }
         }

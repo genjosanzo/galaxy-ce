@@ -26,6 +26,19 @@ public final class SecurityUtils {
     
     public static User getCurrentUser() {
         SecurityContext ctx = SecurityContextHolder.getContext();
+        return getUserFromSecurityContext(ctx);
+    }
+
+    public static User getLoggedInUser() {
+        Stack<SecurityContext> contextStack = contexts.get();
+        if (contextStack == null || contextStack.isEmpty()) {
+            return null;
+        }
+        SecurityContext ctx = contextStack.lastElement();
+        return getUserFromSecurityContext(ctx);
+    }
+
+    private static User getUserFromSecurityContext(SecurityContext ctx) {
         if (ctx == null) {
             return null;
         }
@@ -44,7 +57,7 @@ public final class SecurityUtils {
         }
         return wrapper.getUser();
     }
-
+    
     public static void startDoPrivileged() {
         SecurityContext prevContext = SecurityContextHolder.getContext();
 

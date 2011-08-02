@@ -128,7 +128,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (activityManager == null) {
             activityManager = (ActivityManager) applicationContext.getBean("activityManager");
         }
-        activityManager.logActivity("User " + SecurityUtils.getCurrentUser().getUsername() + " set the password for user "
+        activityManager.logActivity("User " + SecurityUtils.getLoggedInUser().getUsername() + " set the password for user "
             + username + ".", EventType.INFO);
         return (Boolean) execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -155,7 +155,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (activityManager == null) {
             activityManager = (ActivityManager) applicationContext.getBean("activityManager");
         }
-        activityManager.logActivity("User " + SecurityUtils.getCurrentUser().getUsername() + " set the password for user "
+        activityManager.logActivity("User " + SecurityUtils.getLoggedInUser().getUsername() + " set the password for user "
             + user.getUsername() + ".", EventType.INFO);
         execute(new JcrCallback() {
             public Object doInJcr(Session session) throws IOException, RepositoryException {
@@ -254,7 +254,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (activityManager == null) {
             activityManager = (ActivityManager) applicationContext.getBean("activityManager");
         }
-        String currentUsername = SecurityUtils.getCurrentUser().getUsername();
+        String currentUsername = SecurityUtils.getLoggedInUser().getUsername();
         activityManager.logActivity("User " + currentUsername + " created user "
             + (user != null ? user.getUsername() + "(ID " + user.getId() + ")" : "[null]") + ".", EventType.INFO);
     }
@@ -277,7 +277,7 @@ public class UserManagerImpl extends AbstractReflectionDao<User>
         if (activityManager == null) {
             activityManager = (ActivityManager) applicationContext.getBean("activityManager");
         }
-        String currentUsername = SecurityUtils.getCurrentUser().getUsername();
+        String currentUsername = SecurityUtils.getLoggedInUser().getUsername();
         activityManager.logActivity("User " + currentUsername + " deleted user with ID "
             + id + " (Username: " + (userNode != null ? JcrUtil.getStringOrNull(userNode, USERNAME) : "[null]")
             + ")", EventType.INFO);
