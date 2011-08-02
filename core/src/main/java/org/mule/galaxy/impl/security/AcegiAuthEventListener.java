@@ -46,7 +46,7 @@ public class AcegiAuthEventListener implements ApplicationListener {
                     String username = authEvent.getAuthentication().getName();
                     message = "Authenticated user " + username + "; details: " + details + "; source: " + source + "; "
                         + ClassUtils.getShortName(authEvent.getClass());
-                    activityManager.logActivity(message, EventType.INFO, SecurityUtils.getCurrentUser(), null);
+                    activityManager.logActivity(message, EventType.INFO, SecurityUtils.getLoggedInUser(), null);
                 }
             }
         }

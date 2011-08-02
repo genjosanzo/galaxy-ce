@@ -78,7 +78,7 @@ public class SecurityServiceImpl implements SecurityService {
     public void setUserProperty(final String property, final String value) throws RPCException {
         // Execute this as a privelged action because users don't have the MANAGE_USERS permission
         // This is ok because they're just changing their own data
-        final User loggedInUser = SecurityUtils.getCurrentUser();
+        final User loggedInUser = SecurityUtils.getLoggedInUser();
         setProperty(loggedInUser, property, value);
         
         SecurityUtils.doPrivileged(new Runnable() {
