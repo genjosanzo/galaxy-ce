@@ -80,9 +80,12 @@ public class ScheduleForm extends AbstractAdministrationForm {
         table.setText(row++, 0, "Cron Command:");
         table.setText(row++, 0, "Allow Concurrent Execution:");
 
+        int formWidth = 350;
+        
         row = 0;
         scriptLB = new ListBox();
         table.setWidget(row, 1, scriptLB);
+        scriptLB.setWidth(formWidth + "px");
         loadScripts();
 
         row++;
@@ -90,18 +93,20 @@ public class ScheduleForm extends AbstractAdministrationForm {
         nameTB.setAllowBlank(false);
         table.setWidget(row, 1, nameTB);
         table.setWidget(row, 2, new Label(" "));
+        nameTB.setWidth(formWidth);
         nameTB.setValue(job.getName());
 
         row++;
         descriptionTA = new TextArea();
         descriptionTA.setAllowBlank(false);
-        descriptionTA.setWidth(150);
-        descriptionTA.setHeight(50);
+        descriptionTA.setWidth(formWidth);
+        descriptionTA.setHeight(200);
         table.setWidget(row, 1, descriptionTA);
         descriptionTA.setValue(job.getDescription());
 
         row++;
         cronTB = new TextField<String>();
+        cronTB.setWidth(formWidth);
         cronTB.setAllowBlank(false);
         cronTB.setValue(job.getExpression());
         
@@ -116,7 +121,7 @@ public class ScheduleForm extends AbstractAdministrationForm {
         concurrentCB = new CheckBox();
         concurrentCB.setValue(job.isConcurrentExecutionAllowed());
         table.setWidget(row, 1, concurrentCB);
-        
+
         styleHeaderColumn(table);
     }
 
