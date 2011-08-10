@@ -35,7 +35,11 @@ public final class SecurityUtils {
             return null;
         }
         SecurityContext ctx = contextStack.lastElement();
-        return getUserFromSecurityContext(ctx);
+        User user = getUserFromSecurityContext(ctx);
+        if (user == null) {
+            user = getCurrentUser();
+        }
+        return user;
     }
 
     private static User getUserFromSecurityContext(SecurityContext ctx) {
