@@ -31,7 +31,7 @@ public final class SecurityUtils {
     public static User getLoggedInUser() {
         Stack<SecurityContext> contextStack = contexts.get();
         if (contextStack == null || contextStack.isEmpty()) {
-            return null;
+            return getCurrentUser();
         }
         SecurityContext ctx = contextStack.lastElement();
         User user = getUserFromSecurityContext(ctx);
