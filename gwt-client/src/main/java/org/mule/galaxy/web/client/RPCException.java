@@ -35,7 +35,7 @@ public class RPCException extends Exception implements IsSerializable {
      * @param message
      * @param cause must be GWT Serializable
      */
-    public RPCException(final String message, final Exception cause) {
+    public RPCException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

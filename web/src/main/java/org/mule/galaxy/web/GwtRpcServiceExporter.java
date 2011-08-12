@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gwtwidgets.server.spring.GWTRPCServiceExporter;
 
+import com.google.gwt.user.server.rpc.RPC;
 import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 import com.google.gwt.user.server.rpc.SerializationPolicyLoader;
@@ -71,11 +73,12 @@ public class GwtRpcServiceExporter extends GWTRPCServiceExporter {
     }
 
     @Override
-    protected String handleServiceException(final Exception e, final Object service, final Method targetMethod, final RPCRequest rpcRequest) throws Exception {
+    protected String handleInvocationTargetException(final InvocationTargetException e, final Object service, final Method targetMethod, final RPCRequest rpcRequest) throws Exception {
+        final Throwable cause = e.getCause();
         if (GwtRpcServiceExporter.logger.isWarnEnabled()) {
-            GwtRpcServiceExporter.logger.warn("Got exception while executing <"+extractMethodInvocationIdentifier(targetMethod)+">: "+e.toString());
+            GwtRpcServiceExporter.logger.warn("Got exception while executing <"+extractMethodInvocationIdentifier(targetMethod)+">", cause);
         }
-        return super.handleServiceException(e, service, targetMethod, rpcRequest);
+        return RPC.encodeResponseForFailure(rpcRequest.getMethod(), cause, rpcRequest.getSerializationPolicy());
     }
 
     protected SerializationPolicy doGetSerializationPolicy(HttpServletRequest request, String moduleBaseURL,
