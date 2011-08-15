@@ -409,11 +409,6 @@
 
   <bean class="org.mule.galaxy.impl.plugin.OtherArtifactPlugin" parent="abstractArtifactPlugin"/>
 
-  <bean class="org.mule.galaxy.impl.plugin.JarArtifactPlugin" parent="abstractArtifactPlugin">
-    <property name="contentService" ref="contentService"/>
-    <property name="jcrTemplate" ref="jcrTemplate" />
-  </bean>
-    
   <bean id="jcrTransactionManager"
    class="org.springmodules.jcr.jackrabbit.LocalTransactionManager">
      <property name="sessionFactory" ref="sessionFactory"/>
