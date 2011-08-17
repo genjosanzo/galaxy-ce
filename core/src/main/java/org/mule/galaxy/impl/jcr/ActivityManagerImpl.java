@@ -29,6 +29,7 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.AccessException;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
+import org.springframework.dao.ConcurrencyFailureException;
 import org.springmodules.jcr.JcrCallback;
 
 public class ActivityManagerImpl extends AbstractReflectionDao<Activity> implements ActivityManager {
@@ -211,18 +212,20 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
             if (logDestination.equals("disabled")) {
                 return;
             } else if (logDestination.equals("stdout")) {
-                try {
-                    DateFormat format = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss aa");
-                    String loggerTime = format.format(date);
-                    System.out.println(loggerTime + " " + user.getUsername() + " " + eventType + " " + activity);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                logToStdout(activity, eventType, user);
                 return;
             }
         }
         try {
             save(new Activity(user, eventType, c, itemId, activity));
+        } catch (ConcurrencyFailureException e) {
+            // Sleep briefly, then re-try.
+            try {
+                Thread.sleep(1000);
+                save(new Activity(user, eventType, c, itemId, activity));
+            } catch (Exception e2) {
+                logToStdout(activity, eventType, user);
+            }
         } catch (DuplicateItemException e1) {
             // should never happen
             throw new RuntimeException(e1);
@@ -232,6 +235,16 @@ public class ActivityManagerImpl extends AbstractReflectionDao<Activity> impleme
         }
     }
 
+    private void logToStdout(String activity, EventType eventType, User user) {
+        try {
+            Date date = new Date();
+            DateFormat format = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss aa");
+            String loggerTime = format.format(date);
+            System.out.println(loggerTime + " " + (user != null ? user.getUsername() : " Service User ") + " " + eventType + " " + activity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void setAccessControlManager(AccessControlManager accessControlManager) {
         this.accessControlManager = accessControlManager;
