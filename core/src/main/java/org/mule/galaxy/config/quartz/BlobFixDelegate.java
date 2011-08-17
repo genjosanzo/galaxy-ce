@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
 import org.quartz.impl.jdbcjobstore.StdJDBCDelegate;
+import org.slf4j.Logger;
 
 /**
  * A driver delegate class to fix empty BLOB serialization bugs in Quartz persistence.
@@ -16,11 +17,11 @@ import org.quartz.impl.jdbcjobstore.StdJDBCDelegate;
  */
 public class BlobFixDelegate extends StdJDBCDelegate {
 
-    public BlobFixDelegate(Log log, String s, String s1) {
+    public BlobFixDelegate(Logger log, String s, String s1) {
         super(log, s, s1);
     }
 
-    public BlobFixDelegate(Log log, String s, String s1, Boolean aBoolean) {
+    public BlobFixDelegate(Logger log, String s, String s1, Boolean aBoolean) {
         super(log, s, s1, aBoolean);
     }
 
