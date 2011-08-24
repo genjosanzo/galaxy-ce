@@ -25,6 +25,7 @@ import com.google.gwt.core.client.GWT;
 
 /**
  * Validates a string against a regular expression.
+ * WARNING: does not support the whole Java regex syntax. See http://google-web-toolkit.googlecode.com/svn/javadoc/2.1/com/google/gwt/regexp/shared/RegExp.html for differences.
  */
 public class RegexValidator implements com.extjs.gxt.ui.client.widget.form.Validator {
 
