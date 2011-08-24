@@ -35,6 +35,10 @@ public class IterableCellRenderer implements GridCellRenderer<BaseModel> {
         }
         if (iterable != null) {
             for (final Object o : iterable) {
+                if (o == null) {
+                    continue;
+                }
+
                 if (newLine) {
                     html += "<div>" + renderObjectAsHTML(o) + "</div>";
                 } else {
@@ -49,6 +53,7 @@ public class IterableCellRenderer implements GridCellRenderer<BaseModel> {
     }
 
     protected String renderObjectAsHTML(final Object o) {
+        if ()
         return o.toString();
     }
 }
