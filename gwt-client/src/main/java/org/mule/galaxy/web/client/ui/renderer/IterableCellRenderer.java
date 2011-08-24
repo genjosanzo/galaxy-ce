@@ -53,7 +53,6 @@ public class IterableCellRenderer implements GridCellRenderer<BaseModel> {
     }
 
     protected String renderObjectAsHTML(final Object o) {
-        if ()
         return o.toString();
     }
 }
