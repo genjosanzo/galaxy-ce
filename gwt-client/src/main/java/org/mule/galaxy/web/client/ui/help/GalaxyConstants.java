@@ -14,7 +14,7 @@ public interface GalaxyConstants extends com.google.gwt.i18n.client.Constants {
 
     String rights();
 
-    String Administration();
+    String administration();
 
     String info();
 

@@ -321,7 +321,7 @@ public class Galaxy {
 
     protected void loadAdminTab() {
         if (showAdminTab()) {
-            adminTabIndex = pageManager.createTab(galaxyConstants.Administration(), "admin", administrationConstants.tabTip(),
+            adminTabIndex = pageManager.createTab(galaxyConstants.administration(), "admin", administrationConstants.tabTip(),
                     TAB_HEADER_ADMINISTRATION_ID);
             pageManager.createPageInfo("admin", adminPanel, adminTabIndex);
         }
