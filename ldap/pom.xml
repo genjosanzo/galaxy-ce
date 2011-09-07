@@ -14,13 +14,13 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

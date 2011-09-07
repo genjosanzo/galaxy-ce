@@ -17,13 +17,13 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-gwt-client</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-gwt-client</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <classifier>sources</classifier>
             <scope>provided</scope>
         </dependency>

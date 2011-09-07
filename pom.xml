@@ -694,7 +694,7 @@
                     <dependency>
                         <groupId>org.mule.galaxy</groupId>
                         <artifactId>galaxy-buildtools</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -783,7 +783,7 @@
         </snapshotRepository>
         <site>
             <id>muleforge.webdav.sites</id>
-            <url>dav:https://dav.muleforge.org/galaxy/${version}</url>
+            <url>dav:https://dav.muleforge.org/galaxy/${project.version}</url>
         </site>
     </distributionManagement>
     <scm>

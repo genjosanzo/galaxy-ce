@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -30,19 +30,19 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-web</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-repository-server</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-core</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-web</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 

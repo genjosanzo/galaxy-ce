@@ -29,14 +29,14 @@
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
-      <version>${version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.mule.galaxy</groupId>
       <artifactId>galaxy-web</artifactId>
-      <version>${version}</version>
+      <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -105,7 +105,7 @@
                 <artifactItem>
                   <groupId>org.mule.galaxy</groupId>
                   <artifactId>galaxy-helloworld-plugin</artifactId>
-                  <version>${version}</version>
+                  <version>${project.version}</version>
                   <outputDirectory>target/webapp/WEB-INF/plugins</outputDirectory>
                   <type>zip</type>
                 </artifactItem>
