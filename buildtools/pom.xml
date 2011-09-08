@@ -3,10 +3,10 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>2.2-SNAPSHOT</version>
+        <version>2.2.0</version>
     </parent>
     <artifactId>galaxy-buildtools</artifactId>
-  <version>2.2-SNAPSHOT</version>
+  <version>2.2.0</version>
     <packaging>jar</packaging>
     <name>Galaxy Build Tools</name>
     <description>These are the tools used by the Galaxy's build procedure</description>

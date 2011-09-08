@@ -5,7 +5,7 @@
     <groupId>org.mule.galaxy</groupId>
     <artifactId>galaxy-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.2.0</version>
     <name>Galaxy</name>
 
     <properties>
