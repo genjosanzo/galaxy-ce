@@ -47,38 +47,38 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
         this.userMapper = userMapper;
     }
 
-    protected void additionalAuthenticationChecks(UserDetails userDetails,
-                                                  UsernamePasswordAuthenticationToken authentication)
-            throws AuthenticationException {
-        
-        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        boolean found = false;
-        if (authorities != null && requiredAuthorities != null) {
-            for (GrantedAuthority auth : authorities) {
-                for (String requiredAuthority : requiredAuthorities) {
-                    if (auth.getAuthority().equals(requiredAuthority)) {
-                        found = true;  
-                        break;
-                    }
-                }
-            }
-        }
-        if (!found) {
-            throw new AuthenticationCredentialsNotFoundException("Invalid username/password.");
+    protected void additionalAuthenticationChecks(final UserDetails userDetails,
+                                                  final UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        if (this.requiredAuthorities != null && !this.requiredAuthorities.isEmpty()) {
+	    	final Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+	        boolean found = false;
+	        if (authorities != null) {
+	            for (final GrantedAuthority auth : authorities) {
+	                for (final String requiredAuthority : requiredAuthorities) {
+	                    if (auth.getAuthority().equals(requiredAuthority)) {
+	                        found = true;  
+	                        break;
+	                    }
+	                }
+	            }
+	        }
+	        if (!found) {
+	            throw new AuthenticationCredentialsNotFoundException("User does not have sufficient authority.");
+	        }
         }
     }
 
     @Override
-    protected Authentication createSuccessfulAuthentication(final UsernamePasswordAuthenticationToken authentication, final UserDetails user, final DirContextOperations userData) {
-    	final UsernamePasswordAuthenticationToken successfulAuthentication = (UsernamePasswordAuthenticationToken) super.createSuccessfulAuthentication(authentication, user, userData);
+    protected Authentication createSuccessfulAuthentication(final UsernamePasswordAuthenticationToken authentication, final UserDetails userDetails, final DirContextOperations userData) {
+    	final UsernamePasswordAuthenticationToken successfulAuthentication = (UsernamePasswordAuthenticationToken) super.createSuccessfulAuthentication(authentication, userDetails, userData);
 
-        final User userObj = (User) userMapper.mapFromContext(userData);
+        final User user = (User) userMapper.mapFromContext(userData);
         
-        final UserDetailsWrapper userDetailsWrapper = new UserDetailsWrapper(userObj, null, successfulAuthentication.getCredentials().toString());
+        final UserDetailsWrapper userDetailsWrapper = new UserDetailsWrapper(user, null, successfulAuthentication.getCredentials().toString());
         userDetailsWrapper.setAuthorities(successfulAuthentication.getAuthorities().toArray(new GrantedAuthority[successfulAuthentication.getAuthorities().size()]));
 
-        Set<Group> galaxyGroups = new HashSet<Group>();
-        for (GrantedAuthority authority : successfulAuthentication.getAuthorities()) {
+        final Set<Group> galaxyGroups = new HashSet<Group>();
+        for (final GrantedAuthority authority : successfulAuthentication.getAuthorities()) {
             try {
                 galaxyGroups.add(accessControlManager.getGroupByName(authority.toString()));
             } catch (NotFoundException ex) {
@@ -86,7 +86,7 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
             }
         }
         userDetailsWrapper.getUser().setGroups(galaxyGroups);
-        userDetailsWrapper.setPermissions(accessControlManager.getGrantedPermissions(userDetailsWrapper.getUser()));
+        userDetailsWrapper.setPermissions(accessControlManager.getGrantedPermissions(user));
 
         additionalAuthenticationChecks(userDetailsWrapper, successfulAuthentication);
 
