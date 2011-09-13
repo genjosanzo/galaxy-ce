@@ -26,7 +26,7 @@ public final class AuthenticationWrapper implements Authentication {
 	}
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.delegate.getAuthorities();
+		return this.userDetails.getAuthorities();
 	}
 
 	public Object getCredentials() {
