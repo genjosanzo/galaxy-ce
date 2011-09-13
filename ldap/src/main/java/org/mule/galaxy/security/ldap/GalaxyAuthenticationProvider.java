@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.galaxy.NotFoundException;
@@ -15,14 +13,14 @@ import org.mule.galaxy.security.AccessControlManager;
 import org.mule.galaxy.security.Group;
 import org.mule.galaxy.security.User;
 import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
 /**
  * Custom ldap authentication provider for populating the Galaxy
@@ -49,13 +47,11 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
         this.userMapper = userMapper;
     }
 
-    /*@Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   UsernamePasswordAuthenticationToken authentication)
             throws AuthenticationException {
-        super.additionalAuthenticationChecks(userDetails, authentication);
         
-        Collection<GrantedAuthority> authorities = userDetails.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         boolean found = false;
         if (authorities != null && requiredAuthorities != null) {
             for (GrantedAuthority auth : authorities) {
@@ -72,36 +68,30 @@ public class GalaxyAuthenticationProvider extends LdapAuthenticationProvider {
         }
     }
 
-    public Authentication authenticate(Authentication authentication) {
+    @Override
+    protected Authentication createSuccessfulAuthentication(final UsernamePasswordAuthenticationToken authentication, final UserDetails user, final DirContextOperations userData) {
+    	final UsernamePasswordAuthenticationToken successfulAuthentication = (UsernamePasswordAuthenticationToken) super.createSuccessfulAuthentication(authentication, user, userData);
 
-        Authentication user = (LdapUserDetails) super.authenticate(authentication);
-
-        User userObj;
-        try {
-            userObj = (User) userMapper.mapFromContext(ldapUser.getDn(), ldapUser.getAttributes());
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        }
+        final User userObj = (User) userMapper.mapFromContext(userData);
         
-        UserDetailsWrapper wrapper = new UserDetailsWrapper(userObj, null, password);
-        wrapper.setAuthorities(user.getAuthorities().toArray(new GrantedAuthority[user.getAuthorities().size()]));
-        wrapper.setAttributes(user.getAttributes());
-        wrapper.setControls(user.getControls());
-        wrapper.setDn(user.getDn());
+        final UserDetailsWrapper userDetailsWrapper = new UserDetailsWrapper(userObj, null, successfulAuthentication.getCredentials().toString());
+        userDetailsWrapper.setAuthorities(successfulAuthentication.getAuthorities().toArray(new GrantedAuthority[successfulAuthentication.getAuthorities().size()]));
 
         Set<Group> galaxyGroups = new HashSet<Group>();
-        for (GrantedAuthority authority : user.getAuthorities()) {
+        for (GrantedAuthority authority : successfulAuthentication.getAuthorities()) {
             try {
                 galaxyGroups.add(accessControlManager.getGroupByName(authority.toString()));
             } catch (NotFoundException ex) {
                 log.warn("Galaxy group not found " + authority.toString());
             }
         }
-        wrapper.getUser().setGroups(galaxyGroups);
-        wrapper.setPermissions(accessControlManager.getGrantedPermissions(wrapper.getUser()));
+        userDetailsWrapper.getUser().setGroups(galaxyGroups);
+        userDetailsWrapper.setPermissions(accessControlManager.getGrantedPermissions(userDetailsWrapper.getUser()));
 
-        return wrapper;
-    }*/
+        additionalAuthenticationChecks(userDetailsWrapper, successfulAuthentication);
+
+        return new AuthenticationWrapper(successfulAuthentication, userDetailsWrapper);
+    }
 
     public void setRequiredAuthorities(List<String> requiredAuthorities) {
         this.requiredAuthorities = requiredAuthorities;
