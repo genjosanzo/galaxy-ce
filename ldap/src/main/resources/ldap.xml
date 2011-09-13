@@ -30,7 +30,7 @@
         </property>
     </bean>
 
-    <bean id="initialDirContextFactory"
+    <bean id="contextSource"
             class="org.springframework.security.ldap.DefaultSpringSecurityContextSource"
             depends-on="ldapService">
       <constructor-arg value="${providerURL}"/>
@@ -41,14 +41,14 @@
     <bean id="userSearch" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
       <constructor-arg value="${userSearchBaseContext}"/>
       <constructor-arg value="${userSearchFilterExpression}"/>
-      <constructor-arg ref="initialDirContextFactory" />
+      <constructor-arg ref="contextSource" />
       <property name="searchSubtree" value="true"/>
     </bean>
     
     <bean id="userManager"
           class="org.mule.galaxy.security.ldap.LdapUserManager"
           init-method="initialize">
-      <property name="initialDirContextFactory" ref="initialDirContextFactory"/>
+      <property name="initialDirContextFactory" ref="contextSource"/>
       <property name="persisterManager" ref="persisterManager" />
       <property name="userSearch" ref="userSearch"/>
       <property name="userMapper" ref="userDetailsMapper"/>
@@ -65,7 +65,7 @@
     
 
   <bean id="ldapAuthoritiesPopulator" class="org.mule.galaxy.security.ldap.LdapAuthoritiesPopulator">
-      <constructor-arg ref="initialDirContextFactory" />
+      <constructor-arg ref="contextSource" />
       <constructor-arg value="${roleDn}" />
       <property name="groupSearchFilter" value="${groupSearchFilter}"/>
       <property name="searchSubtree" value="true"/>
