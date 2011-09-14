@@ -227,7 +227,8 @@ public class LdapUserManager
     }
 
     public boolean isManagementSupported() {
-        return false;
+        //TODO Hack for MMC 3.2.0. Restore back for next releases.
+    	return true;
     }
 
     public void setUserSearchAttributes(Map<String, String> userSearchAttributes) {
