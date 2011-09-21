@@ -3,6 +3,7 @@ package org.mule.galaxy.impl.jcr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.naming.directory.Attributes;
@@ -11,7 +12,7 @@ import javax.naming.ldap.Control;
 import org.mule.galaxy.security.Permission;
 import org.mule.galaxy.security.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
 public class UserDetailsWrapper implements LdapUserDetails {
@@ -42,9 +43,9 @@ public class UserDetailsWrapper implements LdapUserDetails {
             Object[] pArray = permissions.toArray();
             authorities = new GrantedAuthority[pArray.length+1];
             for (int i = 0; i < pArray.length; i++) {
-                authorities[i] = new GrantedAuthorityImpl(pArray[i].toString());
+                authorities[i] = new SimpleGrantedAuthority(pArray[i].toString());
             }
-            authorities[pArray.length] = new GrantedAuthorityImpl("role_user");
+            authorities[pArray.length] = new SimpleGrantedAuthority("role_user");
         }
         return Arrays.asList(authorities);
     }
@@ -98,10 +99,10 @@ public class UserDetailsWrapper implements LdapUserDetails {
         userDn = dn;
     }
 
-    public void setAuthorities(GrantedAuthority[] auths) {
-        ArrayList list = new ArrayList(Arrays.asList(auths));
-        list.add(new GrantedAuthorityImpl("role_user"));
-        authorities = (GrantedAuthority[]) list.toArray(new GrantedAuthority[0]);
+    public void setAuthorities(final GrantedAuthority[] auths) {
+        final List<GrantedAuthority> list = new ArrayList<GrantedAuthority>(Arrays.asList(auths));
+        list.add(new SimpleGrantedAuthority("role_user"));
+        authorities = (GrantedAuthority[]) list.toArray(new GrantedAuthority[list.size()]);
     }
 
     public void setPermissions(Set<Permission> set) {
