@@ -5561,6 +5561,21 @@ body.ext-ie6.x-body-masked .x-window select {
   white-space: nowrap;
 }
 
+.x-view-item-overflow {
+  border: 1px solid #FFFFFF;
+  font-family: tahoma, arial, helvetica, sans-serif;
+  font-size: 12px;
+  font-size-adjust: none;
+  font-stretch: normal;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: normal;
+  overflow: visible;
+  padding: 2px;
+  white-space: nowrap;
+}
+
 .x-view-highlightrow  {
   border: 1px dotted #545352 !important;
 }

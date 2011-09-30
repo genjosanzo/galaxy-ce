@@ -195,6 +195,17 @@ body {
   overflow: hidden;
 }
 
+.left-menu-view-overflow {
+  -moz-outline: none;
+  -moz-user-focus: normal;
+  outline: 0 none;
+  padding: 1px;
+  background-color: white;
+  cursor: default;
+  border: 0 !important;
+  overflow: visible;
+}
+
 .panel-no-border {
     border: 0 !important;
     border-width: 0 !important;
