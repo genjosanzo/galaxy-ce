@@ -68,7 +68,6 @@
         <module>atom-client</module>
         <module>core</module>
         <module>ldap</module>
-        <module>plugins</module>
         <module>wsdldiff</module>
         <module>wsi</module>
         <module>testutils</module>
