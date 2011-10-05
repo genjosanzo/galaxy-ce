@@ -24,6 +24,13 @@ public class StringUtil {
         return string;
     }
 
+    public static String strip(final String string, final int length) {
+        if (string.length() > length) {
+            return string.substring(0, length)+"...";
+        }
+        return string;
+    }
+
     /**
      * @param object
      * @return regular representation of provided camel case string ie. testName => Test Name
@@ -90,7 +97,7 @@ public class StringUtil {
     public static boolean isConstant(final String string) {
         for (int i = 1; i< string.length(); i++) {
             final char character = string.charAt(i);
-            if (!(Character.isUpperCase(character) || "_".equals(character))) {
+            if (!(Character.isUpperCase(character) || '_' == character)) {
                 return false;
             }
         }

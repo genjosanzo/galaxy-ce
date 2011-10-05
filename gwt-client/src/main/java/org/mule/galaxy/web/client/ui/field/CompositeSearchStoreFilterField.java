@@ -46,11 +46,7 @@ public class CompositeSearchStoreFilterField<M extends ModelData> extends Search
             if (propertyValue == null) {
                 return null;
             }
-            final String convertedValue = convertValue(propertyValue);
-            if (convertedValue == null) {
-                return null;
-            }
-            return convertedValue;
+            return convertValue(propertyValue);
         }
 
         protected String convertValue(final V propertyValue) {
