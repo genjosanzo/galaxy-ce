@@ -72,8 +72,7 @@
         <module>wsi</module>
         <module>testutils</module>
         <module>registry</module>
-        <module>repository/gwt-client</module>
-        <module>repository/server</module>
+        <module>repository</module>
         <module>rest</module>
         <module>web</module>
         <module>gwt-client</module>
