@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.mule.galaxy</groupId>
         <artifactId>galaxy-parent</artifactId>
-        <version>2.2-SNAPSHOT</version>
+        <version>2.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>galaxy-helloworld-client</artifactId>
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-gwt-client</artifactId>
-            <version>2.2-SNAPSHOT</version>
+            <version>2.2.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mule.galaxy</groupId>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-gwt-client</artifactId>
-            <version>2.2-SNAPSHOT</version>
+            <version>2.2.1</version>
             <classifier>sources</classifier>
         </dependency>
         
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.mule.galaxy</groupId>
             <artifactId>galaxy-testutils</artifactId>
-            <version>2.2-SNAPSHOT</version>
+            <version>2.2.1</version>
             <scope>test</scope>
         </dependency>
 
