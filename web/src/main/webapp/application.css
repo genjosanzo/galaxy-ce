@@ -578,6 +578,20 @@ a:visited {
     filter:alpha(opacity=40);
 }
 
+.portlet-loading-indicator-panel {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.portlet-loading-indicator-panel img {
+    padding: 35px 0 0px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    opacity:0.4;
+    filter:alpha(opacity=40);
+}
+
 /**
  **
  ** The Main Panel
