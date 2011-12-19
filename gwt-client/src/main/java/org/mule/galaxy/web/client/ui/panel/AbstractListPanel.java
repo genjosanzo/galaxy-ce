@@ -22,6 +22,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
  * @param <M>
  */
 public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRefreshableComponent {
+	private LoadingIndicatorPanel loadingPanel = new LoadingIndicatorPanel();
 
     /**
      *
@@ -124,10 +125,13 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
         contentPanel.add(buttonBar);
         contentPanel.add(grid);
+        contentPanel.add(loadingPanel);
 
         removeAll();
         add(contentPanel);
         layout();
+        
+        loadingPanel.start();
         
         refresh();
     }
@@ -151,5 +155,13 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
             component.enable();
         }
     }
+    
+    public LoadingIndicatorPanel getLoadingPanel() {
+		return loadingPanel;
+	}
+
+	public void setLoadingPanel(LoadingIndicatorPanel loadingPanel) {
+		this.loadingPanel = loadingPanel;
+	}
 
 }
