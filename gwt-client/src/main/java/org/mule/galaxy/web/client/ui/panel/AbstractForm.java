@@ -236,7 +236,7 @@ public abstract class AbstractForm extends AbstractShowable {
             }
             
             errorPanel.addMessage(error);
-            Label lbl = new Label("[See the stacktrace]");
+            Label lbl = new Label("[More Detail]");
             lbl.addClickHandler(new ClickHandler(){
 
                 public void onClick(ClickEvent event) {    
