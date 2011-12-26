@@ -131,7 +131,7 @@ public class SecurityServiceImpl implements SecurityService {
             User user = userManager.get(id);
             return toWeb(user);
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -194,7 +194,7 @@ public class SecurityServiceImpl implements SecurityService {
                 accessControlManager.assertAccess(Permission.MANAGE_USERS);
             } catch (AccessException e) {
                 // TODO probably change the signature to throw AccessException
-                throw new RPCException(e.getMessage());
+                throw new RPCException(e.getMessage(),e);
             }
 
             User u = userManager.get(user.getId());
@@ -218,7 +218,7 @@ public class SecurityServiceImpl implements SecurityService {
 
 
         } catch (DuplicateItemException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         }
@@ -256,9 +256,9 @@ public class SecurityServiceImpl implements SecurityService {
                 accessControlManager.grant(group, grants);
                 accessControlManager.revoke(group, revocations);
             } catch (AccessException e1) {
-                throw new RPCException(e1.getMessage());
+                throw new RPCException(e1.getMessage(),e1);
             } catch (NotFoundException e1) {
-                throw new RPCException(e1.getMessage());
+                throw new RPCException(e1.getMessage(),e1);
             }
         }
     }
@@ -339,12 +339,12 @@ public class SecurityServiceImpl implements SecurityService {
             }
         } catch (RegistryException e) {
             log.error( e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             log.error( e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -383,10 +383,10 @@ public class SecurityServiceImpl implements SecurityService {
             return wgroups;
         } catch (RegistryException e) {
             log.error( e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             log.error( e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
             throw new RPCException(e.getMessage());
         }
@@ -406,11 +406,11 @@ public class SecurityServiceImpl implements SecurityService {
             accessControlManager.grant(g, defaultGrantedPermissions);
         } catch (AccessException e1) {
             e1.printStackTrace();
-            throw new RPCException(e1.getMessage());
+            throw new RPCException(e1.getMessage(),e1);
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
  
@@ -418,7 +418,7 @@ public class SecurityServiceImpl implements SecurityService {
     	try {
     		accessControlManager.deleteGroup(id);
     	} catch (Exception e) {
-    		throw new RPCException(e.getMessage());
+    		throw new RPCException(e.getMessage(),e);
     	}
     }
 
@@ -427,7 +427,7 @@ public class SecurityServiceImpl implements SecurityService {
         	try {
         		accessControlManager.deleteGroup(id);
         	} catch (Exception e) {
-        		throw new RPCException(e.getMessage());
+        		throw new RPCException(e.getMessage(),e);
         	}
         }
     }
@@ -436,7 +436,7 @@ public class SecurityServiceImpl implements SecurityService {
         try {
             return toWeb(accessControlManager.getGroup(id));
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 

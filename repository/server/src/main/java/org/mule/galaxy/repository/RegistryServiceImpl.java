@@ -167,11 +167,11 @@ public class RegistryServiceImpl implements RegistryService {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -192,11 +192,11 @@ public class RegistryServiceImpl implements RegistryService {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -351,7 +351,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             return toWeb(artifactTypeDao.get(id));
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -373,7 +373,7 @@ public class RegistryServiceImpl implements RegistryService {
             artifactTypeDao.delete(id);
         } catch (RuntimeException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -383,11 +383,11 @@ public class RegistryServiceImpl implements RegistryService {
             artifactTypeDao.save(at);
         } catch (RuntimeException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -475,14 +475,14 @@ public class RegistryServiceImpl implements RegistryService {
             wr.setFeed(context + "/api/registry?q=" + UrlEncoding.encode(wr.getQuery(), Profile.PATH.filter()));
             return wr;
         } catch (QueryException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (RegistryException e) {
             log.error("Could not query the registry.", e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -497,10 +497,10 @@ public class RegistryServiceImpl implements RegistryService {
             
             return entries;
         } catch (QueryException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (RegistryException e) {
             log.error("Could not query the registry.", e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
     
@@ -626,7 +626,7 @@ public class RegistryServiceImpl implements RegistryService {
             }
             return toWeb(idx);
         } catch (Exception e) {
-            throw new RPCException("Could not find index " + id);
+            throw new RPCException("Could not find index " + id,e);
         }
     }
 
@@ -637,7 +637,7 @@ public class RegistryServiceImpl implements RegistryService {
             indexManager.save(idx);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new RPCException("Couldn't save index.");
+            throw new RPCException("Couldn't save index.",e);
         }
     }
 
@@ -646,7 +646,7 @@ public class RegistryServiceImpl implements RegistryService {
             indexManager.delete(id, removeArtifactMetadata);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new RPCException("Couldn't save index.");
+            throw new RPCException("Couldn't save index.",e);
         }
     }
 
@@ -677,7 +677,7 @@ public class RegistryServiceImpl implements RegistryService {
             try {
                 docTypes.add(QName.valueOf(o.toString()));
             } catch (IllegalArgumentException e) {
-                throw new RPCException("QName was formatted incorrectly: " + o.toString());
+                throw new RPCException("QName was formatted incorrectly: " + o.toString(),e);
             }
         }
         idx.setDocumentTypes(docTypes);
@@ -690,7 +690,7 @@ public class RegistryServiceImpl implements RegistryService {
             return true;
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             return false;
         } catch (AccessException e) {
@@ -711,7 +711,7 @@ public class RegistryServiceImpl implements RegistryService {
             return toWeb(links, pd);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
 
     }
@@ -821,11 +821,11 @@ public class RegistryServiceImpl implements RegistryService {
             return toWebExtended(item, showHidden);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -835,11 +835,11 @@ public class RegistryServiceImpl implements RegistryService {
             return toWeb(item, false);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -955,11 +955,11 @@ public class RegistryServiceImpl implements RegistryService {
                                 comment.getText());
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -999,11 +999,11 @@ public class RegistryServiceImpl implements RegistryService {
             registry.save(item);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
             throw toWeb(e);
         }
@@ -1053,7 +1053,7 @@ public class RegistryServiceImpl implements RegistryService {
                     return new Object[] { uploadService.getFile(s.toString()),
                                           "application/octet-stream" };
                 } catch (FileNotFoundException e) {
-                    throw new RPCException("An error occurred processing the file upload. Please try again.");
+                    throw new RPCException("An error occurred processing the file upload. Please try again.",e);
                 }
             } else if (ext instanceof LifecycleExtension) {
                 List ids = (List) s;
@@ -1106,11 +1106,11 @@ public class RegistryServiceImpl implements RegistryService {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
             throw toWeb(e);
         }
@@ -1137,11 +1137,11 @@ public class RegistryServiceImpl implements RegistryService {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
             throw toWeb(e);
         }
@@ -1166,13 +1166,13 @@ public class RegistryServiceImpl implements RegistryService {
             registry.save(item);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1191,13 +1191,13 @@ public class RegistryServiceImpl implements RegistryService {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1214,11 +1214,11 @@ public class RegistryServiceImpl implements RegistryService {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1274,9 +1274,9 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1293,7 +1293,7 @@ public class RegistryServiceImpl implements RegistryService {
         try {
             return toWeb(typeManager.getType(id));
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1317,11 +1317,11 @@ public class RegistryServiceImpl implements RegistryService {
             
             wt.setId(type.getId());
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1404,11 +1404,11 @@ public class RegistryServiceImpl implements RegistryService {
             registry.move(i, workspacePath, name);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
             throw toWeb(e);
         }
@@ -1421,11 +1421,11 @@ public class RegistryServiceImpl implements RegistryService {
             item.delete();
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
             throw toWeb(e);
         } 
@@ -1440,11 +1440,11 @@ public class RegistryServiceImpl implements RegistryService {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (NotFoundException e) {
             throw new ItemNotFoundException();
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (PolicyException e) {
             throw toWeb(e);
         } 
@@ -1475,7 +1475,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             return toWeb(l, defaultLifecycle.equals(l));
         } catch (Exception e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1533,12 +1533,12 @@ public class RegistryServiceImpl implements RegistryService {
                 pols = policyManager.getActivePolicies(lifecycle);
             }
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
         return getArtifactPolicyIds(pols);
     }
@@ -1557,12 +1557,12 @@ public class RegistryServiceImpl implements RegistryService {
                 pols = policyManager.getActivePolicies(phase);
             }
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
 
         return getArtifactPolicyIds(pols);
@@ -1631,7 +1631,7 @@ public class RegistryServiceImpl implements RegistryService {
                 failures.put(info, wapprovals);
             } catch (RegistryException ex) {
                 log.error(ex.getMessage(), ex);
-                throw new RPCException(ex.getMessage());
+                throw new RPCException(ex.getMessage(),e);
             }
         }
         return new WPolicyException(failures);
@@ -1689,7 +1689,7 @@ public class RegistryServiceImpl implements RegistryService {
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1704,7 +1704,7 @@ public class RegistryServiceImpl implements RegistryService {
 
             localLifecycleManager.delete(id, fallback);
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -1800,7 +1800,7 @@ public class RegistryServiceImpl implements RegistryService {
                 try {
                     itemId = registry.getItemByPath(itemPath).getId();
                 } catch (NotFoundException e) {
-                    throw new RPCException("You do not have sufficient permissions to view activities relating to that item.");
+                    throw new RPCException("You do not have sufficient permissions to view activities relating to that item.",e);
                 }
             }
             
@@ -1816,10 +1816,10 @@ public class RegistryServiceImpl implements RegistryService {
             }
             return wactivities;
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 

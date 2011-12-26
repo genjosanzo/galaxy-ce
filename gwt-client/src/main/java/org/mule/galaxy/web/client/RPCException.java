@@ -27,9 +27,17 @@ public class RPCException extends Exception implements IsSerializable {
     private String stacktrace;
     private String highLevelDescription;
 
+    /**
+     * @deprecated Constructor {@linkplain RPCException(final String message, final Throwable cause, String highLevelDesc)} should be used instead.
+     */
+    @Deprecated
     public RPCException() {
     }
-
+    
+    /**
+     * @deprecated Constructor {@linkplain RPCException(final String message, final Throwable cause, String highLevelDesc)} should be used instead.
+     */
+    @Deprecated
     public RPCException(final String message) {
         super(message);
     }
@@ -40,9 +48,9 @@ public class RPCException extends Exception implements IsSerializable {
      * the stacktrace is translated in order to see the exception from the client UI.
      * @param message Brief message that explains the current error
      * @param cause Exception that caused this exception
-     * 
+     * @deprecated There's no problem using this method but is deprecated because some description should be added to the exception.
      */
-    
+    @Deprecated
     public RPCException(final String message, final Throwable cause) {
         super(message, cause);
            setStacktrace(translateExceptionToString(cause));
@@ -66,16 +74,12 @@ public class RPCException extends Exception implements IsSerializable {
     private String translateExceptionToString(Throwable cause) {
         //TODO ivan: test what happens if something prints out to system.out at the same time
         String trace = "";
-        
         cause.getClass().toString();
-        
         trace += "<br/> <b> <font size=6 color= red> StackTrace: </font> </b>";
-        
         for (int i = 0; i < cause.getStackTrace().length; i++) {
             trace += "<br/>" + cause.getStackTrace()[i].toString();
-        }
-        
-           return trace;
+        }  
+        return trace;
     }
 
     public void setStacktrace(String stacktrace) {
