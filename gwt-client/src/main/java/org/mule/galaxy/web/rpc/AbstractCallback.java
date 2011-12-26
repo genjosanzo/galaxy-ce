@@ -18,15 +18,19 @@
 
 package org.mule.galaxy.web.rpc;
 
+import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.client.ui.help.PanelConstants;
 import org.mule.galaxy.web.client.ui.panel.ErrorPanel;
 
 import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.InvocationException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -100,12 +104,20 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
      */
     protected String createErrorMessageFromException(final Throwable caught) {
         final String exceptionMessage = caught.getMessage();
-        final String errorMessage;
+        String errorMessage;
         if (caught instanceof InvocationException && !(caught instanceof StatusCodeException)) {
             // happens after server is back online, and got a forward to a login page
             // typically would be displayed with a session killed dialog
             errorMessage = panelMessages.currentSession();
-        } else if (exceptionMessage != null && !"".equals(exceptionMessage)) {
+        }else if (caught instanceof RPCException) {
+            errorMessage = "An unespected error has occurred: ";
+            if (caught.getMessage() != null) {
+                errorMessage +=  caught.getMessage();
+            }
+            if (caught.getCause() != null) {
+                errorMessage += ".Caused by :" + caught.getCause().getMessage();
+            }
+        }else if (exceptionMessage != null && !"".equals(exceptionMessage)) {
             errorMessage = panelMessages.errorCommunicatingServer() + exceptionMessage;
         } else {
             errorMessage = panelMessages.errorCommunicatingExeption() + caught.getClass().getName();
@@ -115,7 +127,28 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
 
     protected void onCallFailure(final Throwable caught) {
         setErrorMessage(createErrorMessageFromException(caught));
+        
+        if (caught instanceof RPCException) {
+            Label lbl = new Label("[See the stacktrace]");
+            lbl.addClickHandler(new ClickHandler(){
+
+                public void onClick(ClickEvent event) {    
+                    createWindow(((RPCException) caught).getStacktrace());
+                }
+                
+            });
+            lbl.setStyleName("a-faux-link");
+            errorPanel.addMessage(lbl);
+        }
+        
     }
+    
+    public static native void createWindow(String contents) /*-{   
+      var win = window.open("", "StackTrace", "scrollbars=1"); // a window object
+    win.document.open("text/html", "replace");
+    win.document.write("<HTML><HEAD><TITLE>StackTrace</TITLE></HEAD><BODY>"+ contents + "</BODY></HTML>");
+    win.document.close(); 
+    }-*/;
 
     /**
      * Do not call this method from {@link #onCallFailure(Throwable)} !

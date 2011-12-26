@@ -24,6 +24,7 @@ import static org.mule.galaxy.web.client.ClientId.GRAL_FORM_SAVE_ID;
 
 import java.util.List;
 
+import org.mule.galaxy.web.client.RPCException;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.ui.help.PanelConstants;
 import org.mule.galaxy.web.rpc.AbstractCallback;
@@ -36,9 +37,12 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
 public abstract class AbstractForm extends AbstractShowable {
 
@@ -220,15 +224,37 @@ public abstract class AbstractForm extends AbstractShowable {
         };
     }
 
-    protected void onSaveFailure(AbstractCallback callback, Throwable caught) {
+    protected void onSaveFailure(AbstractCallback callback,final Throwable caught) {
         setEnabled(true);
 
         if (caught instanceof ItemExistsException) {
             errorPanel.setMessage(existsMessage);
-        } else {
-            callback.onFailure(caught);
+        } else if (caught instanceof RPCException) {
+            String error = "The following error has occurred";
+            if (caught.getMessage() != null) {
+                error += ": " + caught.getMessage();
+            }
+            
+            errorPanel.addMessage(error);
+            Label lbl = new Label("[See the stacktrace]");
+            lbl.addClickHandler(new ClickHandler(){
+
+                public void onClick(ClickEvent event) {    
+                    createWindow(((RPCException) caught).getStacktrace());
+                }
+                
+            });
+            lbl.setStyleName("a-faux-link");
+            errorPanel.addMessage(lbl);
         }
     }
+    
+    public static native void createWindow(String contents) /*-{   
+      var win = window.open("", "StackTrace", "scrollbars=1"); // a window object
+    win.document.open("text/html", "replace");
+    win.document.write("<HTML><HEAD><TITLE>StackTrace</TITLE></HEAD><BODY>"+ contents + "</BODY></HTML>");
+    win.document.close(); 
+    }-*/;
 
     protected AsyncCallback getDeleteCallback() {
         return new AbstractCallback(errorPanel) {
