@@ -219,7 +219,7 @@ public class JcrWorkspaceManagerImpl extends AbstractWorkspaceManager
         return a;
     }
 
-    protected Item build(Node node) throws RepositoryException, ItemNotFoundException, AccessException, RegistryException {
+    public Item build(Node node) throws RepositoryException, ItemNotFoundException, AccessException, RegistryException {
         return build(node, node.getPrimaryNodeType().getName());
     }
     

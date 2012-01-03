@@ -6,12 +6,29 @@ import java.util.List;
 import com.extjs.gxt.ui.client.data.ListLoader;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.ListView;
+import com.extjs.gxt.ui.client.widget.form.ComboBox;
 
+/**
+ * The store class encapsulates a client side cache of {@link ModelData} objects
+ * which provide input data for Components such as the {@link ComboBox} and
+ * {@link ListView ListView}. This extended one allows getting all stored models at once.
+ *
+ */
 public class ExtendedListStore<M extends ModelData> extends ListStore<M> {
 
+  /**
+   * Creates a new store.
+   * 
+   */
     public ExtendedListStore() {
     }
 
+    /**
+     * Creates a new store.
+     * 
+     * @param loader the loader instance
+     */
     public ExtendedListStore(ListLoader<?> loader) {
         super(loader);
     }

@@ -1061,5 +1061,9 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
     public void setTypeManager(TypeManager typeManager) {
         this.typeManager = typeManager;
     }
+
+	public Item build(Node node) throws RepositoryException, ItemNotFoundException, AccessException, RegistryException {
+		return localWorkspaceManager.build(node);
+	}
     
 }

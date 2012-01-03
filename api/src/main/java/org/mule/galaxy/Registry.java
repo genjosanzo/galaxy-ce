@@ -5,6 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
 import org.mule.galaxy.extension.Extension;
 import org.mule.galaxy.policy.PolicyException;
 import org.mule.galaxy.query.Query;
@@ -89,5 +93,7 @@ public interface Registry {
     List<Extension> getExtensions();
 
     Extension getExtension(String extension);
+    
+    Item build(Node node) throws RepositoryException, ItemNotFoundException, AccessException, RegistryException;
 
 }

@@ -504,6 +504,17 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         return query(stmt, session, 0, -1).getData();
     }
     
+    /**
+     * Note: queries without an 'order by' clause will have -1 for its size count because of jackrabbit implementation optimizations, also the 'order by' trick only works for XPATH queries, not the new JCR-SQL2
+     * 
+     * @param stmt The XPATH query to execute
+     * @param session The JCR session
+     * @param start The offset (number of results at the beginning to skip)
+     * @param maxResults Maximum number of results to retrieve
+     * @return Result of the query, with the parameterized type
+     * @throws RepositoryException
+     * @throws InvalidQueryException
+     */
     protected Results<T> query(String stmt, Session session, int start, int maxResults) throws RepositoryException, InvalidQueryException {
         QueryManager qm = getQueryManager(session);
         Query q = qm.createQuery(stmt, Query.XPATH);

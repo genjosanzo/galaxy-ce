@@ -57,7 +57,7 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
 
     }
 
-    private GridAwareToolbarButtonBar toolbarButtonBar;
+    protected GridAwareToolbarButtonBar toolbarButtonBar;
 
     public AbstractListPanel() {
     }
