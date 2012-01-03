@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mule.galaxy.repository.rpc.RegistryService;
+import org.mule.galaxy.repository.rpc.RegistryServiceAsync;
 import org.mule.galaxy.web.client.admin.AdministrationPanel;
 import org.mule.galaxy.web.client.ui.ExternalHyperlink;
 import org.mule.galaxy.web.client.ui.help.AdministrationConstants;
@@ -98,6 +100,7 @@ public class Galaxy {
     private String logoHref = "images/galaxy_logo_main_trans.gif";
     private InlineFlowPanel alertNotificationArea;
     private ApplicationInfo applicationInfo;
+	private RegistryServiceAsync registryService;
 
     public void initialize(final List<GalaxyModule> modules) {
         // GXT.setDefaultTheme(Theme.GRAY, true);
@@ -121,6 +124,10 @@ public class Galaxy {
         this.adminService = (AdminServiceAsync) GWT.create(AdminService.class);
         target = (ServiceDefTarget) adminService;
         target.setServiceEntryPoint(baseUrl + "../handler/admin.rpc");
+        
+        this.registryService = (RegistryServiceAsync) GWT.create(RegistryService.class);
+        target = (ServiceDefTarget) registryService;
+        target.setServiceEntryPoint(baseUrl + "../handler/registry.rpc");
 
         this.galaxyConstants = (GalaxyConstants) GWT.create(GalaxyConstants.class);
         this.administrationConstants = (AdministrationConstants) GWT.create(AdministrationConstants.class);
@@ -474,4 +481,12 @@ public class Galaxy {
     public void setLogoHref(String logoHref) {
         this.logoHref = logoHref;
     }
+
+	public RegistryServiceAsync getRegistryService() {
+		return registryService;
+	}
+
+	public void setRegistryService(RegistryServiceAsync registryService) {
+		this.registryService = registryService;
+	}
 }

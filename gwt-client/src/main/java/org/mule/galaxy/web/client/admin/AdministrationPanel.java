@@ -25,6 +25,7 @@ import static org.mule.galaxy.web.client.ClientId.ADMIN_PANEL_LIST_VIEW_UTILITY_
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.galaxy.repository.client.activity.ActivityPanel;
 import org.mule.galaxy.web.client.Galaxy;
 import org.mule.galaxy.web.client.PageInfo;
 import org.mule.galaxy.web.client.PageManager;
@@ -92,6 +93,14 @@ public class AdministrationPanel extends MenuPanel {
                     "schedules",
                     new ScheduleListPanel(this),
                     new ScheduleForm(this)));
+        }
+        
+
+        
+        if (galaxy.hasPermission("VIEW_ACTIVITY")) {
+            addUtilityMenuItem(new NavMenuItem("Activity",
+                    "ActivityPanel",
+                    new ActivityPanel(this, galaxy, galaxy.getRegistryService())));
         }
     }
 

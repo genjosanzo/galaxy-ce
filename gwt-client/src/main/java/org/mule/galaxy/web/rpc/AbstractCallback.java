@@ -115,7 +115,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
                 errorMessage +=  caught.getMessage();
             }
             if (caught.getCause() != null) {
-                errorMessage += ".Caused by :" + caught.getCause().getMessage();
+                errorMessage += ".Caused by :" + caught.getCause().getClass().toString();
             }
         }else if (exceptionMessage != null && !"".equals(exceptionMessage)) {
             errorMessage = panelMessages.errorCommunicatingServer() + exceptionMessage;
@@ -129,7 +129,7 @@ public abstract class AbstractCallback<T> implements AsyncCallback<T> {
         setErrorMessage(createErrorMessageFromException(caught));
         
         if (caught instanceof RPCException) {
-            Label lbl = new Label("[See the stacktrace]");
+            Label lbl = new Label("[See more detail]");
             lbl.addClickHandler(new ClickHandler(){
 
                 public void onClick(ClickEvent event) {    

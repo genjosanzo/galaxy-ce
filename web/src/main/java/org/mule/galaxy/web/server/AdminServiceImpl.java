@@ -48,14 +48,14 @@ public class AdminServiceImpl implements AdminService {
         try {
             return scriptManager.execute(scriptText);
         } catch (AccessException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         } catch (RegistryException e) {
             Throwable t = ExceptionUtils.getRootCause(e);
             log.error(t);
             String msg = t != null
                     ? t.getMessage()
                     : e.getMessage();
-            throw new RPCException(msg);
+            throw new RPCException(msg,e);
         }
     }
 
@@ -88,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
         }
     }
 
@@ -121,9 +121,9 @@ public class AdminServiceImpl implements AdminService {
         } catch (DuplicateItemException e) {
             throw new ItemExistsException();
         } catch (NotFoundException e) {
-            throw new RPCException(e.getMessage());
-        } catch (CronParseException e) {
-            throw new RPCException(e.getMessage());
+            throw new RPCException(e.getMessage(),e);
+        } catch (CronParseException cpe) {
+            throw new RPCException(cpe.getMessage() ,cpe);
         }
     }
 
@@ -153,7 +153,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             s.setScript(scriptManager.get(ws.getScript()));
         } catch (NotFoundException e) {
-            throw new RPCException("Script " + ws.getScript() + " was not found.");
+            throw new RPCException("Script " + ws.getScript() + " was not found.",e);
         }
         
         s.setDescription(ws.getDescription());

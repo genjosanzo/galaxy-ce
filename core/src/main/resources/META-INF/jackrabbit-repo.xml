@@ -93,6 +93,7 @@
         -->
         <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
             <param name="path" value="${wsp.home}/index"/>
+            <param name="respectDocumentOrder" value="false"/>
             <FileSystem class="org.mule.galaxy.config.jackrabbit.JndiDatabaseFileSystem">
                 <param name="dataSourceLocation" value="jdbc/galaxy/InternalDS"/>
                 <param name="initialContextFactory" value="org.mule.galaxy.config.jndi.SpringInitialContextFactory"/>
