@@ -89,7 +89,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <scope>test</scope>
-                <version>3.8.2</version>
+                <version>4.10</version>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
