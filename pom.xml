@@ -12,7 +12,7 @@
         <slf4jVersion>1.5.0</slf4jVersion>
         <gwtVersion>2.2.0</gwtVersion>
         <gxtVersion>2.2.3</gxtVersion>
-        <version.spring3>3.1.0.M2</version.spring3>
+        <version.spring3>3.1.0.RELEASE</version.spring3>
         <!--
             Well, it's broken too, and some assemblies override it to
             fallback to 2.1.
