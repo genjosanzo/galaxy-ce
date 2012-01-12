@@ -311,6 +311,10 @@ public class ActivityPanel extends AbstractFlowComposite {
         userLB.setSelectedIndex(0);
         eventLB.setSelectedIndex(0);
         resultsLB.setSelectedIndex(2);
+        itemSB.setText("[All Items]");
+        textTB.setValue("");
+        startDate.setValue(new Date());
+        endDate = new DateField();   
     }
 
 }
