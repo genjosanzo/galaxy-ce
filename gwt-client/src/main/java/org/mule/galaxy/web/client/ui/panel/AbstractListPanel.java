@@ -11,6 +11,7 @@ import com.extjs.gxt.ui.client.widget.form.StoreFilterField;
 import com.extjs.gxt.ui.client.widget.grid.CheckBoxSelectionModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.toolbar.FillToolItem;
+import com.extjs.gxt.ui.client.widget.toolbar.PagingToolBar;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
 /**
@@ -23,6 +24,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
  */
 public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRefreshableComponent {
 	private LoadingIndicatorPanel loadingPanel = new LoadingIndicatorPanel();
+	protected PagingToolBar pagingToolBar;
 
     /**
      *
@@ -30,7 +32,6 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
      *
      */
     public abstract static class GridAwareToolbarButtonBar extends ToolbarButtonBar {
-
         private final Grid<BeanModel> grid;
 
         public GridAwareToolbarButtonBar(final Grid<BeanModel> grid) {
@@ -126,6 +127,9 @@ public abstract class AbstractListPanel<M extends BeanModel> extends AbstractRef
         contentPanel.add(buttonBar);
         contentPanel.add(grid);
         contentPanel.add(loadingPanel);
+        if (pagingToolBar != null) {
+			contentPanel.setBottomComponent(pagingToolBar);
+		}
 
         removeAll();
         add(contentPanel);

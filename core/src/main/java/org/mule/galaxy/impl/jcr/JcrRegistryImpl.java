@@ -19,6 +19,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -34,6 +35,7 @@ import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.PropertyException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Results;
 import org.mule.galaxy.event.EventManager;
 import org.mule.galaxy.event.ItemMovedEvent;
 import org.mule.galaxy.extension.Extension;
@@ -741,6 +743,47 @@ public class JcrRegistryImpl extends JcrTemplate implements Registry, Applicatio
             }
 
         });
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Results<Item> doQuery(final String stmt, final int start, final int max) {
+        return (Results<Item>) execute(new JcrCallback() {
+            public Object doInJcr(Session session) throws IOException, RepositoryException {
+                return query(stmt, session, start, max);
+            }
+        });
+    }
+    
+    protected Results<Item> query(String stmt, Session session, int start, int maxResults) throws RepositoryException, InvalidQueryException {
+        QueryManager qm = session.getWorkspace().getQueryManager();
+        Query q = qm.createQuery(stmt, Query.XPATH);
+        
+        QueryResult qr = q.execute();
+        
+        List<Item> values = new ArrayList<Item>();
+        
+        NodeIterator iterator = qr.getNodes();
+        iterator.skip(start);
+        
+        if (maxResults != 0) {
+            for (NodeIterator nodes = iterator; nodes.hasNext();) {
+                try {
+                    values.add(build(nodes.nextNode()));
+                } catch (Exception e) {
+                    if (e instanceof RepositoryException) {
+                        throw ((RepositoryException) e);
+                    } else if (e instanceof RuntimeException) {
+                        throw (RuntimeException) e;
+                    }
+                    throw new RuntimeException(e);
+                }
+                if (maxResults == values.size()) {
+                    break;
+                }
+            }
+        }
+        
+        return new Results<Item>(values, iterator.getSize());
     }
 
     protected String createQueryString(final org.mule.galaxy.query.Query query, 

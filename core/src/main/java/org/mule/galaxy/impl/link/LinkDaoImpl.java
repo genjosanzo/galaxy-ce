@@ -27,6 +27,7 @@ import org.mule.galaxy.Link;
 import org.mule.galaxy.NotFoundException;
 import org.mule.galaxy.Registry;
 import org.mule.galaxy.RegistryException;
+import org.mule.galaxy.Results;
 import org.mule.galaxy.event.ItemCreatedEvent;
 import org.mule.galaxy.event.ItemDeletedEvent;
 import org.mule.galaxy.event.ItemMovedEvent;
