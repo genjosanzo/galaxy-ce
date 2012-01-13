@@ -1,5 +1,6 @@
 package org.mule.galaxy;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.mule.galaxy.type.PropertyDescriptor;
 import org.mule.galaxy.type.Type;
 import org.mule.galaxy.type.TypeManager;
 
-public interface Item {
+public interface Item extends Serializable{
 
     String getId();
 
