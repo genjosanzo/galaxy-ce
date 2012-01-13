@@ -524,6 +524,7 @@ public abstract class AbstractDao<T> extends JcrTemplate implements Dao<T> {
         List<T> values = new ArrayList<T>();
         
         NodeIterator iterator = qr.getNodes();
+        if(iterator.getSize()!= -1 && iterator.getSize() >= start)
         iterator.skip(start);
         
         if (maxResults != 0) {
