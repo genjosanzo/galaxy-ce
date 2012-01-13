@@ -1,10 +1,10 @@
 package org.mule.galaxy.event;
 
-public class TestEvent extends GalaxyEvent {
+public class ExampleEvent extends GalaxyEvent {
 
     private Object source;
 
-    public TestEvent(final Object source) {
+    public ExampleEvent(final Object source) {
         this.source = source;
     }
 

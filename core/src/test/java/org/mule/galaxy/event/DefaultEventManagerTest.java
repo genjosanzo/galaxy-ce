@@ -39,8 +39,8 @@ public class DefaultEventManagerTest extends TestCase {
 
     public void testRemoveListener() {
         EventManager em = new DefaultEventManager(Collections.emptyList(), null, executor);
-        TestSingleEventListener listener = new TestSingleEventListener();
-        TestEvent event = new TestEvent(this);
+        ExampleSingleEventListener listener = new ExampleSingleEventListener();
+        ExampleEvent event = new ExampleEvent(this);
         em.addListener(listener);
 
         em.fireEvent(event);

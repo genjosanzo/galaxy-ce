@@ -1,19 +1,19 @@
 package org.mule.galaxy.config;
 
 import org.mule.galaxy.event.EventManager;
-import org.mule.galaxy.event.TestEvent;
-import org.mule.galaxy.event.TestSingleEventListener;
+import org.mule.galaxy.event.ExampleEvent;
+import org.mule.galaxy.event.ExampleSingleEventListener;
 import org.mule.galaxy.test.AbstractGalaxyTest;
 
 public class GalaxyNamespaceHandlerTest extends AbstractGalaxyTest {
 
     private EventManager eventManager;
 
-    private TestSingleEventListener listener;
+    private ExampleSingleEventListener listener;
 
     @Override
     protected void onTearDown() throws Exception {
-        eventManager.removeListener(TestEvent.class);
+        eventManager.removeListener(ExampleEvent.class);
         super.onTearDown();
     }
 
@@ -22,7 +22,7 @@ public class GalaxyNamespaceHandlerTest extends AbstractGalaxyTest {
         assertNotNull(listener);
 
         System.out.println("GalaxyNamespaceHandlerTest.testNSHandler");
-        final TestEvent event = new TestEvent(this);
+        final ExampleEvent event = new ExampleEvent(this);
         eventManager.fireEvent(event);
 
         assertNotNull(listener.getEvent());
@@ -33,7 +33,7 @@ public class GalaxyNamespaceHandlerTest extends AbstractGalaxyTest {
         this.eventManager = eventManager;
     }
 
-    public void setListener(final TestSingleEventListener listener) {
+    public void setListener(final ExampleSingleEventListener listener) {
         this.listener = listener;
     }
 }
