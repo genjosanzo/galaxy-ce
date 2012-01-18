@@ -91,7 +91,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <scope>test</scope>
-                <version>3.8.2</version>
+                <version>4.10</version>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
@@ -646,11 +646,11 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-            <plugin>
+ 			<plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.4.3</version>
                 <configuration>
-                    <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
+                    <argLine>-Xms512m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m</argLine>
                 </configuration>
             </plugin>
             <!--
