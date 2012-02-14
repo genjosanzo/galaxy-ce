@@ -76,7 +76,7 @@ public class Main {
         wac.setWar(baseWebapp.getAbsolutePath());
         
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("useFileMappedBuffer", Boolean.FALSE);
+        params.put("useFileMappedBuffer", Boolean.FALSE.toString());
         wac.setInitParams(params);
         
         server.addHandler(wac);
